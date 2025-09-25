@@ -84,6 +84,11 @@ class LegalSLMApp {
       resultsSection.classList.remove('hidden')
     }
 
+    // Display compliance alert if detected
+    if (data.complianceAlert && data.complianceAlert.detected) {
+      this.displayComplianceAlert(data.complianceAlert)
+    }
+
     // Display legal answer
     this.displayAnswer(data.answer, data.warning)
     
@@ -92,6 +97,9 @@ class LegalSLMApp {
     
     // Display risk metrics
     this.displayRiskMetrics(data.riskMetrics)
+    
+    // Display metadata
+    this.displayMetadata(data.metadata)
     
     // Scroll to results
     resultsSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -248,6 +256,69 @@ class LegalSLMApp {
     if (rohBound <= 0.05) return 'text-green-600'
     if (rohBound <= 0.15) return 'text-yellow-600'
     return 'text-red-600'
+  }
+
+  displayComplianceAlert(complianceData) {
+    const resultsSection = document.getElementById('results')
+    if (resultsSection) {
+      const alertHtml = `
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <i class="fas fa-exclamation-triangle text-amber-500 text-xl"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-lg font-medium text-amber-800">
+                🚨 Alerta de Compliance Cultural Detectada
+              </h3>
+              <p class="text-amber-700 mt-2">
+                Se detectaron ${complianceData.patterns} patrones culturales argentinos con implicaciones bajo la ${complianceData.framework}.
+              </p>
+              <div class="mt-3 text-sm text-amber-600">
+                <strong>Recomendación:</strong> Esta consulta requiere evaluación especializada de compliance empresarial.
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+      resultsSection.insertAdjacentHTML('afterbegin', alertHtml)
+    }
+  }
+
+  displayMetadata(metadata) {
+    const metadataDiv = document.createElement('div')
+    metadataDiv.className = 'mt-6 bg-gray-50 rounded-lg p-4'
+    metadataDiv.innerHTML = `
+      <h4 class="text-sm font-medium text-gray-700 mb-3">
+        <i class="fas fa-info-circle mr-2"></i>
+        Información del Procesamiento
+      </h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-gray-600">
+        <div>
+          <strong>Chunks analizados:</strong> ${metadata.chunksAnalyzed || 0}
+        </div>
+        <div>
+          <strong>Chunks recuperados:</strong> ${metadata.chunksRetrieved || 0}
+        </div>
+        <div>
+          <strong>Patrones compliance:</strong> ${metadata.compliancePatterns || 0}
+        </div>
+        <div>
+          <strong>Tiempo:</strong> ${metadata.processingTime ? Math.round(metadata.processingTime) + 'ms' : 'N/A'}
+        </div>
+        <div class="col-span-2">
+          <strong>Modelo:</strong> ${metadata.model || 'N/A'}
+        </div>
+        <div class="col-span-2">
+          <strong>Versión:</strong> ${metadata.version || 'N/A'}
+        </div>
+      </div>
+    `
+    
+    const resultsSection = document.getElementById('results')
+    if (resultsSection) {
+      resultsSection.appendChild(metadataDiv)
+    }
   }
 
   showError(message) {
