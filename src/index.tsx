@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { serveStatic } from 'hono/cloudflare-workers'
 import { renderer } from './renderer'
-import { legalQueryHandler } from './routes/legal'
+import { legalQueryHandler } from './routes/legal-enhanced'
 import { hallucinationGuard } from './lib/hallucination-guard'
 
 const app = new Hono()
