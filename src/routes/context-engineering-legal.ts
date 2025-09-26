@@ -7,6 +7,7 @@ import { worldClassDegradationManager } from '../lib/context-degradation-manager
 import { contextMemorySystem } from '../lib/context-engineering-memory.js';
 import { worldClassContextAssembler } from '../lib/context-assembly-pipeline.js';
 import { loadYAMLLegalCorpus, calculateTokenEfficiency, YAML_ARGENTINE_LEGAL_CORPUS } from '../lib/yaml-legal-corpus.js';
+import { contextEngineeringSecurity } from '../lib/security-prompt-defense.js';
 
 // =============================================================================
 // 🎯 WORLD-CLASS CONTEXT ENGINEERING HANDLER
@@ -30,6 +31,36 @@ export const contextEngineeringLegalHandler = async (c: Context) => {
         error: 'Query is required and must be a non-empty string',
         code: 'INVALID_QUERY'
       }, 400);
+    }
+
+    // =================================================================
+    // 🛡️ SECURITY PHASE: Prompting Attacks Detection
+    // =================================================================
+    
+    const securityAssessment = contextEngineeringSecurity.assessSecurityThreat(
+      query.trim(),
+      sessionId || `session-${Date.now()}`
+    );
+    
+    const securityMetrics = contextEngineeringSecurity.calculateSecurityRiskMetrics(
+      query.trim(),
+      sessionId || `session-${Date.now()}`
+    );
+    
+    // Block query if critical security threat detected
+    if (securityAssessment.blockQuery) {
+      return c.json({
+        success: false,
+        error: 'Query blocked due to security policy violation',
+        code: 'SECURITY_THREAT_DETECTED',
+        securityAssessment: {
+          threatLevel: securityAssessment.threatLevel,
+          detectedAttacks: securityAssessment.detectedAttacks,
+          confidenceScore: securityAssessment.confidenceScore,
+          reasoning: securityAssessment.reasoning
+        },
+        framework: 'Context Engineering Security + Prem Natarajan Defense'
+      }, 403);
     }
     
     // =================================================================
@@ -233,16 +264,35 @@ export const contextEngineeringLegalHandler = async (c: Context) => {
         ]
       },
       
+      // Security Assessment
+      security: {
+        framework: 'Context Engineering Security + Prem Natarajan Defense',
+        threatLevel: securityAssessment.threatLevel,
+        detectedAttacks: securityAssessment.detectedAttacks,
+        riskMetrics: {
+          injectionRisk: securityMetrics.injectionRisk,
+          roleAbuseRisk: securityMetrics.roleAbuseRisk,
+          exfiltrationRisk: securityMetrics.exfiltrationRisk,
+          socialEngineeringRisk: securityMetrics.socialEngineeringRisk,
+          chainedQueryRisk: securityMetrics.chainedQueryRisk,
+          overallRisk: securityMetrics.overallRisk
+        },
+        securityScore: 1.0 - securityMetrics.overallRisk,
+        isSecure: securityAssessment.threatLevel === 'low'
+      },
+      
       // Certification for EU AI Act Compliance
       certification: {
-        framework: 'EDFL + Context Engineering',
+        framework: 'EDFL + Context Engineering + Security Defense',
         timestamp: new Date().toISOString(),
         hash: `ce-${Date.now().toString(36)}`,
         auditTrail: {
           memoryTypesUsed: 5,
           optimizationStrategies: degradationResult.performance.optimizationsApplied.length,
           degradationPrevention: degradationResult.performance.degradationRisk !== 'critical',
-          tokenOptimization: efficiency.efficiency > 50
+          tokenOptimization: efficiency.efficiency > 50,
+          securityThreatLevel: securityAssessment.threatLevel,
+          securityScore: 1.0 - securityMetrics.overallRisk
         }
       }
     };
