@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { serveStatic } from 'hono/cloudflare-workers'
 import { renderer } from './renderer'
 import { legalQueryHandler } from './routes/legal-enhanced'
+import { contextEngineeringLegalHandler, contextEngineeringStatusHandler } from './routes/context-engineering-legal'
 import { hallucinationGuard } from './lib/hallucination-guard'
 
 const app = new Hono()
@@ -20,6 +21,10 @@ app.use(renderer)
 app.post('/api/legal/query', legalQueryHandler)
 app.post('/api/legal/validate', hallucinationGuard)
 
+// Context Engineering API routes (World-Class)
+app.post('/api/context-engineering/query', contextEngineeringLegalHandler)
+app.get('/api/context-engineering/status', contextEngineeringStatusHandler)
+
 // Main page with legal interface
 app.get('/', (c) => {
   return c.render(
@@ -28,11 +33,22 @@ app.get('/', (c) => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            🧠 SLM Legal Anti-alucinación
+            🧠 SLM Legal - Context Engineering Edition
           </h1>
           <p className="text-xl text-gray-600 mb-4">
-            Small Language Model para consultas jurídicas en Argentina
+            World-Class Legal AI con Paul Iusztin Context Engineering Framework
           </p>
+          <div className="flex justify-center space-x-4 mb-4">
+            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+              ✅ 5-Memory Architecture
+            </span>
+            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              ⚡ YAML 66% Optimization
+            </span>
+            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+              🛡️ 32K Degradation Prevention
+            </span>
+          </div>
           <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 text-left max-w-4xl mx-auto">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -142,16 +158,16 @@ app.get('/', (c) => {
               <strong>Modelo Base:</strong> Llama 3.2 3B (local)
             </div>
             <div>
-              <strong>Arquitectura:</strong> RAG + SLM + Hallucination Guard
+              <strong>Arquitectura:</strong> Context Engineering + WorldClass RAG + EDFL
             </div>
             <div>
-              <strong>Framework:</strong> EDFL (Expectation-level Decompression Law)
+              <strong>Framework:</strong> Paul Iusztin Context Engineering + 5-Memory System
             </div>
           </div>
         </div>
       </div>
 
-      <script src="/static/legal-app.js"></script>
+      <script src="/static/context-engineering-app.js"></script>
     </div>
   )
 })
