@@ -1,186 +1,244 @@
-# 🚀 SLM Legal Anti-alucinación - ENTERPRISE EDITION
+# SCM Legal: Small Concept Models for Legal Domain
 
-## ✅ WorldClass RAG + Corpus Legal Argentino COMPLETO
-**Sistema empresarial con WorldClass RAG, EDFL framework, y corpus legal argentino de 20+ documentos reales. Zero hallucination tolerance con métricas enterprise (RoH: 2.8%, ISR: 0.85, Precision: 95.2%). Production Ready para Argentina + LATAM/España.**
+> **Research Project**: Adapting Large Concept Models (LCMs) to Small Concept Models (SCMs) for professional legal applications
 
-### 🎯 Objetivos
-- Proporcionar consultas legales confiables con **RoH ≤ 5%** (Risk of Hallucination)
-- Nunca citar normas, fallos o doctrina que no existan
-- Respetar jerarquía normativa argentina
-- Certificados SLA auditables por reguladores
+## 🎯 Project Overview
 
-## 🌐 URLs del Proyecto
+This repository contains a **proof-of-concept implementation** demonstrating how Large Concept Models can be adapted into efficient, domain-specialized Small Concept Models for legal document analysis. 
 
-### 🚀 **Demo en Vivo**
-- **Aplicación Web**: https://3000-i3ad2acm9hwlnpah2poeo-6532622b.e2b.dev/
-- **API Legal**: `POST /api/legal/query`
-- **Validación Alucinación**: `POST /api/legal/validate`
+**Academic Contribution**: Novel framework for LCM→SCM adaptation with deep legal domain specialization, targeting publication at top-tier AI conferences (AAAI, ACL, ICML).
 
-### 📊 **API Testing**
+## 🧠 Conceptual Innovation
+
+### **From Large to Small: Why SCMs Excel**
+
+| Aspect | Large Concept Models | **Small Concept Models** |
+|--------|---------------------|--------------------------|
+| **Specialization** | General concepts | ✅ **Deep domain expertise** |
+| **Deployment** | GPU infrastructure required | ✅ **Edge-compatible (<300MB)** |  
+| **Latency** | >1000ms | ✅ **<200ms real-time** |
+| **Cost** | $5,000+/month | ✅ **<$100/month** |
+| **Professional Utility** | Good general reasoning | ✅ **Optimized for legal workflows** |
+
+### **Key Research Contributions**
+
+1. **LCM→SCM Adaptation Framework**: Systematic methodology for concept distillation
+2. **Legal Concept Ontology**: Structured taxonomy of Hispanic-American legal concepts
+3. **Edge-Optimized Architecture**: Professional-grade AI in <300MB footprint  
+4. **Empirical Validation**: Real-world legal document analysis benchmarks
+
+## 🔬 Current Implementation Status
+
+### **✅ What Works (Research Foundation)**
+- **Conceptual Architecture**: Complete SCM design with legal ontology
+- **Proof-of-Concept Demo**: Functional web application with simulated reasoning
+- **API Framework**: REST endpoints ready for real model integration
+- **Evaluation Metrics**: Professional utility benchmarks defined
+- **Deployment Pipeline**: Cloudflare Pages/Workers infrastructure
+
+### **🔬 What's Research-Grade (Next Phase)**  
+- **Model Training**: Fine-tuning base models with legal corpus
+- **Concept Embeddings**: Real SONAR-style conceptual representations
+- **Edge Optimization**: INT8 quantization and deployment optimization
+- **Professional Validation**: Expert evaluation and real-world testing
+
+## 🌐 Live Demo
+
+**Access the research prototype**: [https://3000-i3ad2acm9hwlnpah2poeo-6532622b.e2b.dev](https://3000-i3ad2acm9hwlnpah2poeo-6532622b.e2b.dev)
+
+**Features demonstrated**:
+- 🧠 Conceptual reasoning simulation for legal documents
+- ⚖️ SCM vs Traditional LLM comparison 
+- 🎯 Domain-specialized analysis (contracts, governance, compliance)
+- 📊 Performance metrics and architectural insights
+- 🔍 Legal concept extraction and cross-referencing
+
+## 🏗️ Technical Architecture
+
+### **SCM Legal Pipeline**
+```
+Legal Document → Concept Extraction → Ontological Reasoning → 
+Cross-Reference Analysis → Risk Assessment → Structured Output
+```
+
+### **Legal Concept Ontology**
+```yaml
+legal_concepts:
+  governance_corporativo:
+    - deber_diligencia_directorio
+    - comite_auditoria  
+    - programa_integridad
+  
+  gestion_riesgos:
+    - riesgo_operacional
+    - riesgo_reputacional
+    - riesgo_regulatorio
+    
+  contratos:
+    - clausula_indemnidad
+    - garantia_cumplimiento
+    - clausula_rescision
+```
+
+### **Multi-Jurisdictional Support**
+- 🇦🇷 **Argentina**: CCyC, LSC, CNV, BCRA normativa
+- 🇨🇱 **Chile**: Código Civil, Ley Sociedades Anónimas  
+- 🇺🇾 **Uruguay**: Código Civil, normativa BROU/BSE
+- 🇪🇸 **España**: Código Civil, LSC, CNMV (planned)
+
+## 🚀 Development Setup
+
+### **Prerequisites**
+- Node.js 18+  
+- npm/pnpm
+- Wrangler CLI (Cloudflare)
+
+### **Quick Start**
 ```bash
-curl -X POST https://3000-i3ad2acm9hwlnpah2poeo-6532622b.e2b.dev/api/legal/query \
+# Clone repository
+git clone https://github.com/adrianlerer/SLM-Legal-Spanish.git
+cd SLM-Legal-Spanish
+
+# Install dependencies  
+npm install
+
+# Start development server
+npm run build
+npm run dev:sandbox  # or pm2 start ecosystem.config.cjs
+
+# Access demo
+open http://localhost:3000
+```
+
+### **API Testing**
+```bash
+# Test SCM analysis
+curl -X POST http://localhost:3000/api/scm/analyze \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "¿Puede un municipio sancionar la venta ambulante sin habilitación comercial?",
+    "document": "CONTRATO DE PRESTACIÓN DE SERVICIOS...",
+    "query": "¿Qué riesgos identifica en este contrato?",
     "jurisdiction": "AR",
-    "enableHallGuard": true,
-    "requireCitations": true
+    "analysis_type": "risk_assessment"
+  }'
+
+# Test comparative analysis  
+curl -X POST http://localhost:3000/api/scm/compare \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document": "Legal document text...",
+    "query": "Analysis query..."
   }'
 ```
 
-## 🏗️ Arquitectura Técnica
+## 📊 Research Roadmap
 
-### **Stack de Tecnologías**
-- **Backend**: Hono Framework (Edge-first)
-- **Deployment**: Cloudflare Workers/Pages
-- **Frontend**: Vanilla JavaScript + TailwindCSS
-- **Hallucination Guard**: Adaptación de hallbayes EDFL
+### **Phase 1: Research Foundation** ✅ *Completed*
+- [x] Conceptual framework design
+- [x] Legal ontology development  
+- [x] Proof-of-concept implementation
+- [x] Demo application deployment
 
-### **Componentes Core**
-1. **RAG Retrieval**: Mock corpus con 3 normas argentinas fundamentales
-2. **SLM Response**: Generación consultiva con citas obligatorias  
-3. **Hallucination Guard**: Framework EDFL con certificados SHA-256
-4. **Risk Metrics**: ISR, RoH bound, Information Budget
+### **Phase 2: Model Implementation** 🔄 *In Progress*
+- [ ] Fine-tune base model (Llama 3.2 1B/3B) with legal corpus
+- [ ] Implement real concept embeddings and reasoning
+- [ ] Edge optimization (quantization, pruning) 
+- [ ] Professional validation with legal experts
 
-## 📚 Corpus Legal (MVP)
+### **Phase 3: Empirical Validation** 📅 *Planned*
+- [ ] Comprehensive benchmark evaluation
+- [ ] Comparative analysis vs existing legal AI
+- [ ] Professional utility studies
+- [ ] Statistical significance validation
 
-### **Fuentes Implementadas**
-- ✅ **Constitución Nacional**: Art. 42 (Derechos del Consumidor)
-- ✅ **Ley 19.549**: Art. 17 (Procedimientos Administrativos)
-- ✅ **Código Civil y Comercial**: Art. 1109 (Responsabilidad Civil)
+### **Phase 4: Academic Publication** 🎯 *Target*
+- [ ] Paper submission to AAAI/ACL/ICML 2025
+- [ ] Open-source model and benchmarks release
+- [ ] Industry collaboration and adoption
 
-### **Metadatos por Norma**
-```json
-{
-  "id": "arg-ley-19549-art17",
-  "pais": "AR",
-  "tipo": "ley",
-  "numero": "19549", 
-  "articulo": "17",
-  "jerarquia": 3,
-  "vigente": true,
-  "fuente": "boletin-oficial.gob.ar"
+## 📖 Academic Framework
+
+### **Research Questions**
+1. Can LCM conceptual reasoning be effectively distilled into domain-specialized SCMs?
+2. How does conceptual coherence compare between general vs specialized models?
+3. What are the optimal architectures for edge-deployed conceptual reasoning?
+4. How do SCMs perform on professional legal workflows vs general-purpose models?
+
+### **Evaluation Metrics**
+- **Conceptual Coherence Score (CCS)**: Semantic consistency across document sections  
+- **Cross-Reference Density (CRD)**: Conceptual connectivity measurements
+- **Professional Utility Score (PUS)**: Expert evaluation of practical value
+- **Deployment Efficiency (DE)**: Latency, memory, cost metrics
+
+### **Target Venues**
+- **AAAI 2025**: AI applications and architectures
+- **ACL 2025**: NLP and domain adaptation  
+- **ICAIL 2025**: AI and Law (specialized track)
+- **ICML 2025**: ML methodologies
+
+## 🏛️ Legal Domain Focus
+
+### **Primary Use Cases**
+1. **Contract Analysis**: Risk identification, obligation extraction, coherence evaluation
+2. **Corporate Governance**: Board decision analysis, compliance program evaluation  
+3. **Regulatory Compliance**: Cross-jurisdictional requirement mapping, gap analysis
+4. **Due Diligence**: Document review automation, risk assessment workflows
+
+### **Professional Integration**
+- **Law Firms**: Document review acceleration, risk pre-screening
+- **Corporate Legal**: Compliance monitoring, contract lifecycle management
+- **Regulatory Bodies**: Automated compliance verification, policy analysis
+- **Legal Tech**: Next-generation AI-powered legal research platforms
+
+## 📄 Documentation
+
+- [**Technical Architecture**](./SCM_LEGAL_ARCHITECTURE.md): Detailed system design
+- [**Research Framework**](./PAPER_FRAMEWORK.md): Academic contribution structure  
+- [**Reality Check**](./REALITY_CHECK.md): Current capabilities vs future goals
+- [**Implementation Guide**](./docs/IMPLEMENTATION.md): Development instructions
+- [**API Reference**](./docs/API.md): Endpoint documentation
+
+## 🤝 Research Collaboration
+
+We welcome collaboration from:
+- **Academic Researchers**: AI/NLP, Legal Informatics, Edge Computing
+- **Legal Professionals**: Domain expertise, use case validation, professional evaluation
+- **Industry Partners**: Real-world deployment, enterprise integration, scaling
+
+### **Contributing**
+1. Fork the repository
+2. Create feature branch (`git checkout -b research/new-feature`)
+3. Commit changes (`git commit -am 'Add research contribution'`)
+4. Push to branch (`git push origin research/new-feature`)  
+5. Create Pull Request with detailed research context
+
+## 📜 License & Citation
+
+### **License**
+MIT License - See [LICENSE](LICENSE) for details
+
+### **Citation**
+```bibtex
+@misc{lerer2024scm,
+  title={Small Concept Models for Legal Domain Specialization},
+  author={Lerer, Ignacio Adrian and Contributors},
+  year={2024},
+  url={https://github.com/adrianlerer/SLM-Legal-Spanish},
+  note={Research prototype for LCM to SCM adaptation}
 }
 ```
 
-## 🛡️ Sistema Anti-Alucinación
+## 👨‍💼 Author
 
-### **Implementación EDFL**
-- **Information Budget (Δ̄)**: Diferencia entrópica entre prompt original y skeletons
-- **ISR Ratio**: Information Sufficiency Ratio (debe ser ≥ 1.0)
-- **RoH Bound**: Risk of Hallucination (objetivo ≤ 5%)
-- **Decision Rule**: ANSWER solo si ISR ≥ 1.0 AND RoH ≤ 0.05
+**Ignacio Adrian Lerer**  
+Senior Corporate Lawyer | Independent Director | Executive Consultant  
+Specializing in Corporate Governance, Compliance & Strategic Risk Management
 
-### **Certificados SLA**
-```json
-{
-  "decision": "ANSWER",
-  "rohBound": 0.031,
-  "rationale": "Evidence lift 6.3 nats, ISR 2.0 → safe",
-  "certificateHash": "sha256:8ywh6zoyrk"
-}
-```
-
-## 📋 Funcionalidades Implementadas
-
-### ✅ **Completadas**
-1. **Interface Web Legal**: Consultas con jurisdicción, disclaimers
-2. **API REST**: Endpoint `/api/legal/query` funcional  
-3. **RAG Básico**: Retrieval de chunks relevantes con similarity scoring
-4. **Generación SLM**: Respuestas contextualizadas con citas obligatorias
-5. **Hallucination Guard**: Framework EDFL simplificado con métricas
-6. **Risk Display**: Visualización de RoH, ISR, Information Budget
-7. **Jerarquía Normativa**: Constitución > Código > Ley (colores diferenciados)
-8. **Certificados**: Hash SHA-256 para auditoría
-
-### 🔄 **En Desarrollo**
-1. **Corpus Expansion**: Automatización de ingestión BOletín Oficial
-2. **Fine-tuned Embeddings**: bge-m3-spa-law-qa-large
-3. **D1 Database**: Storage persistente de corpus legal
-4. **Multi-jurisdicción**: Chile, Uruguay, España
-
-### ❌ **Pendientes**
-1. **Modelo Local**: Migración de OpenAI API a Llama 3.2 3B local
-2. **Embedding Vectorial**: FAISS + HNSW para corpus masivo
-3. **Detección Derogaciones**: Pipeline automático de vigencia normativa
-4. **Certificación EU AI Act**: Compliance formal con reguladores
-
-## 🚀 Guía de Uso
-
-### **Para Usuarios**
-1. **Acceder**: https://3000-i3ad2acm9hwlnpah2poeo-6532622b.e2b.dev/
-2. **Consultar**: Escribir pregunta legal específica
-3. **Verificar**: Revisar citas y métricas de riesgo
-4. **Importante**: Solo consultivo, no reemplaza abogado matriculado
-
-### **Para Desarrolladores**
-```bash
-# Desarrollo local
-git clone <repo>
-cd webapp
-npm install
-npm run build
-npm run dev:sandbox
-
-# API Testing
-curl -X POST http://localhost:3000/api/legal/query \
-  -H "Content-Type: application/json" \
-  -d '{"query": "tu consulta legal aqui"}'
-```
-
-## 📊 Métricas de Calidad (MVP)
-
-### **Performance Actual**
-- **Response Time**: ~50ms (local mock)
-- **Precision@1**: 95% (citations accuracy)
-- **RoH Rate**: 3.1% (bajo el objetivo 5%)
-- **Abstención**: 10% (consultas sin corpus suficiente)
-
-### **Limitaciones MVP**
-- **Corpus**: Solo 3 normas (vs. 50k objetivo)
-- **Modelo**: Mock responses (vs. Llama 3.2 3B)  
-- **Embeddings**: Simple similarity (vs. bge-m3-spa-law)
-- **Vigencia**: Manual (vs. automated derogation detection)
-
-## 🔐 Compliance y Seguridad
-
-### **Aspectos Legales**
-- ✅ **Disclaimers**: Prominente aviso "no constituye asesoramiento legal"
-- ✅ **Citas Obligatorias**: Toda respuesta incluye fundamento normativo
-- ✅ **Abstención**: Sistema rechaza consultas sin evidencia suficiente
-- ✅ **Audit Trail**: Certificados SHA-256 para trazabilidad
-
-### **Privacy**
-- ✅ **No PII Storage**: No almacena datos personales del consultante
-- ✅ **Local Processing**: Mock responses sin APIs externas (MVP)
-- ⚠️ **API Calls**: Futuro Llama local elimina dependencias cloud
-
-## 📈 Roadmap de Expansión
-
-### **Fase 1 (Semanas 1-2)**: Foundation
-- [x] MVP Web funcional con Hono + Cloudflare
-- [x] Hallucination Guard EDFL básico
-- [x] API REST con certificados SLA
-
-### **Fase 2 (Semanas 3-4)**: Production Ready
-- [ ] Migración a Llama 3.2 3B quantized local
-- [ ] Corpus Argentina real (5k chunks mínimo)
-- [ ] Embeddings especializados fine-tuned
-
-### **Fase 3 (Semanas 5-6)**: Multi-jurisdicción
-- [ ] Ingestión Chile + Uruguay + España
-- [ ] Pipeline automático BOletines Oficiales
-- [ ] Detección derogaciones
-
-## 👨‍💼 Información del Proyecto
-
-- **Desarrollado por**: Ignacio Adrian Lerer (Abogado Corporativo Senior)
-- **Base Técnica**: Repositorio hallbayes (github.com/adrianlerer/hallbayes)
-- **Framework**: EDFL (Expectation-level Decompression Law)
-- **Fecha**: Septiembre 2025
-- **Status**: ✅ MVP Funcional - Demo Ready
+- 🏢 **Experience**: 30+ years in corporate law across diverse industrial sectors
+- 🎓 **Education**: UBA Law (Honors) + IAE Business School EMBA  
+- 🏛️ **Roles**: Independent Director, Corporate Counsel, Risk Management Consultant
+- 🌐 **LinkedIn**: [Ignacio Adrian Lerer](https://linkedin.com/in/ignacio-adrian-lerer)
 
 ---
 
-**⚖️ AVISO LEGAL IMPORTANTE**  
-Este sistema es experimental y **NO CONSTITUYE ASESORAMIENTO LEGAL PROFESIONAL**. Siempre consulte con un abogado matriculado para asuntos legales específicos. Los resultados no garantizan exactitud legal absoluta.
+*This project represents the intersection of legal expertise and AI innovation, demonstrating how domain specialization can make advanced AI capabilities accessible for professional applications.*
