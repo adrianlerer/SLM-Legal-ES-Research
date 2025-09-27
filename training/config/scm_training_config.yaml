@@ -1,0 +1,130 @@
+# SCM Legal Training Configuration
+# Optimized for academic research and publication-quality results
+
+model:
+  base_model: "meta-llama/Llama-3.2-1B"  # Also supports 3B variant
+  model_type: "llama"
+  load_in_4bit: true  # QLoRA for memory efficiency
+  load_in_8bit: false
+  torch_dtype: "float16"
+  trust_remote_code: true
+
+# LoRA Configuration for Parameter-Efficient Fine-tuning
+lora:
+  r: 64  # Rank - higher for better performance, lower for efficiency
+  lora_alpha: 128  # Scaling parameter
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  lora_dropout: 0.1
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+# Training Hyperparameters
+training:
+  output_dir: "./results/scm-legal-llama-3.2-1b"
+  num_train_epochs: 3
+  per_device_train_batch_size: 1  # Adjust based on GPU memory
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 2e-4
+  weight_decay: 0.01
+  warmup_steps: 100
+  logging_steps: 10
+  eval_steps: 500
+  save_steps: 500
+  max_steps: -1
+  max_grad_norm: 1.0
+  fp16: true
+  bf16: false  # Use bf16 if available (A100/H100)
+  dataloader_num_workers: 4
+  remove_unused_columns: false
+  
+# Dataset Configuration
+dataset:
+  train_file: "data/legal_corpus_train.jsonl"
+  validation_file: "data/legal_corpus_val.jsonl"
+  test_file: "data/legal_corpus_test.jsonl"
+  max_length: 2048  # Context length
+  block_size: 2048
+  preprocessing_num_workers: 8
+  
+# Legal Domain Specific Configuration
+legal:
+  jurisdictions: ["argentina", "chile", "uruguay", "españa"]
+  concept_categories:
+    - "constitutional"
+    - "civil"
+    - "commercial" 
+    - "administrative"
+    - "labor"
+    - "criminal"
+    - "compliance"
+  
+  # Concept extraction parameters
+  concept_extraction:
+    min_concept_frequency: 5
+    max_concepts_per_text: 20
+    concept_similarity_threshold: 0.75
+    
+  # Legal reasoning parameters
+  reasoning:
+    max_inference_steps: 10
+    confidence_threshold: 0.7
+    multi_jurisdictional: true
+
+# Evaluation Configuration  
+evaluation:
+  metrics: ["perplexity", "bleu", "rouge", "bertscore", "legal_accuracy", "concept_coherence"]
+  benchmark_datasets: 
+    - "legal_qa_spanish"
+    - "jurisprudencia_argentina" 
+    - "codigo_civil_reasoning"
+  
+  # Custom legal evaluation metrics
+  legal_metrics:
+    concept_extraction_f1: true
+    legal_reasoning_accuracy: true
+    multi_jurisdictional_consistency: true
+    regulatory_compliance_score: true
+
+# Logging and Monitoring
+logging:
+  project_name: "scm-legal-spanish"
+  experiment_name: "llama-3.2-1b-legal-concepts"
+  use_wandb: true
+  wandb_project: "scm-legal-research"
+  log_model: true
+  save_total_limit: 3
+
+# Hardware Configuration
+hardware:
+  mixed_precision: "fp16"  # or "bf16" for newer GPUs
+  gradient_checkpointing: true
+  dataloader_pin_memory: true
+  
+# Concept Model Architecture
+scm_architecture:
+  concept_embedding_dim: 768
+  num_concept_layers: 6
+  concept_attention_heads: 12
+  concept_vocab_size: 5000  # Legal concepts vocabulary
+  hierarchical_concepts: true
+  
+  # Inter-concept reasoning
+  concept_graph:
+    enable_graph_attention: true
+    max_concept_connections: 50
+    graph_attention_layers: 3
+    
+# Data Augmentation for Legal Domain
+data_augmentation:
+  enable_back_translation: false  # Expensive, use only if needed
+  enable_paraphrasing: true
+  enable_concept_substitution: true
+  augmentation_ratio: 0.2
+
+# Production Deployment Configuration  
+deployment:
+  quantization: "4bit"  # For edge deployment
+  optimization: "onnx"  # Convert to ONNX for production
+  max_memory_mb: 2048  # Memory limit for edge deployment
+  inference_batch_size: 1
