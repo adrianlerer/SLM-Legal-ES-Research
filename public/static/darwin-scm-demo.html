@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darwin-SCM Hybrid: Demo de Integración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-500">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-dna text-3xl text-purple-600"></i>
+                        <span class="text-2xl font-bold text-gray-800">Darwin Writer</span>
+                    </div>
+                    <div class="text-2xl text-gray-400">+</div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-balance-scale text-3xl text-blue-600"></i>
+                        <span class="text-2xl font-bold text-gray-800">SCM Legal</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        Integración Activa
+                    </span>
+                </div>
+            </div>
+            <p class="text-gray-600 mt-2">
+                Sistema Híbrido de Escritura Legal: Consistencia Conceptual + Inteligencia Artificial Especializada
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- Integration Overview -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-link text-blue-600 mr-2"></i>
+                Sinergia Darwin Writer + SCM Legal
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-purple-700 mb-3">
+                        <i class="fas fa-dna mr-2"></i>Darwin Writer SaaS
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Motor de Consistencia Conceptual</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Detección de Contradicciones</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Templates Multi-formato (Legal, Académico, Substack)</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Knowledge Graph Acumulativo</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Estilo "Lerer" con Contexto Argentino</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-700 mb-3">
+                        <i class="fas fa-balance-scale mr-2"></i>SCM Legal Spanish
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>IA Especializada en Conceptos Legales</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Análisis Multi-jurisdiccional (AR/ES/CL/UY)</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Assessment de Riesgos Legales</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Integración con Fuentes Oficiales</li>
+                        <li><i class="fas fa-check text-green-600 mr-2"></i>Edge Computing + Performance Global</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-6 p-4 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-2">
+                    <i class="fas fa-magic text-purple-600 mr-2"></i>Resultado de la Integración:
+                </h4>
+                <p class="text-gray-700">
+                    <strong>Escritura Legal Evolutiva</strong> que combina consistencia conceptual temporal con expertise jurídico profesional, 
+                    capaz de detectar contradicciones entre documentos y proporcionar análisis legal especializado multi-jurisdiccional.
+                </p>
+            </div>
+        </div>
+
+        <!-- Demo Interface -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            
+            <!-- Input Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-edit text-blue-600 mr-2"></i>
+                    Generación Híbrida de Contenido Legal
+                </h2>
+                
+                <form id="hybridForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Prompt Legal (mínimo 10 caracteres)
+                        </label>
+                        <textarea 
+                            id="legalPrompt" 
+                            rows="4" 
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Ej: Análisis de la Ley 27.401 de Responsabilidad Penal Empresaria en el contexto de compliance corporativo"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Formato de Salida
+                            </label>
+                            <select id="outputFormat" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="legal">Legal - Análisis Jurídico Integral</option>
+                                <option value="academic">Académico - Paper Formal</option>
+                                <option value="substack">Substack - Estilo Lerer Provocativo</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Jurisdicciones
+                            </label>
+                            <select id="jurisdictions" multiple class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" size="4">
+                                <option value="AR" selected>🇦🇷 Argentina</option>
+                                <option value="ES">🇪🇸 España</option>
+                                <option value="CL">🇨🇱 Chile</option>
+                                <option value="UY">🇺🇾 Uruguay</option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Mantén Ctrl/Cmd para seleccionar múltiples</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button 
+                            type="submit" 
+                            id="generateBtn"
+                            class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium"
+                        >
+                            <i class="fas fa-magic mr-2"></i>
+                            Generar Documento Híbrido
+                        </button>
+                        
+                        <button 
+                            type="button"
+                            id="compareBtn" 
+                            class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-teal-700 transition-all font-medium"
+                        >
+                            <i class="fas fa-balance-scale mr-2"></i>
+                            Análisis Comparativo
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Loading Indicator -->
+                <div id="loading" class="hidden text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="text-gray-600 mt-2">Procesando con Darwin + SCM...</p>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-line text-green-600 mr-2"></i>
+                    Resultados de la Integración
+                </h2>
+                
+                <div id="results" class="space-y-4">
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
+                        <p>Los resultados del análisis híbrido aparecerán aquí...</p>
+                        <p class="text-sm mt-2">Darwin Writer + SCM Legal trabajando en conjunto</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div id="performanceMetrics" class="hidden bg-white rounded-xl shadow-lg p-6 mt-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-tachometer-alt text-blue-600 mr-2"></i>
+                Métricas de Performance de la Integración
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6" id="metricsContainer">
+                <!-- Metrics will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-4 mb-4">
+                <i class="fas fa-dna text-purple-400 text-2xl"></i>
+                <span class="text-xl font-bold">Darwin-SCM Hybrid Integration</span>
+                <i class="fas fa-balance-scale text-blue-400 text-2xl"></i>
+            </div>
+            <p class="text-gray-400">
+                Sistema Pionero de Escritura Legal Inteligente para Argentina y LATAM
+            </p>
+            <p class="text-gray-500 text-sm mt-2">
+                Desarrollado por: Ignacio Adrian Lerer | Integración: Darwin Writer SaaS + SCM Legal Spanish
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Darwin-SCM Integration Demo JavaScript
+        
+        const API_BASE = window.location.origin;
+        
+        // Form elements
+        const form = document.getElementById('hybridForm');
+        const generateBtn = document.getElementById('generateBtn');
+        const compareBtn = document.getElementById('compareBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const performanceMetrics = document.getElementById('performanceMetrics');
+        
+        // Generate hybrid document
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const prompt = document.getElementById('legalPrompt').value.trim();
+            const format = document.getElementById('outputFormat').value;
+            const jurisdictionSelect = document.getElementById('jurisdictions');
+            const selectedJurisdictions = Array.from(jurisdictionSelect.selectedOptions).map(option => option.value);
+            
+            if (prompt.length < 10) {
+                alert('El prompt debe tener al menos 10 caracteres');
+                return;
+            }
+            
+            if (selectedJurisdictions.length === 0) {
+                alert('Selecciona al menos una jurisdicción');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const response = await axios.post(`${API_BASE}/api/hybrid/generate`, {
+                    prompt,
+                    format,
+                    jurisdiction: selectedJurisdictions,
+                    user_session: 'demo_session'
+                });
+                
+                displayHybridResults(response.data);
+                displayPerformanceMetrics(response.data.performance);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                displayError('Error al generar documento híbrido: ' + (error.response?.data?.error || error.message));
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // Comparative analysis
+        compareBtn.addEventListener('click', async () => {
+            const prompt = document.getElementById('legalPrompt').value.trim();
+            
+            if (prompt.length < 10) {
+                alert('El prompt debe tener al menos 10 caracteres para análisis comparativo');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const response = await axios.post(`${API_BASE}/api/hybrid/compare`, {
+                    prompt,
+                    jurisdictions: ['AR', 'ES', 'CL', 'UY']
+                });
+                
+                displayComparativeResults(response.data);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                displayError('Error en análisis comparativo: ' + (error.response?.data?.error || error.message));
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loading.classList.remove('hidden');
+                generateBtn.disabled = true;
+                compareBtn.disabled = true;
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
+            } else {
+                loading.classList.add('hidden');
+                generateBtn.disabled = false;
+                compareBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-magic mr-2"></i>Generar Documento Híbrido';
+            }
+        }
+        
+        function displayHybridResults(data) {
+            const document = data.document;
+            
+            results.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Integration Summary -->
+                    <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border-l-4 border-purple-500">
+                        <h3 class="font-bold text-gray-800 mb-2">
+                            <i class="fas fa-link text-purple-600 mr-2"></i>
+                            Documento Híbrido Generado
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <strong>ID:</strong> ${document.id}<br>
+                                <strong>Formato:</strong> ${document.darwin_content.split('\\n')[0].replace('#', '').trim()}<br>
+                                <strong>Jurisdicciones:</strong> ${Object.keys(document.scm_analysis.jurisdiction_analysis).join(', ')}
+                            </div>
+                            <div>
+                                <strong>Consistencia:</strong> 
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${document.consistency_score > 0.8 ? 'bg-green-100 text-green-800' : document.consistency_score > 0.6 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                    ${(document.consistency_score * 100).toFixed(1)}%
+                                </span><br>
+                                <strong>Confianza Profesional:</strong> 
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${document.professional_confidence > 0.8 ? 'bg-green-100 text-green-800' : document.professional_confidence > 0.6 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                    ${(document.professional_confidence * 100).toFixed(1)}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Darwin Content -->
+                    <div class="border rounded-lg">
+                        <div class="bg-purple-50 px-4 py-3 border-b">
+                            <h3 class="font-semibold text-purple-800">
+                                <i class="fas fa-dna text-purple-600 mr-2"></i>
+                                Contenido Darwin Writer
+                            </h3>
+                        </div>
+                        <div class="p-4">
+                            <pre class="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded border max-h-64 overflow-y-auto">${document.darwin_content}</pre>
+                        </div>
+                    </div>
+                    
+                    <!-- SCM Analysis -->
+                    <div class="border rounded-lg">
+                        <div class="bg-blue-50 px-4 py-3 border-b">
+                            <h3 class="font-semibold text-blue-800">
+                                <i class="fas fa-balance-scale text-blue-600 mr-2"></i>
+                                Análisis SCM Legal
+                            </h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-2">Conceptos Legales Identificados:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    ${document.scm_analysis.legal_concepts.map(concept => 
+                                        `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">${concept}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-2">Score de Riesgo:</h4>
+                                <div class="flex items-center">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                                        <div class="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full" 
+                                             style="width: ${document.scm_analysis.risk_score * 100}%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">${(document.scm_analysis.risk_score * 100).toFixed(1)}%</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-2">Recomendaciones:</h4>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                    ${document.scm_analysis.recommendations.map(rec => 
+                                        `<li>${rec}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contradictions -->
+                    ${document.contradictions_detected.length > 0 ? `
+                    <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded">
+                        <h3 class="font-semibold text-yellow-800 mb-2">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                            Contradicciones Detectadas por Darwin
+                        </h3>
+                        <ul class="space-y-2">
+                            ${document.contradictions_detected.map(contradiction => `
+                                <li class="text-sm">
+                                    <strong>Conflicto:</strong> ${contradiction.existing}<br>
+                                    <strong>Fuente:</strong> ${contradiction.source}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    ` : `
+                    <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded">
+                        <h3 class="font-semibold text-green-800">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            Sin Contradicciones Detectadas
+                        </h3>
+                        <p class="text-sm text-green-700">El análisis de Darwin Writer no encontró contradicciones conceptuales.</p>
+                    </div>
+                    `}
+                </div>
+            `;
+        }
+        
+        function displayComparativeResults(data) {
+            const analysis = data.comparative_analysis;
+            
+            results.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Comparative Summary -->
+                    <div class="bg-gradient-to-r from-green-50 to-teal-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <h3 class="font-bold text-gray-800 mb-2">
+                            <i class="fas fa-balance-scale text-green-600 mr-2"></i>
+                            Análisis Comparativo Multi-jurisdiccional
+                        </h3>
+                        <p class="text-sm text-gray-700 mb-3"><strong>Prompt:</strong> ${analysis.prompt}</p>
+                        <div class="text-sm">
+                            <strong>Insights Comparativos:</strong>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                ${analysis.comparative_insights.map(insight => `<li>${insight}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Jurisdiction Analysis Grid -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        ${analysis.jurisdictions.map(juris => `
+                            <div class="border rounded-lg">
+                                <div class="bg-gray-50 px-4 py-3 border-b">
+                                    <h3 class="font-semibold text-gray-800">
+                                        ${getJurisdictionFlag(juris.jurisdiction)} ${getJurisdictionName(juris.jurisdiction)}
+                                    </h3>
+                                </div>
+                                <div class="p-4 space-y-3">
+                                    <div>
+                                        <strong class="text-sm text-gray-700">Riesgo:</strong>
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                                                <div class="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full" 
+                                                     style="width: ${juris.risk_score * 100}%"></div>
+                                            </div>
+                                            <span class="text-sm">${(juris.risk_score * 100).toFixed(1)}%</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong class="text-sm text-gray-700">Consistencia:</strong>
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                                                <div class="bg-blue-500 h-2 rounded-full" 
+                                                     style="width: ${juris.consistency_score * 100}%"></div>
+                                            </div>
+                                            <span class="text-sm">${(juris.consistency_score * 100).toFixed(1)}%</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong class="text-sm text-gray-700">Assessment:</strong>
+                                        <p class="text-xs text-gray-600 mt-1">${juris.analysis?.risk_assessment || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function displayPerformanceMetrics(performance) {
+            performanceMetrics.classList.remove('hidden');
+            
+            const metricsContainer = document.getElementById('metricsContainer');
+            metricsContainer.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600">${(performance.darwin_consistency * 100).toFixed(1)}%</div>
+                    <div class="text-sm text-gray-600">Consistencia Darwin</div>
+                    <div class="text-xs text-gray-500 mt-1">Motor de contradicciones</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600">${(performance.scm_confidence * 100).toFixed(1)}%</div>
+                    <div class="text-sm text-gray-600">Confianza SCM</div>
+                    <div class="text-xs text-gray-500 mt-1">Análisis legal especializado</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">${(performance.overall_score * 100).toFixed(1)}%</div>
+                    <div class="text-sm text-gray-600">Score General</div>
+                    <div class="text-xs text-gray-500 mt-1">Integración híbrida</div>
+                </div>
+            `;
+        }
+        
+        function displayError(message) {
+            results.innerHTML = `
+                <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded">
+                    <h3 class="font-semibold text-red-800 mb-2">
+                        <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                        Error en la Integración
+                    </h3>
+                    <p class="text-sm text-red-700">${message}</p>
+                </div>
+            `;
+        }
+        
+        function getJurisdictionFlag(code) {
+            const flags = { 'AR': '🇦🇷', 'ES': '🇪🇸', 'CL': '🇨🇱', 'UY': '🇺🇾' };
+            return flags[code] || '🏛️';
+        }
+        
+        function getJurisdictionName(code) {
+            const names = { 'AR': 'Argentina', 'ES': 'España', 'CL': 'Chile', 'UY': 'Uruguay' };
+            return names[code] || code;
+        }
+        
+        // Load sample prompts
+        const samplePrompts = [
+            "Análisis de la Ley 27.401 de Responsabilidad Penal Empresaria en el contexto de compliance corporativo argentino",
+            "Marco regulatorio para criptomonedas en Argentina: desafíos de implementación y supervisión",
+            "Gobierno corporativo en sociedades anónimas: comparativa Argentina-España en materia de directorio independiente",
+            "Protección de datos personales: impacto del RGPD europeo en la legislación argentina",
+            "Responsabilidad de administradores en crisis empresariales: análisis multi-jurisdiccional LATAM"
+        ];
+        
+        // Add sample prompt functionality
+        const promptTextarea = document.getElementById('legalPrompt');
+        promptTextarea.addEventListener('focus', function() {
+            if (!this.value) {
+                this.placeholder = "Ejemplos:\n" + samplePrompts.join("\n\n");
+            }
+        });
+        
+        // Health check on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await axios.get(`${API_BASE}/api/hybrid/health`);
+                console.log('Darwin-SCM Integration Health:', response.data);
+            } catch (error) {
+                console.error('Integration health check failed:', error);
+            }
+        });
+    </script>
+</body>
+</html>
