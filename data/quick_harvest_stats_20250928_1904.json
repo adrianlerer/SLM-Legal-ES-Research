@@ -1,0 +1,12 @@
+{
+  "total_papers": 50,
+  "avg_abstract_length": 1244.52,
+  "by_source": {
+    "arXiv": 50
+  },
+  "by_year": {
+    "2024": 50
+  },
+  "corpus_file": "data/quick_harvest_corpus_20250928_1904.json.gz",
+  "ready_for_training": true
+}

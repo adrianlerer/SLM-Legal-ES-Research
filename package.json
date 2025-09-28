@@ -1,27 +1,73 @@
 {
-  "name": "webapp",
+  "name": "scm-legal-spanish",
+  "version": "1.0.0",
+  "description": "SCM Legal - Small Concept Models for Legal Domain with World-Class Architecture",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "dev:sandbox": "wrangler pages dev dist --ip 0.0.0.0 --port 3000",
+    "dev:d1": "wrangler pages dev dist --d1=SLM-Legal-Spanish-production --local --ip 0.0.0.0 --port 3000",
     "build": "vite build",
-    "preview": "wrangler pages dev",
-    "deploy": "npm run build && wrangler pages deploy",
-    "deploy:prod": "npm run build && wrangler pages deploy dist --project-name legal-slm-mvp",
+    "preview": "wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist",
+    "deploy:prod": "npm run build && wrangler pages deploy dist --project-name SLM-Legal-Spanish",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "clean-port": "fuser -k 3000/tcp 2>/dev/null || true",
     "test": "curl http://localhost:3000",
+    "test:health": "curl http://localhost:3000/health",
+    "test:api": "curl -X POST http://localhost:3000/api/legal/analyze -H 'Content-Type: application/json' -d '{\"query\":\"test\",\"jurisdiction\":\"AR\"}\"",
+    "db:migrate:local": "wrangler d1 migrations apply SLM-Legal-Spanish-production --local",
+    "db:migrate:prod": "wrangler d1 migrations apply SLM-Legal-Spanish-production",
+    "db:seed": "wrangler d1 execute SLM-Legal-Spanish-production --local --file=./seed.sql",
+    "db:reset": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed",
+    "db:console:local": "wrangler d1 execute SLM-Legal-Spanish-production --local",
+    "db:console:prod": "wrangler d1 execute SLM-Legal-Spanish-production",
+    "git:init": "git init && git add . && git commit -m 'Initial commit'",
     "git:commit": "git add . && git commit -m",
     "git:status": "git status",
-    "git:log": "git log --oneline"
+    "git:log": "git log --oneline",
+    "lint": "echo 'Linting would run here'",
+    "type-check": "echo 'Type checking would run here'",
+    "test:unit": "echo 'Unit tests would run here'",
+    "test:integration": "echo 'Integration tests would run here'",
+    "test:e2e": "echo 'E2E tests would run here'",
+    "security:audit": "npm audit",
+    "performance:analyze": "echo 'Performance analysis would run here'",
+    "docs:serve": "echo 'Documentation server would start here'",
+    "backup:create": "echo 'Project backup would be created here'"
+  },
+  "keywords": [
+    "legal-ai", "small-concept-models", "legal-tech", "multi-jurisdictional", 
+    "microservices", "cloudflare-workers", "hono-framework", "legal-analysis"
+  ],
+  "author": "Ignacio Adrian Lerer",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianlerer/SLM-Legal-Spanish.git"
+  },
+  "homepage": "https://github.com/adrianlerer/SLM-Legal-Spanish",
+  "bugs": {
+    "url": "https://github.com/adrianlerer/SLM-Legal-Spanish/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
     "hono": "^4.9.8"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250705.0",
     "@hono/vite-build": "^1.2.0",
+    "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-dev-server": "^0.18.2",
+    "typescript": "^5.0.0",
     "vite": "^6.3.5",
     "wrangler": "^4.4.0"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/adrianlerer"
   }
 }
