@@ -8,7 +8,7 @@ export const AR_PATTERNS = [
   /Decreto\s\d{3,5}\/\d{4}/i,
   /Resoluci[óo]n(\sGeneral)?(\s[A-Z]+)?\s?\d{3,5}\/\d{4}/i,
   /Fallos:\s?\d{1,3}:\d{1,5}/i,
-  /(BORA|BOCBA|PBA|C[óo]rdoba|Mendoza|Santa\sFe)[^\n]+(Art\.?|Cap\.?|Secc\.?)/i
+  /(BORA|BOCBA|PBA|Bolet[ií]n\s+Oficial.*Buenos\s+Aires|Bolet[ií]n\s+Oficial.*C[óo]rdoba|Bolet[ií]n\s+Oficial.*Mendoza|Bolet[ií]n\s+Oficial.*Santa\s+Fe)[^\n]+(Art\.?|Cap\.?|Secc\.?)/i
 ];
 
 export function validateArgentineCitation(text: string): { valid: boolean; patterns: string[] } {

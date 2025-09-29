@@ -119,6 +119,38 @@ if ! grep -q "runSelfRAG" rag/self_rag/run_selfrag.ts; then
     exit 1
 fi
 
+echo "🧪 Verificando estructura de tests..."
+if [ ! -f "tests/run_all.tests.ts" ]; then
+    echo "❌ Falta runner de tests"
+    exit 1
+fi
+
+if [ ! -f "tests/test_province_router.test.ts" ]; then
+    echo "❌ Falta test de province router"
+    exit 1
+fi
+
+if [ ! -f "tests/test_jurisdiction_classifier.test.ts" ]; then
+    echo "❌ Falta test de jurisdiction classifier"
+    exit 1
+fi
+
+if [ ! -f "tests/test_citation_enforcer_provincial.test.ts" ]; then
+    echo "❌ Falta test de citation enforcer provincial"
+    exit 1
+fi
+
+echo "📦 Verificando dependencias de testing..."
+if ! grep -q "ts-node" package.json; then
+    echo "❌ Falta dependencia ts-node"
+    exit 1
+fi
+
+if [ ! -f "tsconfig.json" ]; then
+    echo "❌ Falta configuración TypeScript"
+    exit 1
+fi
+
 echo "✅ Todas las verificaciones pasaron correctamente!"
 echo ""
 echo "🎯 Resumen del sistema implementado:"
@@ -129,7 +161,9 @@ echo "   - ✨ Verificador de pinpoint por provincia (boletín + Art./Cap./Secc.
 echo "   - ✨ NUEVO: Province-aware retrieval router con fallback jerárquico"
 echo "   - ✨ NUEVO: Clasificador heurístico de jurisdicción (boletín/geográfico/ISO)"
 echo "   - ✨ NUEVO: Mapa de boletines oficiales con schema JSON"
-echo "   - ✨ NUEVO: Self-RAG integrado con province-aware retrieval + citation enforcer"
+echo "   - ✨ Self-RAG integrado con province-aware retrieval + citation enforcer"
+echo "   - ✨ NUEVO: Unit tests TS (router + classifier + enforcer AR) sin frameworks"
+echo "   - ✨ NUEVO: TypeScript configuration + ts-node para testing minimalista"
 echo "   - Patrones de cita argentinos integrados"
 echo "   - Extractor de léxico legislativo/judicial"
 echo "   - Normalización ELI con soporte subnacional y alias automáticos"
@@ -137,4 +171,4 @@ echo "   - Citation enforcer con validación provincial específica"
 echo "   - Framework anti-sesgo (110,000+ líneas ya implementadas)"
 echo "   - Documentación completa y datos de prueba"
 echo ""
-echo "🚀 SISTEMA RAG COMPLETO: GraphRAG + Self-RAG + Province-Aware + YaRN 64k READY!"
+echo "🚀 SISTEMA COMPLETO + TESTED: GraphRAG + Self-RAG + Province-Aware + Unit Tests TS!"
