@@ -70,6 +70,9 @@ This repository contains a **proof-of-concept implementation** demonstrating how
 - **🆕 Data Governance**: PII detection, anonymization, and legal data privacy protection
 - **🆕 CI/CD Pipeline**: Automated testing, security scanning, and compliance validation
 - **🆕 Monitoring Framework**: Real-time model performance and legal accuracy tracking
+- **🔴 Anti-Bias Framework**: Comprehensive ideological bias detection and mitigation for legal AI
+- **🔴 Traceability Engine**: Full attribution and explainability for legal document summaries
+- **🔴 Research Integration**: 10 cutting-edge research lines for bias-free legal AI systems
 
 ## 🌐 Live Demo
 
@@ -232,6 +235,21 @@ mlflow ui --host 0.0.0.0 --port 5000
 python -c "from src.mlops import LegalModelRegistry; registry = LegalModelRegistry(); print('MLOps ready')"
 ```
 
+### **Anti-Bias Framework Setup** 🔴
+```bash
+# Test ideological bias detection
+python -c "
+from src.bias_detection import IdeologicalBiasDetector
+detector = IdeologicalBiasDetector()
+result = detector.analyze_ideological_bias('La nueva ley fortalece los derechos ciudadanos')
+print(f'Bias Risk: {result.risk_assessment}')
+print(f'Confidence: {result.confidence_level:.2f}')
+"
+
+# Run comprehensive bias evaluation
+python src/bias_detection/ideological_bias.py
+```
+
 ### **LoRA Training Pipeline** 🆕
 ```bash
 # Navigate to training directory
@@ -343,7 +361,8 @@ curl -X POST http://localhost:3000/api/scm/compare \
 - [**Research Framework**](./PAPER_FRAMEWORK.md): Academic contribution structure  
 - [**Reality Check**](./REALITY_CHECK.md): Current capabilities vs future goals
 - [**Training Guide**](./TRAINING_GUIDE.md): LoRA training pipeline documentation
-- [**MLOps Integration Framework**](./MLOPS_INTEGRATION_FRAMEWORK.md): World-class ML engineering patterns 🆕
+- [**MLOps Integration Framework**](./MLOPS_INTEGRATION_FRAMEWORK.md): World-class ML engineering patterns
+- [**Bias Research Integration**](./BIAS_RESEARCH_INTEGRATION.md): Anti-bias framework and 10 research lines 🔴
 - [**Research Methodology**](./docs/RESEARCH_METHODOLOGY.md): Academic validation framework
 - [**API Reference**](./docs/API.md): Endpoint documentation
 
