@@ -1,523 +1,567 @@
 """
 Ideological Bias Detection for Legal AI Systems
-Implements research-based methodology for detecting political/ideological bias in legal summaries
+Implements detection and measurement of political/ideological bias in legal text summarization
+Based on research: "Sesgo en resúmenes legislativos con IA"
 """
 
 import numpy as np
-from typing import Dict, Any, List
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-import torch
-from sklearn.metrics.pairwise import cosine_similarity
+from typing import Dict, Any, List, Tuple
 from dataclasses import dataclass
+import logging
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
+import spacy
 import re
+from collections import Counter
 
 @dataclass
-class IdeologicalAnalysis:
+class BiasAnalysisResult:
     """Results of ideological bias analysis"""
-    sentiment_scores: Dict[str, float]
-    ideological_markers: Dict[str, float]
+    model_type: str
+    sentiment_score: float
+    ideological_lean: Dict[str, float]
     bias_indicators: Dict[str, Any]
-    confidence_level: float
-    risk_assessment: str
+    confidence_score: float
 
 class IdeologicalBiasDetector:
     """
-    Detects ideological bias in legal document summaries
-    Based on multi-model comparison and lexical analysis
+    Detects ideological biases in legal text summaries
+    
+    Implements methodology from research paper:
+    - Multi-model comparison (open-source, commercial, governmental)
+    - Sentiment and framing analysis with embeddings
+    - Cross-model variance measurement for bias detection
     """
     
     def __init__(self):
-        self.sentiment_models = self._initialize_models()
-        self.ideological_lexicon = self._load_ideological_lexicon()
-        self.legal_context_markers = self._load_legal_context_markers()
+        self.logger = logging.getLogger(__name__)
         
-    def _initialize_models(self) -> Dict[str, Any]:
-        """Initialize different types of sentiment/bias detection models"""
+        # Initialize models for bias detection
+        self.sentiment_pipeline = pipeline(
+            "sentiment-analysis",
+            model="cardiffnlp/twitter-roberta-base-sentiment-latest",
+            device=0 if self._gpu_available() else -1
+        )
         
-        models = {}
+        self.embedding_model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
         
+        # Load Spanish legal NLP model
         try:
-            # Spanish legal sentiment model
-            models['legal_sentiment'] = pipeline(
-                "sentiment-analysis",
-                model="finiteautomata/beto-sentiment-analysis",
-                tokenizer="finiteautomata/beto-sentiment-analysis"
-            )
+            self.nlp = spacy.load("es_core_news_sm")
+        except IOError:
+            self.logger.warning("Spanish spaCy model not found. Install with: python -m spacy download es_core_news_sm")
+            self.nlp = None
             
-            # General Spanish sentiment
-            models['general_sentiment'] = pipeline(
-                "sentiment-analysis", 
-                model="cardiffnlp/twitter-roberta-base-sentiment-latest"
-            )
-            
-            # Political bias detection (if available)
-            models['political_classifier'] = pipeline(
-                "text-classification",
-                model="unitary/toxic-bert"  # Placeholder - would use political bias model
-            )
-            
-        except Exception as e:
-            print(f"Warning: Some models not available: {e}")
-            # Fallback to basic analysis
-            models['fallback'] = True
-            
-        return models
-        
-    def _load_ideological_lexicon(self) -> Dict[str, List[str]]:
-        """Load lexicon of ideologically-marked terms for legal contexts"""
-        
-        return {
-            'progressive_legal': [
-                'derechos humanos', 'inclusión', 'equidad de género', 'diversidad',
-                'acceso a la justicia', 'protección social', 'medio ambiente',
-                'consumidor', 'trabajador', 'minorías', 'transparencia'
-            ],
-            'conservative_legal': [
-                'orden público', 'seguridad jurídica', 'tradición legal', 'estabilidad',
-                'propiedad privada', 'libre mercado', 'autoridad', 'jerarquía',
-                'familia tradicional', 'valores morales', 'disciplina'
-            ],
-            'libertarian_legal': [
-                'libertad individual', 'desregulación', 'mercado libre', 'autonomía',
-                'mínima intervención', 'derechos individuales', 'libre empresa',
-                'competencia', 'innovación', 'eficiencia económica'
-            ],
-            'statist_legal': [
-                'intervención estatal', 'regulación', 'control gubernamental', 'planificación',
-                'servicio público', 'bienestar social', 'redistribución',
-                'política pública', 'supervisión', 'administración central'
-            ],
-            'neutral_legal': [
-                'normativa', 'procedimiento', 'artículo', 'disposición', 'vigencia',
-                'aplicación', 'cumplimiento', 'interpretación', 'jurisprudencia'
-            ]
+        # Ideological lexicons for Spanish legal context
+        self.ideological_lexicons = {
+            'progressive': {
+                'keywords': ['derechos', 'inclusión', 'equidad', 'social', 'igualdad', 
+                           'diversidad', 'protección', 'acceso', 'participación', 'transparencia'],
+                'phrases': ['derechos humanos', 'justicia social', 'desarrollo sostenible']
+            },
+            'conservative': {
+                'keywords': ['orden', 'tradición', 'estabilidad', 'seguridad', 'autoridad',
+                           'disciplina', 'jerarquía', 'patrimonio', 'familia', 'valores'],
+                'phrases': ['orden público', 'seguridad nacional', 'valores tradicionales']
+            },
+            'libertarian': {
+                'keywords': ['libertad', 'mercado', 'individual', 'privado', 'competencia',
+                           'autonomía', 'iniciativa', 'empresa', 'propiedad', 'desregulación'],
+                'phrases': ['libre mercado', 'iniciativa privada', 'libertad económica']
+            },
+            'statist': {
+                'keywords': ['estado', 'regulación', 'control', 'público', 'intervención',
+                           'planificación', 'supervisión', 'gestión', 'administración', 'gobierno'],
+                'phrases': ['intervención estatal', 'sector público', 'regulación gubernamental']
+            }
         }
         
-    def _load_legal_context_markers(self) -> Dict[str, List[str]]:
-        """Load markers that indicate legal context and authority"""
-        
-        return {
-            'authority_markers': [
-                'el congreso', 'la legislatura', 'el poder ejecutivo', 'la corte',
-                'tribunal', 'juzgado', 'ministerio', 'secretaría', 'organismo'
-            ],
-            'obligation_markers': [
-                'debe', 'deberá', 'tiene que', 'está obligado', 'es responsable',
-                'corresponde', 'incumbe', 'compete', 'se establece'
-            ],
-            'permission_markers': [
-                'puede', 'podrá', 'está autorizado', 'tiene derecho', 'faculta',
-                'permite', 'habilita', 'autoriza'
-            ],
-            'prohibition_markers': [
-                'no puede', 'no podrá', 'prohibe', 'impide', 'veda', 'restringe'
-            ]
+        # Emotional valence indicators
+        self.emotional_indicators = {
+            'positive': ['beneficio', 'mejora', 'progreso', 'avance', 'éxito', 'fortaleza'],
+            'negative': ['crisis', 'problema', 'riesgo', 'amenaza', 'pérdida', 'deterioro'],
+            'neutral': ['establecer', 'definir', 'regular', 'determinar', 'especificar']
         }
-    
-    def analyze_ideological_bias(self, 
-                                text: str, 
-                                reference_summaries: List[str] = None) -> IdeologicalAnalysis:
+        
+    def analyze_bias_across_models(self, 
+                                 legal_text: str,
+                                 model_summaries: Dict[str, str]) -> Dict[str, Any]:
         """
-        Analyze ideological bias in a legal text or summary
+        Analyzes ideological bias across different model types
         
         Args:
-            text: Text to analyze for bias
-            reference_summaries: Optional list of reference summaries for comparison
+            legal_text: Original legal document text
+            model_summaries: Dict with model_type -> summary mappings
             
         Returns:
-            IdeologicalAnalysis object with detailed bias assessment
+            Comprehensive bias analysis results
         """
         
-        # 1. Sentiment analysis across models
-        sentiment_scores = self._analyze_sentiment_across_models(text)
+        results = {}
+        bias_scores = []
         
-        # 2. Ideological marker detection
-        ideological_markers = self._detect_ideological_markers(text)
-        
-        # 3. Legal framing analysis
-        framing_analysis = self._analyze_legal_framing(text)
-        
-        # 4. Comparative analysis if references provided
-        comparative_analysis = None
-        if reference_summaries:
-            comparative_analysis = self._comparative_bias_analysis(text, reference_summaries)
+        # Analyze each model's output
+        for model_type, summary in model_summaries.items():
             
-        # 5. Calculate bias indicators
-        bias_indicators = self._calculate_bias_indicators(
-            sentiment_scores, ideological_markers, framing_analysis, comparative_analysis
+            bias_result = self._analyze_single_model_bias(
+                original_text=legal_text,
+                summary=summary,
+                model_type=model_type
+            )
+            
+            results[model_type] = bias_result
+            bias_scores.append(bias_result.bias_indicators['overall_bias_score'])
+            
+        # Calculate cross-model variance (key bias indicator)
+        cross_model_variance = np.var(bias_scores)
+        
+        # Compare ideological leans
+        ideological_comparison = self._compare_ideological_leans(results)
+        
+        # Generate bias assessment
+        bias_assessment = self._generate_bias_assessment(
+            results, cross_model_variance, ideological_comparison
         )
         
-        # 6. Risk assessment
-        risk_assessment = self._assess_bias_risk(bias_indicators)
+        return {
+            'individual_analyses': results,
+            'cross_model_variance': float(cross_model_variance),
+            'ideological_comparison': ideological_comparison,
+            'bias_assessment': bias_assessment,
+            'production_readiness': self._assess_production_readiness(bias_assessment),
+            'recommendations': self._generate_mitigation_recommendations(bias_assessment)
+        }
         
-        # 7. Confidence calculation
-        confidence_level = self._calculate_confidence(sentiment_scores, ideological_markers)
+    def _analyze_single_model_bias(self, 
+                                 original_text: str,
+                                 summary: str,
+                                 model_type: str) -> BiasAnalysisResult:
+        """Analyze bias in a single model's output"""
         
-        return IdeologicalAnalysis(
-            sentiment_scores=sentiment_scores,
-            ideological_markers=ideological_markers,
+        # 1. Sentiment analysis
+        sentiment_score = self._analyze_sentiment(summary)
+        
+        # 2. Ideological lean detection  
+        ideological_lean = self._detect_ideological_markers(summary)
+        
+        # 3. Framing analysis
+        framing_analysis = self._analyze_framing(original_text, summary)
+        
+        # 4. Emotional valence
+        emotional_valence = self._analyze_emotional_valence(summary)
+        
+        # 5. Lexical choice bias
+        lexical_bias = self._analyze_lexical_choices(original_text, summary)
+        
+        # 6. Calculate comprehensive bias indicators
+        bias_indicators = {
+            'sentiment_score': sentiment_score,
+            'framing_shift': framing_analysis['framing_shift_score'],
+            'emotional_valence': emotional_valence,
+            'lexical_bias_score': lexical_bias['bias_score'],
+            'ideological_intensity': sum(ideological_lean.values()),
+            'overall_bias_score': self._calculate_overall_bias_score({
+                'sentiment': sentiment_score,
+                'framing': framing_analysis['framing_shift_score'],
+                'emotional': emotional_valence,
+                'lexical': lexical_bias['bias_score'],
+                'ideological': sum(ideological_lean.values())
+            })
+        }
+        
+        # Calculate confidence score
+        confidence_score = self._calculate_confidence_score(bias_indicators)
+        
+        return BiasAnalysisResult(
+            model_type=model_type,
+            sentiment_score=sentiment_score,
+            ideological_lean=ideological_lean,
             bias_indicators=bias_indicators,
-            confidence_level=confidence_level,
-            risk_assessment=risk_assessment
+            confidence_score=confidence_score
         )
-    
-    def _analyze_sentiment_across_models(self, text: str) -> Dict[str, float]:
-        """Analyze sentiment using multiple models to detect bias"""
+        
+    def _detect_ideological_markers(self, text: str) -> Dict[str, float]:
+        """Detect ideological markers in text using lexicon-based approach"""
+        
+        text_lower = text.lower()
+        text_words = text_lower.split()
+        total_words = len(text_words)
+        
+        if total_words == 0:
+            return {ideology: 0.0 for ideology in self.ideological_lexicons.keys()}
         
         scores = {}
         
-        for model_name, model in self.sentiment_models.items():
-            if model_name == 'fallback':
-                continue
-                
-            try:
-                if 'sentiment' in model_name:
-                    result = model(text[:512])  # Limit text length
-                    
-                    if isinstance(result, list) and len(result) > 0:
-                        # Extract sentiment score
-                        if result[0]['label'] in ['POSITIVE', 'POS']:
-                            scores[model_name] = result[0]['score']
-                        elif result[0]['label'] in ['NEGATIVE', 'NEG']:
-                            scores[model_name] = -result[0]['score']
-                        else:  # NEUTRAL
-                            scores[model_name] = 0.0
-                            
-                elif 'political' in model_name:
-                    result = model(text[:512])
-                    # Extract political bias score (implementation depends on specific model)
-                    scores[model_name] = self._extract_political_score(result)
-                    
-            except Exception as e:
-                print(f"Error analyzing with {model_name}: {e}")
-                scores[model_name] = 0.0
-                
-        # If no models worked, use lexicon-based fallback
-        if not scores:
-            scores['lexicon_sentiment'] = self._lexicon_based_sentiment(text)
+        for ideology, lexicon in self.ideological_lexicons.items():
+            
+            # Count keyword matches
+            keyword_matches = sum(
+                text_lower.count(keyword) for keyword in lexicon['keywords']
+            )
+            
+            # Count phrase matches (weighted higher)
+            phrase_matches = sum(
+                text_lower.count(phrase) * 2 for phrase in lexicon['phrases']
+            )
+            
+            # Calculate normalized score (per 100 words)
+            total_matches = keyword_matches + phrase_matches
+            scores[ideology] = (total_matches / total_words) * 100
             
         return scores
-    
-    def _detect_ideological_markers(self, text: str) -> Dict[str, float]:
-        """Detect and quantify ideological markers in text"""
         
-        text_lower = text.lower()
-        word_count = len(text.split())
+    def _analyze_sentiment(self, text: str) -> float:
+        """Analyze overall sentiment of text"""
         
-        marker_scores = {}
-        
-        for ideology, markers in self.ideological_lexicon.items():
-            score = 0
-            matches = []
+        try:
+            result = self.sentiment_pipeline(text[:512])  # Truncate for model limits
             
-            for marker in markers:
-                marker_count = text_lower.count(marker.lower())
-                if marker_count > 0:
-                    score += marker_count
-                    matches.append((marker, marker_count))
-                    
-            # Normalize by text length
-            normalized_score = (score / word_count) * 1000 if word_count > 0 else 0
-            
-            marker_scores[ideology] = {
-                'raw_score': score,
-                'normalized_score': normalized_score,
-                'matches': matches
-            }
-            
-        return marker_scores
-    
-    def _analyze_legal_framing(self, text: str) -> Dict[str, Any]:
-        """Analyze how legal concepts are framed (positive/negative/neutral)"""
-        
-        text_lower = text.lower()
-        framing_analysis = {}
-        
-        for frame_type, markers in self.legal_context_markers.items():
-            frame_analysis = {
-                'count': 0,
-                'context_sentiment': [],
-                'matches': []
-            }
-            
-            for marker in markers:
-                marker_positions = [m.start() for m in re.finditer(re.escape(marker.lower()), text_lower)]
+            # Convert to numerical score (-1 to 1)
+            if result[0]['label'] == 'LABEL_0':  # Negative
+                return -result[0]['score']
+            elif result[0]['label'] == 'LABEL_1':  # Neutral
+                return 0.0
+            else:  # Positive
+                return result[0]['score']
                 
-                for pos in marker_positions:
-                    frame_analysis['count'] += 1
-                    frame_analysis['matches'].append(marker)
-                    
-                    # Analyze sentiment of surrounding context (±50 chars)
-                    context_start = max(0, pos - 50)
-                    context_end = min(len(text), pos + len(marker) + 50)
-                    context = text[context_start:context_end]
-                    
-                    context_sentiment = self._get_context_sentiment(context)
-                    frame_analysis['context_sentiment'].append(context_sentiment)
-                    
-            # Calculate average sentiment for this frame type
-            if frame_analysis['context_sentiment']:
-                frame_analysis['avg_sentiment'] = np.mean(frame_analysis['context_sentiment'])
-            else:
-                frame_analysis['avg_sentiment'] = 0.0
-                
-            framing_analysis[frame_type] = frame_analysis
+        except Exception as e:
+            self.logger.warning(f"Sentiment analysis failed: {e}")
+            return 0.0
             
-        return framing_analysis
-    
-    def _comparative_bias_analysis(self, 
-                                 target_text: str, 
-                                 reference_summaries: List[str]) -> Dict[str, Any]:
-        """Compare bias levels between target text and reference summaries"""
+    def _analyze_framing(self, original: str, summary: str) -> Dict[str, Any]:
+        """Analyze how framing changes between original and summary"""
         
-        # Analyze target
-        target_analysis = {
-            'sentiment': self._analyze_sentiment_across_models(target_text),
-            'ideological': self._detect_ideological_markers(target_text)
+        # Extract key entities and their contexts
+        original_entities = self._extract_key_entities(original)
+        summary_entities = self._extract_key_entities(summary)
+        
+        # Analyze framing shifts
+        framing_shifts = []
+        
+        for entity in original_entities:
+            if entity in summary_entities:
+                original_context = self._get_entity_context(entity, original)
+                summary_context = self._get_entity_context(entity, summary)
+                
+                # Compare sentiment of contexts
+                original_sentiment = self._analyze_sentiment(original_context)
+                summary_sentiment = self._analyze_sentiment(summary_context)
+                
+                shift = abs(original_sentiment - summary_sentiment)
+                framing_shifts.append(shift)
+                
+        framing_shift_score = np.mean(framing_shifts) if framing_shifts else 0.0
+        
+        return {
+            'framing_shift_score': float(framing_shift_score),
+            'entities_analyzed': len(framing_shifts),
+            'max_shift': float(max(framing_shifts)) if framing_shifts else 0.0
         }
         
-        # Analyze references
-        reference_analyses = []
-        for ref_summary in reference_summaries:
-            ref_analysis = {
-                'sentiment': self._analyze_sentiment_across_models(ref_summary),
-                'ideological': self._detect_ideological_markers(ref_summary)
-            }
-            reference_analyses.append(ref_analysis)
+    def _analyze_emotional_valence(self, text: str) -> float:
+        """Analyze emotional valence of text"""
+        
+        text_lower = text.lower()
+        
+        valence_scores = []
+        
+        for valence, indicators in self.emotional_indicators.items():
+            count = sum(text_lower.count(indicator) for indicator in indicators)
             
-        # Calculate variance and deviation
-        sentiment_variance = self._calculate_sentiment_variance(
-            target_analysis['sentiment'], 
-            [ref['sentiment'] for ref in reference_analyses]
+            if valence == 'positive':
+                valence_scores.extend([1.0] * count)
+            elif valence == 'negative':
+                valence_scores.extend([-1.0] * count)
+            else:  # neutral
+                valence_scores.extend([0.0] * count)
+                
+        return np.mean(valence_scores) if valence_scores else 0.0
+        
+    def _analyze_lexical_choices(self, original: str, summary: str) -> Dict[str, Any]:
+        """Analyze lexical choices that may indicate bias"""
+        
+        if not self.nlp:
+            return {'bias_score': 0.0, 'details': 'NLP model not available'}
+            
+        # Extract adjectives and their frequencies
+        original_doc = self.nlp(original)
+        summary_doc = self.nlp(summary)
+        
+        original_adj = [token.lemma_.lower() for token in original_doc if token.pos_ == 'ADJ']
+        summary_adj = [token.lemma_.lower() for token in summary_doc if token.pos_ == 'ADJ']
+        
+        # Compare adjective distributions
+        original_adj_freq = Counter(original_adj)
+        summary_adj_freq = Counter(summary_adj)
+        
+        # Calculate bias in adjective selection
+        bias_indicators = []
+        
+        for adj in summary_adj_freq:
+            original_freq = original_adj_freq.get(adj, 0)
+            summary_freq = summary_adj_freq[adj]
+            
+            # Check for over-representation of evaluative adjectives
+            if self._is_evaluative_adjective(adj):
+                if original_freq == 0:  # Adjective added in summary
+                    bias_indicators.append(1.0)
+                else:
+                    # Check for disproportionate emphasis
+                    ratio = summary_freq / len(summary_adj) - original_freq / len(original_adj)
+                    bias_indicators.append(abs(ratio))
+                    
+        bias_score = np.mean(bias_indicators) if bias_indicators else 0.0
+        
+        return {
+            'bias_score': float(bias_score),
+            'evaluative_adjectives_added': len(bias_indicators),
+            'details': {
+                'original_adj_count': len(original_adj),
+                'summary_adj_count': len(summary_adj),
+                'bias_indicators_count': len(bias_indicators)
+            }
+        }
+        
+    def _calculate_overall_bias_score(self, components: Dict[str, float]) -> float:
+        """Calculate overall bias score from individual components"""
+        
+        # Weights for different bias components
+        weights = {
+            'sentiment': 0.2,
+            'framing': 0.3,
+            'emotional': 0.2,
+            'lexical': 0.2,
+            'ideological': 0.1
+        }
+        
+        # Normalize components to 0-1 scale
+        normalized = {}
+        for component, value in components.items():
+            if component == 'sentiment' or component == 'emotional':
+                normalized[component] = abs(value)  # Absolute value for bias
+            elif component == 'ideological':
+                normalized[component] = min(value / 10.0, 1.0)  # Scale ideological intensity
+            else:
+                normalized[component] = min(abs(value), 1.0)
+                
+        # Calculate weighted score
+        overall_score = sum(
+            normalized[component] * weights[component] 
+            for component in weights.keys()
         )
         
-        ideological_variance = self._calculate_ideological_variance(
-            target_analysis['ideological'],
-            [ref['ideological'] for ref in reference_analyses]
+        return min(overall_score, 1.0)
+        
+    def _compare_ideological_leans(self, results: Dict[str, BiasAnalysisResult]) -> Dict[str, Any]:
+        """Compare ideological leans across different models"""
+        
+        ideologies = ['progressive', 'conservative', 'libertarian', 'statist']
+        
+        comparison = {}
+        
+        for ideology in ideologies:
+            scores = [result.ideological_lean[ideology] for result in results.values()]
+            
+            comparison[ideology] = {
+                'scores': scores,
+                'variance': float(np.var(scores)),
+                'max_difference': float(max(scores) - min(scores)),
+                'consistent': np.var(scores) < 0.5  # Low variance indicates consistency
+            }
+            
+        # Identify most biased ideology
+        max_variance_ideology = max(
+            comparison.keys(), 
+            key=lambda k: comparison[k]['variance']
         )
         
         return {
-            'sentiment_variance': sentiment_variance,
-            'ideological_variance': ideological_variance,
-            'outlier_score': self._calculate_outlier_score(sentiment_variance, ideological_variance),
-            'consensus_deviation': self._calculate_consensus_deviation(
-                target_analysis, reference_analyses
+            'by_ideology': comparison,
+            'most_variable_ideology': max_variance_ideology,
+            'overall_ideological_consistency': all(
+                comparison[ideology]['consistent'] for ideology in ideologies
             )
         }
-    
-    def _calculate_bias_indicators(self, 
-                                 sentiment_scores: Dict[str, float],
-                                 ideological_markers: Dict[str, Any],
-                                 framing_analysis: Dict[str, Any],
-                                 comparative_analysis: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Calculate comprehensive bias indicators"""
         
-        indicators = {}
+    def _generate_bias_assessment(self, 
+                                results: Dict[str, BiasAnalysisResult],
+                                cross_model_variance: float,
+                                ideological_comparison: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate comprehensive bias assessment"""
         
-        # 1. Sentiment consistency across models
-        sentiment_values = list(sentiment_scores.values())
-        if len(sentiment_values) > 1:
-            indicators['sentiment_variance'] = np.var(sentiment_values)
-            indicators['sentiment_range'] = max(sentiment_values) - min(sentiment_values)
-        else:
-            indicators['sentiment_variance'] = 0.0
-            indicators['sentiment_range'] = 0.0
-            
-        # 2. Ideological balance
-        ideological_scores = {
-            k: v['normalized_score'] for k, v in ideological_markers.items() 
-            if k != 'neutral_legal'
-        }
-        
-        if ideological_scores:
-            max_ideology = max(ideological_scores.values())
-            min_ideology = min(ideological_scores.values())
-            indicators['ideological_imbalance'] = max_ideology - min_ideology
-            
-            # Dominant ideology
-            dominant_ideology = max(ideological_scores.keys(), key=lambda k: ideological_scores[k])
-            indicators['dominant_ideology'] = dominant_ideology
-            indicators['dominance_strength'] = ideological_scores[dominant_ideology]
-        else:
-            indicators['ideological_imbalance'] = 0.0
-            indicators['dominant_ideology'] = 'neutral'
-            indicators['dominance_strength'] = 0.0
-            
-        # 3. Legal framing bias
-        framing_sentiments = [
-            frame['avg_sentiment'] for frame in framing_analysis.values()
-            if 'avg_sentiment' in frame
-        ]
-        
-        if framing_sentiments:
-            indicators['framing_bias'] = np.std(framing_sentiments)
-            indicators['avg_framing_sentiment'] = np.mean(framing_sentiments)
-        else:
-            indicators['framing_bias'] = 0.0
-            indicators['avg_framing_sentiment'] = 0.0
-            
-        # 4. Comparative indicators
-        if comparative_analysis:
-            indicators['outlier_score'] = comparative_analysis['outlier_score']
-            indicators['consensus_deviation'] = comparative_analysis['consensus_deviation']
-        else:
-            indicators['outlier_score'] = 0.0
-            indicators['consensus_deviation'] = 0.0
-            
-        # 5. Overall bias score (0-1, where 1 is maximum bias)
-        bias_components = [
-            min(indicators['sentiment_variance'] * 2, 1.0),  # Sentiment inconsistency
-            min(indicators['ideological_imbalance'] / 10.0, 1.0),  # Ideological imbalance
-            min(indicators['framing_bias'], 1.0),  # Framing bias
-            min(indicators['outlier_score'], 1.0)  # Comparative outlier
-        ]
-        
-        indicators['overall_bias_score'] = np.mean(bias_components)
-        
-        return indicators
-    
-    def _assess_bias_risk(self, bias_indicators: Dict[str, Any]) -> str:
-        """Assess overall bias risk level"""
-        
-        overall_score = bias_indicators['overall_bias_score']
-        
-        if overall_score <= 0.2:
-            return "BAJO - Sesgo mínimo detectado"
-        elif overall_score <= 0.4:
-            return "MODERADO - Sesgo detectado, revisar análisis"
-        elif overall_score <= 0.7:
-            return "ALTO - Sesgo significativo, requiere intervención"
-        else:
-            return "CRÍTICO - Sesgo severo, no apto para producción"
-    
-    def _calculate_confidence(self, 
-                            sentiment_scores: Dict[str, float],
-                            ideological_markers: Dict[str, Any]) -> float:
-        """Calculate confidence level of bias analysis"""
-        
-        # Confidence based on:
-        # 1. Number of models that worked
-        # 2. Consistency of results
-        # 3. Amount of text analyzed
-        
-        model_confidence = len(sentiment_scores) / 3.0  # Assuming 3 models max
-        
-        # Consistency confidence
-        if len(sentiment_scores) > 1:
-            values = list(sentiment_scores.values())
-            consistency = 1.0 - (np.std(values) / 2.0)  # Normalize std
-            consistency_confidence = max(0.0, min(1.0, consistency))
-        else:
-            consistency_confidence = 0.5
-            
-        # Marker confidence (more markers = higher confidence)
-        total_markers = sum(
-            len(markers['matches']) for markers in ideological_markers.values()
-        )
-        marker_confidence = min(total_markers / 10.0, 1.0)  # Cap at 10 markers
-        
-        overall_confidence = np.mean([
-            model_confidence, consistency_confidence, marker_confidence
+        # Calculate average bias score
+        avg_bias_score = np.mean([
+            result.bias_indicators['overall_bias_score'] 
+            for result in results.values()
         ])
         
-        return overall_confidence
-    
-    # Helper methods
-    def _extract_political_score(self, result: Any) -> float:
-        """Extract political bias score from model result"""
-        # Implementation depends on specific political bias model
-        return 0.0
-    
-    def _lexicon_based_sentiment(self, text: str) -> float:
-        """Fallback lexicon-based sentiment analysis"""
-        positive_words = ['bueno', 'beneficio', 'protege', 'mejora', 'fortalece']
-        negative_words = ['malo', 'daño', 'perjudica', 'debilita', 'reduce']
+        # Assess bias severity
+        if avg_bias_score < 0.2:
+            bias_level = "LOW"
+        elif avg_bias_score < 0.5:
+            bias_level = "MODERATE"
+        else:
+            bias_level = "HIGH"
+            
+        # Check for specific bias patterns
+        bias_patterns = []
+        
+        if cross_model_variance > 0.3:
+            bias_patterns.append("HIGH_CROSS_MODEL_VARIANCE")
+            
+        if not ideological_comparison['overall_ideological_consistency']:
+            bias_patterns.append("IDEOLOGICAL_INCONSISTENCY")
+            
+        # Check for systematic sentiment bias
+        sentiment_scores = [result.sentiment_score for result in results.values()]
+        if all(s > 0.5 for s in sentiment_scores):
+            bias_patterns.append("SYSTEMATIC_POSITIVE_BIAS")
+        elif all(s < -0.5 for s in sentiment_scores):
+            bias_patterns.append("SYSTEMATIC_NEGATIVE_BIAS")
+            
+        return {
+            'bias_level': bias_level,
+            'average_bias_score': float(avg_bias_score),
+            'cross_model_variance': float(cross_model_variance),
+            'bias_patterns': bias_patterns,
+            'confidence': float(np.mean([result.confidence_score for result in results.values()])),
+            'requires_mitigation': bias_level in ["MODERATE", "HIGH"] or len(bias_patterns) > 0
+        }
+        
+    def _assess_production_readiness(self, bias_assessment: Dict[str, Any]) -> Dict[str, Any]:
+        """Assess if model is ready for production deployment"""
+        
+        # Production readiness criteria
+        criteria = {
+            'low_bias_score': bias_assessment['average_bias_score'] < 0.3,
+            'low_cross_model_variance': bias_assessment['cross_model_variance'] < 0.2,
+            'no_critical_patterns': len(bias_assessment['bias_patterns']) == 0,
+            'sufficient_confidence': bias_assessment['confidence'] > 0.7
+        }
+        
+        production_ready = all(criteria.values())
+        
+        return {
+            'production_ready': production_ready,
+            'criteria_met': criteria,
+            'blocking_issues': [
+                criterion for criterion, met in criteria.items() if not met
+            ],
+            'recommendation': "APPROVE" if production_ready else "REVIEW_REQUIRED"
+        }
+        
+    def _generate_mitigation_recommendations(self, bias_assessment: Dict[str, Any]) -> List[str]:
+        """Generate specific recommendations for bias mitigation"""
+        
+        recommendations = []
+        
+        if bias_assessment['average_bias_score'] > 0.3:
+            recommendations.append(
+                "Implement bias regularization during training with penalty term for ideological variance"
+            )
+            
+        if bias_assessment['cross_model_variance'] > 0.2:
+            recommendations.append(
+                "Ensemble multiple models to reduce individual model bias"
+            )
+            
+        if "IDEOLOGICAL_INCONSISTENCY" in bias_assessment['bias_patterns']:
+            recommendations.append(
+                "Add ideological consistency constraints to model training"
+            )
+            
+        if "SYSTEMATIC_POSITIVE_BIAS" in bias_assessment['bias_patterns']:
+            recommendations.append(
+                "Rebalance training data with more neutral/negative examples"
+            )
+            
+        if "SYSTEMATIC_NEGATIVE_BIAS" in bias_assessment['bias_patterns']:
+            recommendations.append(
+                "Rebalance training data with more neutral/positive examples"
+            )
+            
+        if not recommendations:
+            recommendations.append("Continue monitoring bias metrics in production")
+            
+        return recommendations
+        
+    def _extract_key_entities(self, text: str) -> List[str]:
+        """Extract key legal entities from text"""
+        
+        if not self.nlp:
+            # Fallback: simple keyword extraction
+            legal_keywords = ['ley', 'decreto', 'artículo', 'norma', 'reglamento', 'código']
+            return [word for word in text.lower().split() if word in legal_keywords]
+            
+        doc = self.nlp(text)
+        entities = [ent.text.lower() for ent in doc.ents if ent.label_ in ['PER', 'ORG', 'MISC']]
+        
+        # Add legal-specific patterns
+        legal_patterns = re.findall(r'(ley\s+\d+|decreto\s+\d+|artículo\s+\d+)', text.lower())
+        entities.extend(legal_patterns)
+        
+        return list(set(entities))
+        
+    def _get_entity_context(self, entity: str, text: str, window: int = 50) -> str:
+        """Get context around entity mentions"""
         
         text_lower = text.lower()
-        pos_count = sum(text_lower.count(word) for word in positive_words)
-        neg_count = sum(text_lower.count(word) for word in negative_words)
+        entity_lower = entity.lower()
         
-        total_words = len(text.split())
-        if total_words == 0:
-            return 0.0
-            
-        return (pos_count - neg_count) / total_words
-    
-    def _get_context_sentiment(self, context: str) -> float:
-        """Get sentiment of a text context"""
-        # Simple implementation - could use full sentiment model
-        return self._lexicon_based_sentiment(context)
-    
-    def _calculate_sentiment_variance(self, 
-                                   target_sentiment: Dict[str, float],
-                                   reference_sentiments: List[Dict[str, float]]) -> float:
-        """Calculate variance in sentiment scores"""
+        contexts = []
+        start = 0
         
-        all_scores = []
-        
-        # Add target scores
-        all_scores.extend(target_sentiment.values())
-        
-        # Add reference scores
-        for ref_sentiment in reference_sentiments:
-            all_scores.extend(ref_sentiment.values())
-            
-        return np.var(all_scores) if all_scores else 0.0
-    
-    def _calculate_ideological_variance(self,
-                                     target_markers: Dict[str, Any],
-                                     reference_markers: List[Dict[str, Any]]) -> float:
-        """Calculate variance in ideological markers"""
-        
-        # Extract normalized scores for each ideology
-        ideologies = target_markers.keys()
-        variance_scores = []
-        
-        for ideology in ideologies:
-            scores = [target_markers[ideology]['normalized_score']]
-            
-            for ref_markers in reference_markers:
-                if ideology in ref_markers:
-                    scores.append(ref_markers[ideology]['normalized_score'])
-                    
-            if len(scores) > 1:
-                variance_scores.append(np.var(scores))
+        while True:
+            pos = text_lower.find(entity_lower, start)
+            if pos == -1:
+                break
                 
-        return np.mean(variance_scores) if variance_scores else 0.0
-    
-    def _calculate_outlier_score(self, 
-                               sentiment_variance: float, 
-                               ideological_variance: float) -> float:
-        """Calculate how much the target is an outlier compared to references"""
+            context_start = max(0, pos - window)
+            context_end = min(len(text), pos + len(entity) + window)
+            
+            context = text[context_start:context_end]
+            contexts.append(context)
+            
+            start = pos + len(entity)
+            
+        return " ".join(contexts)
         
-        # Combine variances to get overall outlier score
-        combined_variance = (sentiment_variance + ideological_variance) / 2.0
+    def _is_evaluative_adjective(self, adjective: str) -> bool:
+        """Check if adjective is evaluative (potentially biasing)"""
         
-        # Normalize to 0-1 scale
-        return min(combined_variance * 10, 1.0)
-    
-    def _calculate_consensus_deviation(self, 
-                                    target_analysis: Dict[str, Any],
-                                    reference_analyses: List[Dict[str, Any]]) -> float:
-        """Calculate how much target deviates from consensus of references"""
+        evaluative_adjectives = {
+            'bueno', 'malo', 'excelente', 'pésimo', 'positivo', 'negativo',
+            'eficaz', 'ineficaz', 'útil', 'inútil', 'importante', 'irrelevante',
+            'necesario', 'innecesario', 'adecuado', 'inadecuado', 'correcto', 'incorrecto'
+        }
         
-        # Implementation for consensus calculation
-        # This is a simplified version
-        return 0.0  # Placeholder
-
-# Usage example
-if __name__ == "__main__":
-    detector = IdeologicalBiasDetector()
-    
-    sample_text = """
-    La nueva ley de transparencia fortalece los derechos de los ciudadanos
-    y establece mecanismos efectivos de control sobre la administración pública.
-    Se garantiza el acceso a la información y se protege el interés general.
-    """
-    
-    analysis = detector.analyze_ideological_bias(sample_text)
-    
-    print(f"Bias Risk: {analysis.risk_assessment}")
-    print(f"Confidence: {analysis.confidence_level:.2f}")
-    print(f"Overall Bias Score: {analysis.bias_indicators['overall_bias_score']:.3f}")
-    print(f"Dominant Ideology: {analysis.bias_indicators['dominant_ideology']}")
+        return adjective in evaluative_adjectives
+        
+    def _calculate_confidence_score(self, bias_indicators: Dict[str, float]) -> float:
+        """Calculate confidence score for bias analysis"""
+        
+        # Factors that increase confidence
+        confidence_factors = []
+        
+        # More bias indicators analyzed = higher confidence
+        if len(bias_indicators) >= 5:
+            confidence_factors.append(0.8)
+        else:
+            confidence_factors.append(0.5)
+            
+        # Consistent bias patterns = higher confidence
+        scores = list(bias_indicators.values())
+        if np.var(scores) < 0.1:  # Low variance in scores
+            confidence_factors.append(0.9)
+        else:
+            confidence_factors.append(0.6)
+            
+        return np.mean(confidence_factors)
+        
+    def _gpu_available(self) -> bool:
+        """Check if GPU is available for model inference"""
+        try:
+            import torch
+            return torch.cuda.is_available()
+        except ImportError:
+            return False
