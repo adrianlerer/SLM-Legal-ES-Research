@@ -151,6 +151,29 @@ if [ ! -f "tsconfig.json" ]; then
     exit 1
 fi
 
+echo "🔧 Verificando GitHub Actions..."
+if [ ! -f ".github/workflows/ts-tests.yml" ]; then
+    echo "❌ Falta workflow GitHub Actions"
+    exit 1
+fi
+
+echo "📁 Verificando fixtures de testing..."
+if [ ! -f "tests/fixtures/citations_ok_ar.txt" ]; then
+    echo "❌ Faltan fixtures de citas válidas"
+    exit 1
+fi
+
+if [ ! -f "tests/fixtures/citations_fail_ar.txt" ]; then
+    echo "❌ Faltan fixtures de citas inválidas"
+    exit 1
+fi
+
+echo "🏷️ Verificando badge en README..."
+if ! grep -q "ts-tests.yml/badge.svg" README.md; then
+    echo "❌ Falta badge de CI en README"
+    exit 1
+fi
+
 echo "✅ Todas las verificaciones pasaron correctamente!"
 echo ""
 echo "🎯 Resumen del sistema implementado:"
@@ -162,13 +185,16 @@ echo "   - ✨ NUEVO: Province-aware retrieval router con fallback jerárquico"
 echo "   - ✨ NUEVO: Clasificador heurístico de jurisdicción (boletín/geográfico/ISO)"
 echo "   - ✨ NUEVO: Mapa de boletines oficiales con schema JSON"
 echo "   - ✨ Self-RAG integrado con province-aware retrieval + citation enforcer"
-echo "   - ✨ NUEVO: Unit tests TS (router + classifier + enforcer AR) sin frameworks"
-echo "   - ✨ NUEVO: TypeScript configuration + ts-node para testing minimalista"
-echo "   - Patrones de cita argentinos integrados"
+echo "   - ✨ Unit tests TS (router + classifier + enforcer AR) sin frameworks"
+echo "   - ✨ TypeScript configuration + tsx para testing minimalista"
+echo "   - ✨ NUEVO: GitHub Actions CI/CD con matriz Node 18/20 + cache npm"
+echo "   - ✨ NUEVO: Fixtures de citas AR (válidas/inválidas) para testing robusto"
+echo "   - ✨ NUEVO: Badge de estado CI integrado en README principal"
+echo "   - Patrones de cita argentinos integrados y probados"
 echo "   - Extractor de léxico legislativo/judicial"
 echo "   - Normalización ELI con soporte subnacional y alias automáticos"
 echo "   - Citation enforcer con validación provincial específica"
 echo "   - Framework anti-sesgo (110,000+ líneas ya implementadas)"
 echo "   - Documentación completa y datos de prueba"
 echo ""
-echo "🚀 SISTEMA COMPLETO + TESTED: GraphRAG + Self-RAG + Province-Aware + Unit Tests TS!"
+echo "🚀 SISTEMA COMPLETO + CI/CD: GraphRAG + Self-RAG + Province-Aware + GitHub Actions!"
