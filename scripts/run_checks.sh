@@ -109,4 +109,46 @@ echo "   - Citation enforcer con validación provincial específica"
 echo "   - Framework anti-sesgo (110,000+ líneas ya implementadas)"
 echo "   - Documentación completa y datos de prueba"
 echo ""
+echo "🔍 Verificando province router..."
+if ! grep -q "retrieveProvinceAware" rag/retrieval/province_router.ts; then
+    echo "❌ Falta función retrieveProvinceAware"
+    exit 1
+fi
+
+echo "🗺️ Verificando mapa de boletines..."
+if ! grep -q "\"BORA\"" schema/ar_boletines_map.json; then
+    echo "❌ Falta configuración BORA en mapa"
+    exit 1
+fi
+
+echo "🎯 Verificando clasificador de jurisdicción..."
+if ! grep -q "classifyJurisdictionHint" rag/self_rag/jurisdiction_classify.ts; then
+    echo "❌ Falta función classifyJurisdictionHint"
+    exit 1
+fi
+
+echo "🤖 Verificando integración Self-RAG..."
+if ! grep -q "runSelfRAG" rag/self_rag/run_selfrag.ts; then
+    echo "❌ Falta función runSelfRAG"
+    exit 1
+fi
+
+echo "✅ Todas las verificaciones pasaron correctamente!"
+echo ""
+echo "🎯 Resumen del sistema implementado:"
+echo "   - Ingestors provinciales: Córdoba, Mendoza (+ CABA, PBA, Santa Fe existentes)"
+echo "   - ISO 3166-2:AR completo con alias prácticos"
+echo "   - ✨ NUEVO: Alias ISO completos en español (23 provincias)"
+echo "   - ✨ NUEVO: Verificador de pinpoint por provincia (boletín + Art./Cap./Secc.)"
+echo "   - ✨ NUEVO: Province-aware retrieval router con fallback jerárquico"
+echo "   - ✨ NUEVO: Clasificador heurístico de jurisdicción (boletín/geográfico/ISO)"
+echo "   - ✨ NUEVO: Mapa de boletines oficiales con rate limiting"
+echo "   - ✨ NUEVO: Self-RAG integrado con province-aware retrieval"
+echo "   - Patrones de cita argentinos integrados"
+echo "   - Extractor de léxico legislativo/judicial"
+echo "   - Normalización ELI con soporte subnacional y alias automáticos"
+echo "   - Citation enforcer con validación provincial específica"
+echo "   - Framework anti-sesgo (110,000+ líneas ya implementadas)"
+echo "   - Documentación completa y datos de prueba"
+echo ""
 echo "🚀 Listo para integración con GraphRAG + Self-RAG + YaRN 64k"

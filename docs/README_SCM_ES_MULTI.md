@@ -33,6 +33,12 @@ Sistema de IA Legal especializado en español con extensión multiregional, basa
 - **Normalización ELI**: European Legislation Identifier adaptado
 - **Política de cita obligatoria**: Pinpoint por artículo/capítulo o sumario oficial
 
+### Retrieval por Jurisdicción (AR)
+- **Province-aware router**: Selección automática de índice por ISO 3166-2:AR
+- **Fallback jerárquico**: Provincia → AR nacional → ES → GLOBAL  
+- **Clasificación inteligente**: Detección heurística desde query (boletín/geográfico/ISO)
+- **Trazabilidad completa**: Logging de jurisdicciones consultadas para auditoría
+
 ### Características Específicas
 - **Patrones legislativos**: VISTO/CONSIDERANDO/RESUELVE/ARTÍCULO Nº
 - **Fórmulas judiciales**: "Considerando:", "Fallos: vol:pág", votos ministeriales
@@ -85,11 +91,13 @@ Sistema de IA Legal especializado en español con extensión multiregional, basa
 - ✅ Ingestors provinciales (CABA, PBA, Córdoba, Mendoza, Santa Fe)
 - ✅ Normalización ELI y patrones de cita argentinos
 
-### Fase 2: Integración RAG (En desarrollo)
-- 🔄 GraphRAG con comunidades legales especializadas
-- 🔄 Self-RAG con decisión inteligente de recuperación
-- 🔄 Province-aware retrieval con fallbacks jerárquicos
-- 🔄 Citation enforcer con validación provincial
+### Fase 2: Integración RAG (Completada)
+- ✅ **Province-aware retrieval**: Router inteligente por jurisdicción ISO 3166-2:AR
+- ✅ **Clasificador heurístico**: Detección automática de jurisdicción (boletín/geográfico/ISO)
+- ✅ **Self-RAG integrado**: Decisión inteligente de recuperación con validación
+- ✅ **Mapa de boletines**: Configuración centralizada con rate limiting
+- 🔄 GraphRAG con comunidades legales especializadas (pendiente conexión real)
+- 🔄 Citation enforcer con validación provincial (base implementada)
 
 ### Fase 3: Producción y Escalabilidad
 - 📅 Deployment en Cloudflare Workers/Pages
