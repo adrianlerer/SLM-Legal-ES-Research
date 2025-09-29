@@ -12,6 +12,7 @@ import logging
 from dataclasses import dataclass, asdict
 from datetime import datetime
 import os
+from ..bias_detection import LegalBiasEvaluationFramework
 
 @dataclass
 class LegalModelMetadata:
@@ -43,12 +44,33 @@ class LegalModelMetadata:
     inference_time_ms: float
     memory_usage_mb: float
     
+    # NEW: Bias evaluation results
+    bias_evaluation_score: float = 0.0
+    ideological_variance: float = 0.0
+    compliance_preservation_rate: float = 0.0
+    traceability_score: float = 0.0
+    bias_mitigation_techniques: List[str] = None
+    
+    def __post_init__(self):
+        if self.bias_mitigation_techniques is None:
+            self.bias_mitigation_techniques = []
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for MLflow logging"""
         result = asdict(self)
         result['training_date'] = self.training_date.isoformat()
         result['jurisdiction'] = ','.join(self.jurisdiction)
+        result['bias_mitigation_techniques'] = ','.join(self.bias_mitigation_techniques)
         return result
+        
+    def is_bias_compliant(self) -> bool:
+        """Verify if model meets anti-bias standards"""
+        return (
+            self.bias_evaluation_score <= 0.3 and
+            self.compliance_preservation_rate >= 0.85 and
+            self.hallucination_rate <= 0.05 and
+            self.traceability_score >= 0.8
+        )
 
 class LegalModelRegistry:
     """Enhanced model registry for legal AI with full compliance tracking"""
