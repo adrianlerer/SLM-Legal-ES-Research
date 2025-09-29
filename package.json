@@ -13,9 +13,11 @@
     "deploy:prod": "npm run build && wrangler pages deploy dist --project-name SLM-Legal-Spanish",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "clean-port": "fuser -k 3000/tcp 2>/dev/null || true",
-    "test": "curl http://localhost:3000",
+    "test": "tsx tests/run_all.tests.ts",
     "test:health": "curl http://localhost:3000/health",
     "test:api": "curl -X POST http://localhost:3000/api/legal/analyze -H 'Content-Type: application/json' -d '{\"query\":\"test\",\"jurisdiction\":\"AR\"}\"",
+    "lint:types": "tsc -p tsconfig.json --noEmit",
+    "ci:test": "npm ci && npm run lint:types && npm test",
     "db:migrate:local": "wrangler d1 migrations apply SLM-Legal-Spanish-production --local",
     "db:migrate:prod": "wrangler d1 migrations apply SLM-Legal-Spanish-production",
     "db:seed": "wrangler d1 execute SLM-Legal-Spanish-production --local --file=./seed.sql",
@@ -37,8 +39,14 @@
     "backup:create": "echo 'Project backup would be created here'"
   },
   "keywords": [
-    "legal-ai", "small-concept-models", "legal-tech", "multi-jurisdictional", 
-    "microservices", "cloudflare-workers", "hono-framework", "legal-analysis"
+    "legal-ai",
+    "small-concept-models",
+    "legal-tech",
+    "multi-jurisdictional",
+    "microservices",
+    "cloudflare-workers",
+    "hono-framework",
+    "legal-analysis"
   ],
   "author": "Ignacio Adrian Lerer",
   "license": "Apache-2.0",
@@ -62,7 +70,9 @@
     "@hono/vite-build": "^1.2.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-dev-server": "^0.18.2",
-    "typescript": "^5.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.6.3",
     "vite": "^6.3.5",
     "wrangler": "^4.4.0"
   },
