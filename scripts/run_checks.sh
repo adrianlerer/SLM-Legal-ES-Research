@@ -66,14 +66,46 @@ if [ ! -f "docs/README_SCM_ES_MULTI.md" ]; then
     exit 1
 fi
 
+echo "🌐 Verificando alias ISO completos..."
+if ! grep -q "\"AR-C\": \"Ciudad Autónoma de Buenos Aires\"" schema/ar_iso_aliases.json; then
+    echo "❌ Faltan alias ISO completos"
+    exit 1
+fi
+
+if ! grep -q "\"AR-Q\": \"Neuquén\"" schema/ar_iso_aliases.json; then
+    echo "❌ Falta provincia Neuquén en alias"
+    exit 1
+fi
+
+echo "🎯 Verificando validador provincial..."
+if ! grep -q "export function validateProvincePinpoint" tools/ar/pinpoint_by_province.ts; then
+    echo "❌ Falta función validateProvincePinpoint"
+    exit 1
+fi
+
+echo "🔗 Verificando integración enforcer..."
+if ! grep -q "validateProvincePinpoint" tools/citation_enforcer.ts; then
+    echo "❌ Falta integración validateProvincePinpoint en enforcer"
+    exit 1
+fi
+
+echo "📋 Verificando guía de pinpoint..."
+if [ ! -f "docs/AR_PINPOINT_GUIDE.md" ]; then
+    echo "❌ Falta guía de pinpoint provincial"
+    exit 1
+fi
+
 echo "✅ Todas las verificaciones pasaron correctamente!"
 echo ""
 echo "🎯 Resumen del sistema implementado:"
 echo "   - Ingestors provinciales: Córdoba, Mendoza (+ CABA, PBA, Santa Fe existentes)"
 echo "   - ISO 3166-2:AR completo con alias prácticos"
+echo "   - ✨ NUEVO: Alias ISO completos en español (23 provincias)"
+echo "   - ✨ NUEVO: Verificador de pinpoint por provincia (boletín + Art./Cap./Secc.)"
 echo "   - Patrones de cita argentinos integrados"
 echo "   - Extractor de léxico legislativo/judicial"
-echo "   - Normalización ELI con soporte subnacional"
+echo "   - Normalización ELI con soporte subnacional y alias automáticos"
+echo "   - Citation enforcer con validación provincial específica"
 echo "   - Framework anti-sesgo (110,000+ líneas ya implementadas)"
 echo "   - Documentación completa y datos de prueba"
 echo ""
