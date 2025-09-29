@@ -1,0 +1,18 @@
+{
+  "country": "AR",
+  "iso_3166_2": [
+    "AR-C","AR-B","AR-K","AR-H","AR-U","AR-X","AR-W","AR-E","AR-P","AR-Y",
+    "AR-L","AR-F","AR-M","AR-N","AR-Q","AR-R","AR-A","AR-J","AR-D","AR-Z",
+    "AR-S","AR-T","AR-G"
+  ],
+  "alias": {
+    "AR-CABA": "AR-C",
+    "AR-PBA": "AR-B",
+    "AR-CBA": "AR-X",
+    "AR-MZA": "AR-M",
+    "AR-SFE": "AR-S",
+    "AR-COR": "AR-X",
+    "AR-SAL": "AR-A"
+  },
+  "notes": "Usar códigos ISO 3166-2 como 'jurisdiction' ELI. Alias prácticos para legibilidad humana."
+}
