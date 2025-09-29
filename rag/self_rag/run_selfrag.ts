@@ -1,187 +1,165 @@
 /**
- * Self-RAG integrado con province-aware retrieval y clasificación de jurisdicción
- * Implementa decisión inteligente de recuperación y validación de citas
+ * Self-RAG implementation with province-aware retrieval for Argentina
+ * Integrates jurisdiction classification + province router + citation enforcer
  */
 
-import { retrieveProvinceAware, type Jurisdiction } from "../retrieval/province_router";
-import { classifyJurisdictionDetailed, type JurisdictionHint } from "./jurisdiction_classify";
+import { retrieveProvinceAware } from "../retrieval/province_router";
+import { classifyJurisdictionHint, classifyJurisdictionAdvanced } from "./jurisdiction_classify";
 import { enforceCitations } from "../../tools/citation_enforcer";
 
 export interface SelfRAGPlan {
   needRetrieve: boolean;
-  type: 'article' | 'precedent' | 'regulation' | 'mixed';
+  type: "article" | "jurisprudence" | "legislation" | "general";
   jurisdiction: string;
   confidence: number;
-  retrievalStrategy: 'province_specific' | 'national_fallback' | 'comparative_law';
+  alternatives?: Array<{ jurisdiction: string; confidence: number }>;
 }
 
 export interface SelfRAGResult {
   plan: SelfRAGPlan;
-  jurisdictionHint: JurisdictionHint;
-  retrieved: {
-    jurisdictionTried: string[];
-    hits: Array<{
-      id: string;
-      score: number;
-      meta?: Record<string, any>;
-    }>;
-  };
+  retrieved: any;
   draftAnswer: string;
   citationsOK: boolean;
   errors: string[];
-  finalAnswer?: string;
+  warnings?: string[];
+  metadata: {
+    jurisdictionTried: string[];
+    retrievalHits: number;
+    processingTimeMs: number;
+  };
 }
 
-/**
- * Determina si la consulta requiere recuperación de documentos
- */
-function needsRetrieval(userQuery: string): { needed: boolean; type: SelfRAGPlan['type'] } {
-  const q = userQuery.toLowerCase();
+export async function runSelfRAG(userQuery: string, jurisdictionHint?: string): Promise<SelfRAGResult> {
+  const startTime = Date.now();
   
-  // Patrones que requieren documentos específicos
-  if (/\b(ley|decreto|resolución|artículo|código)\b/i.test(q)) {
-    return { needed: true, type: 'regulation' };
+  // 1. Planificación: ¿necesitamos recuperar información?
+  const needRetrieve = shouldRetrieve(userQuery);
+  const queryType = classifyQueryType(userQuery);
+  
+  // 2. Clasificación inteligente de jurisdicción
+  let jurisdiction: string;
+  let confidence: number;
+  let alternatives: Array<{ jurisdiction: string; confidence: number }> = [];
+  
+  if (jurisdictionHint) {
+    jurisdiction = jurisdictionHint;
+    confidence = 0.95; // Alta confianza si viene como hint explícito
+  } else {
+    const classification = classifyJurisdictionAdvanced(userQuery);
+    jurisdiction = classification.primary;
+    confidence = classification.confidence;
+    alternatives = classification.alternatives;
   }
   
-  if (/\b(fallos|jurisprudencia|precedente|sentencia)\b/i.test(q)) {
-    return { needed: true, type: 'precedent' };
-  }
-  
-  if (/\b(boletín|oficial|publicación)\b/i.test(q)) {
-    return { needed: true, type: 'article' };
-  }
-  
-  // Consultas conceptuales pueden requerir múltiples tipos
-  if (/\b(criterios|lineamientos|interpretación|análisis)\b/i.test(q)) {
-    return { needed: true, type: 'mixed' };
-  }
-  
-  return { needed: true, type: 'mixed' }; // Por defecto, siempre recuperar
-}
-
-/**
- * Determina estrategia de recuperación basada en jurisdicción y tipo de consulta
- */
-function determineRetrievalStrategy(
-  jurisdiction: string, 
-  confidence: number, 
-  queryType: SelfRAGPlan['type']
-): SelfRAGPlan['retrievalStrategy'] {
-  
-  // Alta confianza en provincia específica
-  if (confidence > 0.85 && jurisdiction.startsWith('AR-') && jurisdiction !== 'AR') {
-    return 'province_specific';
-  }
-  
-  // Confianza media o consulta nacional
-  if (jurisdiction === 'AR' || confidence > 0.70) {
-    return 'national_fallback';
-  }
-  
-  // Baja confianza o consultas comparativas
-  return 'comparative_law';
-}
-
-/**
- * Genera borrador de respuesta (stub - TODO: integrar LLM real)
- */
-async function generateDraftAnswer(
-  userQuery: string, 
-  retrievedDocs: SelfRAGResult['retrieved'], 
-  plan: SelfRAGPlan
-): Promise<string> {
-  
-  // STUB: En implementación real, aquí iría la llamada al LLM
-  // con el contexto recuperado y las instrucciones específicas por jurisdicción
-  
-  const jurisdictionContext = plan.jurisdiction.startsWith('AR-') 
-    ? `En el ámbito de ${plan.jurisdiction}, según documentos consultados`
-    : 'Conforme a la normativa aplicable';
-  
-  const docReferences = retrievedDocs.hits
-    .slice(0, 3)
-    .map(hit => `${hit.id} (score: ${hit.score.toFixed(2)})`)
-    .join(', ');
-  
-  return `${jurisdictionContext}, y considerando los documentos relevantes (${docReferences}), se puede establecer que:
-
-[BORRADOR] - Esta sección requiere integración con LLM para generar respuesta completa basada en:
-- Query: ${userQuery}
-- Jurisdicción: ${plan.jurisdiction} (confianza: ${plan.confidence})
-- Documentos recuperados: ${retrievedDocs.hits.length}
-- Estrategia: ${plan.retrievalStrategy}
-
-TODO: Implementar generación real con contexto de documentos recuperados y patrones específicos de la jurisdicción argentina.`;
-}
-
-/**
- * Función principal de Self-RAG
- */
-export async function runSelfRAG(
-  userQuery: string, 
-  jurisdictionHint?: string
-): Promise<SelfRAGResult> {
-  
-  // 1. Clasificar jurisdicción (usar hint o clasificar automáticamente)
-  const jHint = jurisdictionHint 
-    ? { jurisdiction: jurisdictionHint, confidence: 1.0, matches: ['manual'], method: 'explicit_mention' as const }
-    : classifyJurisdictionDetailed(userQuery);
-  
-  // 2. Determinar plan de recuperación
-  const retrievalNeeds = needsRetrieval(userQuery);
   const plan: SelfRAGPlan = {
-    needRetrieve: retrievalNeeds.needed,
-    type: retrievalNeeds.type,
-    jurisdiction: jHint.jurisdiction,
-    confidence: jHint.confidence,
-    retrievalStrategy: determineRetrievalStrategy(jHint.jurisdiction, jHint.confidence, retrievalNeeds.type)
+    needRetrieve,
+    type: queryType,
+    jurisdiction,
+    confidence,
+    alternatives
   };
   
-  let retrieved = { jurisdictionTried: [], hits: [] };
-  
-  // 3. Ejecutar recuperación si es necesaria
-  if (plan.needRetrieve) {
-    try {
-      retrieved = await retrieveProvinceAware(userQuery, plan.jurisdiction as Jurisdiction);
-    } catch (error) {
-      console.error('Error en retrieveProvinceAware:', error);
-      // Continuar con retrieval vacío en caso de error
-    }
+  // 3. Recuperación province-aware (si es necesaria)
+  let retrieved: any = { jurisdictionTried: [], hits: [] };
+  if (needRetrieve) {
+    retrieved = await retrieveProvinceAware(userQuery, jurisdiction as any);
   }
   
-  // 4. Generar borrador de respuesta
-  const draftAnswer = await generateDraftAnswer(userQuery, retrieved, plan);
+  // 4. Generación de respuesta draft
+  const draftAnswer = await generateDraftAnswer(userQuery, retrieved, jurisdiction);
   
-  // 5. Validar citas y compliance
-  const citationResult = enforceCitations(draftAnswer, plan.jurisdiction);
+  // 5. Validación de citas con enforcer
+  const citationResult = enforceCitations(draftAnswer, jurisdiction);
   
-  // 6. Decidir si el borrador es aceptable o necesita refinamiento
-  const shouldRefine = !citationResult.ok || retrieved.hits.length === 0;
-  
-  return {
+  // 6. Compilar resultado final
+  const result: SelfRAGResult = {
     plan,
-    jurisdictionHint: jHint,
     retrieved,
     draftAnswer,
     citationsOK: citationResult.ok,
     errors: citationResult.errors || [],
-    finalAnswer: shouldRefine ? undefined : draftAnswer
+    warnings: citationResult.warnings,
+    metadata: {
+      jurisdictionTried: retrieved.jurisdictionTried || [],
+      retrievalHits: retrieved.hits?.length || 0,
+      processingTimeMs: Date.now() - startTime
+    }
   };
+  
+  return result;
 }
 
 /**
- * Versión simplificada para casos de uso básicos
+ * Determina si la consulta requiere recuperación de información externa
  */
-export async function askLegalQuestion(
-  question: string, 
-  jurisdiction?: string
-): Promise<{ answer: string; sources: string[]; confidence: number }> {
+function shouldRetrieve(query: string): boolean {
+  const q = query.toLowerCase();
   
-  const result = await runSelfRAG(question, jurisdiction);
+  // Siempre recuperar si menciona normativa específica
+  if (/\b(ley|decreto|resolución|código|artículo|reglamento)\b/.test(q)) return true;
   
-  return {
-    answer: result.finalAnswer || result.draftAnswer,
-    sources: result.retrieved.jurisdictionTried,
-    confidence: result.plan.confidence
+  // Recuperar para consultas sobre procedimientos legales
+  if (/\b(cómo|qué dice|cuál es|según|de acuerdo|establece)\b/.test(q)) return true;
+  
+  // No recuperar para consultas muy generales o definiciones básicas
+  if (/\b(qué es|define|concepto de)\b/.test(q) && q.split(' ').length < 5) return false;
+  
+  // Default: recuperar para mayor precisión
+  return true;
+}
+
+/**
+ * Clasifica el tipo de consulta para optimizar la búsqueda
+ */
+function classifyQueryType(query: string): "article" | "jurisprudence" | "legislation" | "general" {
+  const q = query.toLowerCase();
+  
+  if (/\b(fallos|jurisprudencia|sentencia|tribunal|corte|ministro)\b/.test(q)) return "jurisprudence";
+  if (/\b(ley|decreto|resolución|reglamento|código)\b/.test(q)) return "legislation";
+  if (/\b(artículo|art\.|cap\.|capítulo|sección|secc\.)\b/.test(q)) return "article";
+  
+  return "general";
+}
+
+/**
+ * Genera respuesta draft basada en información recuperada
+ * TODO: integrar con LLM real (GPT-4, Claude, Llama, etc.)
+ */
+async function generateDraftAnswer(query: string, retrieved: any, jurisdiction: string): Promise<string> {
+  // STUB: reemplazar por llamada a LLM real
+  const hits = retrieved.hits || [];
+  const jurisdictionName = getJurisdictionDisplayName(jurisdiction);
+  
+  if (hits.length === 0) {
+    return `Borrador de respuesta para "${query}" (jurisdicción: ${jurisdictionName}). ` +
+           `No se encontraron referencias específicas en los índices consultados. ` +
+           `TODO: integrar con LLM real para generar respuesta completa con citas obligatorias.`;
+  }
+  
+  const hitsSummary = hits.slice(0, 3).map((h: any) => h.id).join(", ");
+  return `Borrador basado en "${query}" (jurisdicción: ${jurisdictionName}). ` +
+         `Fuentes consultadas: ${hitsSummary}. ` +
+         `Art. 1º - TODO: integrar con LLM real para análisis completo. ` +
+         `Según normativa aplicable en ${jurisdictionName}... ` +
+         `TODO: generar citas pinpoint específicas y análisis detallado.`;
+}
+
+/**
+ * Convierte código de jurisdicción a nombre legible
+ */
+function getJurisdictionDisplayName(jurisdiction: string): string {
+  const names: Record<string, string> = {
+    "AR": "Argentina (Nacional)",
+    "AR-C": "Ciudad Autónoma de Buenos Aires",
+    "AR-B": "Provincia de Buenos Aires",
+    "AR-X": "Provincia de Córdoba",
+    "AR-M": "Provincia de Mendoza",
+    "AR-S": "Provincia de Santa Fe",
+    "AR-Q": "Provincia del Neuquén",
+    "AR-R": "Provincia de Río Negro",
+    "ES": "España",
+    "GLOBAL": "Global (ES-LatAm-EU)"
   };
+  
+  return names[jurisdiction] || jurisdiction;
 }

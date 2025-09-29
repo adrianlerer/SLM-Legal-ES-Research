@@ -2,160 +2,166 @@
 
 ## Archivo Fuente
 - **Ubicación**: `schema/ar_boletines_map.json`
-- **Formato**: JSON Schema con validación automática
-- **Propósito**: Configuración centralizada de fuentes oficiales
+- **Formato**: JSON Schema con validación estricta
+- **Propósito**: Mapeo centralizado de boletines oficiales por jurisdicción ISO 3166-2:AR
 
 ## Regla Crítica
-**⚠️ VERIFICAR MANUALMENTE** cada `url_base` antes de habilitar *fetchers* reales.
+**VERIFICAR MANUALMENTE** cada `url_base` antes de habilitar fetchers.
 
-## Estructura por Jurisdicción
+## Estructura del Schema
 
 ### Nacional (AR)
-- **BORA**: Boletín Oficial de la República Argentina
-- **URL**: https://www.boletinoficial.gob.ar/ *(VERIFICAR)*
-- **Estado**: Pendiente verificación manual
-
-### Provincias Principales
-
-#### Ciudad Autónoma de Buenos Aires (AR-C)
-- **BOCBA**: Boletín Oficial CABA
-- **URL**: https://boletinoficial.buenosaires.gob.ar/ *(VERIFICAR)*
-- **Estado**: Pendiente verificación manual
-
-#### Buenos Aires (AR-B)
-- **PBA**: Boletín Oficial Provincia de Buenos Aires
-- **URL**: https://boletinoficial.gba.gob.ar/ *(VERIFICAR)*
-- **Estado**: Pendiente verificación manual
-
-#### Córdoba (AR-X)
-- **CORDOBA**: Boletín Oficial Provincia de Córdoba
-- **URL**: TODO - Pendiente investigación
-- **Estado**: Requiere identificación de portal oficial
-
-#### Mendoza (AR-M)
-- **MENDOZA**: Boletín Oficial Provincia de Mendoza
-- **URL**: TODO - Pendiente investigación
-- **Estado**: Requiere identificación de portal oficial
-
-#### Santa Fe (AR-S)
-- **SANTAFE**: Boletín Oficial Provincia de Santa Fe
-- **URL**: https://www.santafe.gob.ar/boletinoficial/ *(VERIFICAR)*
-- **Estado**: Pendiente verificación manual
-
-#### Neuquén (AR-Q)
-- **NEUQUEN**: Boletín Oficial Provincia de Neuquén
-- **URL**: TODO - Pendiente investigación
-- **Estado**: Requiere identificación de portal oficial
-
-#### Río Negro (AR-R)
-- **RIONEGRO**: Boletín Oficial Provincia de Río Negro
-- **URL**: TODO - Pendiente investigación
-- **Estado**: Requiere identificación de portal oficial
-
-## Campos por Boletín
-
-### Obligatorios
-- **`name`**: Nombre oficial completo del boletín
-- **`url_base`**: URL base del sitio oficial
-
-### Opcionales (para implementación futura)
-- **`search_endpoint`**: Endpoint específico de búsqueda
-- **`rate_limit_ms`**: Intervalo entre requests (default: 1000ms)
-
-## Uso en Fetchers
-
-### Carga del Mapa
-```typescript
-import boletinesMap from "../schema/ar_boletines_map.json";
-
-function getBulletinConfig(jurisdiction: string): BulletinConfig {
-  return boletinesMap[jurisdiction];
+```json
+"AR": {
+  "BORA": {
+    "name": "Boletín Oficial de la República Argentina",
+    "url_base": "https://www.boletinoficial.gob.ar/"
+  }
 }
 ```
 
-### Construcción de URLs
+### Provincias Principales
+
+| Jurisdicción | Código | Boletín | URL Base | Estado |
+|-------------|--------|---------|----------|--------|
+| AR-C | BOCBA | Boletín Oficial CABA | https://boletinoficial.buenosaires.gob.ar/ | VERIFICAR |
+| AR-B | PBA | Boletín Oficial PBA | https://boletinoficial.gba.gob.ar/ | VERIFICAR |
+| AR-S | SANTAFE | Boletín Oficial Santa Fe | https://www.santafe.gob.ar/boletinoficial/ | VERIFICAR |
+| AR-X | CORDOBA | Boletín Oficial Córdoba | TODO | PENDIENTE |
+| AR-M | MENDOZA | Boletín Oficial Mendoza | TODO | PENDIENTE |
+
+## Uso en Ingestors
+
+### Patrón de Integración
+Los ingestors provinciales/nacionales deben:
+
+1. **Cargar el mapa**:
 ```typescript
-const config = getBulletinConfig("AR-C");
-const searchUrl = `${config.BOCBA.url_base}${config.BOCBA.search_endpoint}`;
+import boletinesMap from "../schema/ar_boletines_map.json";
 ```
 
-### Respeto de Rate Limits
+2. **Construir URLs**:
 ```typescript
-const rateLimitMs = config.BOCBA.rate_limit_ms || 1000;
-await sleep(rateLimitMs);
+const baseUrl = boletinesMap["AR-X"]["CORDOBA"]["url_base"];
+const searchUrl = `${baseUrl}/search?q=${query}&date=${date}`;
 ```
 
-## Normalización ELI
-
-### Integración con Fuentes
-Los ingestors provinciales y nacionales deben:
-
-1. **Leer este mapa** para construir URLs dinámicamente
-2. **Normalizar fuentes** usando campos `name` como fuente ELI
-3. **Aplicar rate limiting** según configuración por boletín
-
-### Ejemplo de Normalización
+3. **Normalizar fuentes en ELI**:
 ```typescript
-// Del fetcher
-const docData = {
-  jurisdiction: "AR-C",
-  source: boletinesMap["AR-C"].BOCBA.name,
-  url_base: boletinesMap["AR-C"].BOCBA.url_base
-};
-
-// Normalización ELI
-const eliDoc = normalizeToELI(docData);
+const source = boletinesMap["AR-X"]["CORDOBA"]["name"];
+const eliDoc = normalizeToELI({ 
+  jurisdiction: "AR-X", 
+  source,
+  // ... otros campos
+});
 ```
 
-## Consideraciones de Implementación
+### Ejemplo en Fetcher
+```typescript
+// ingest/ar_provincias/cordoba_boletin.ts
+import boletinesMap from "../../schema/ar_boletines_map.json";
 
-### Verificación Manual Requerida
-**Antes de habilitar fetchers**, verificar cada URL:
+export async function searchCordoba(params: {from?: string; to?: string; texto?: string}) {
+  // TODO: verificar que url_base no sea "TODO"
+  const config = boletinesMap["AR-X"]["CORDOBA"];
+  if (config.url_base.startsWith("TODO")) {
+    throw new Error("URL de Córdoba no verificada aún");
+  }
+  
+  // TODO: implementar fetch real con la URL verificada
+  return { 
+    jurisdiction: "AR-X", 
+    source: config.name,
+    items: [] 
+  };
+}
+```
 
-1. **Acceso público**: ¿El sitio es de acceso libre?
-2. **Robots.txt**: ¿Permite web scraping?
-3. **ToS**: ¿Los términos permiten uso académico/investigación?
-4. **Estructura**: ¿Es estable la estructura HTML/API?
-5. **Rate limits**: ¿Hay límites implícitos o explícitos?
+## Proceso de Verificación
 
-### Extensión a Nuevas Provincias
+### Pasos Obligatorios
+1. **Investigación manual**: Verificar URL oficial del boletín
+2. **Testing de acceso**: Confirmar que la URL funciona y permite búsquedas
+3. **Análisis de estructura**: Estudiar formato HTML/API disponible
+4. **Respeto de ToS**: Revisar términos de servicio y robots.txt
+5. **Actualización del schema**: Reemplazar "TODO" con URL verificada
+
+### Criterios de Verificación
+- ✅ **URL accesible**: Responde sin errores 4xx/5xx
+- ✅ **Contenido oficial**: Boletín oficial gubernamental verificado
+- ✅ **Búsqueda funcional**: Permite filtros por fecha/texto
+- ✅ **Rate limiting**: Respeta límites de consultas por segundo
+- ✅ **ToS compliance**: No viola términos de servicio
+
+## Extensión a Nuevas Provincias
+
+### Template para Nueva Jurisdicción
 ```json
-"AR-K": {
-  "type": "object",
+"AR-{CÓDIGO}": {
+  "type": "object", 
   "properties": {
-    "CATAMARCA": {
-      "name": "Boletín Oficial de la Provincia de Catamarca",
-      "url_base": "TODO (VERIFICAR URL OFICIAL)"
+    "{NOMBRE}": { 
+      "type": "object", 
+      "properties": {
+        "name": { 
+          "type": "string", 
+          "const": "Boletín Oficial de la Provincia de {Nombre}" 
+        },
+        "url_base": { 
+          "type": "string", 
+          "description": "TODO (VERIFICAR URL OFICIAL)" 
+        }
+      }, 
+      "required": ["name","url_base"] 
     }
   }
 }
 ```
 
-## Mantenimiento y Actualizaciones
+### Ejemplo: Neuquén (AR-Q)
+```json
+"AR-Q": {
+  "type": "object", 
+  "properties": {
+    "NEUQUEN": { 
+      "type": "object", 
+      "properties": {
+        "name": { "type": "string", "const": "Boletín Oficial de la Provincia del Neuquén" },
+        "url_base": { "type": "string", "description": "TODO (VERIFICAR URL OFICIAL)" }
+      }, 
+      "required": ["name","url_base"] 
+    }
+  }
+}
+```
 
-### Monitoreo Requerido
-- **URLs activas**: Verificación periódica de disponibilidad
-- **Cambios estructurales**: Detección de modificaciones en sitios
-- **Nuevos endpoints**: Identificación de APIs oficiales
+## Integración con Citation Enforcer
 
-### Control de Versiones
-- **Cambios en URLs**: Commit separado con justificación
-- **Nuevas provincias**: PR independiente con verificación
-- **Rate limit updates**: Basado en testing real de sitios
+### Validación de Fuentes
+El citation enforcer usa este mapa para:
+- **Verificar nombres oficiales** de boletines en citas
+- **Validar jurisdicciones** según códigos ISO
+- **Sugerir correcciones** cuando hay errores en nombres
 
-## Próximos Pasos
+### Ejemplo de Validación
+```typescript
+// Usuario cita: "Boletín de Córdoba"
+// Sistema sugiere: "Boletín Oficial de la Provincia de Córdoba" (nombre oficial del mapa)
+```
 
-### Fase 1: Verificación
-1. Revisar manualmente cada URL listada
-2. Confirmar accesibilidad y términos de servicio
-3. Actualizar status de "VERIFICAR" → "CONFIRMED" o "BLOCKED"
+## Consideraciones de Mantenimiento
 
-### Fase 2: Implementación
-1. Conectar fetchers con configuración verificada
-2. Implementar respeto automático de rate limits
-3. Establecer monitoreo de cambios en sitios
+### Updates Periódicos
+- **Frecuencia**: Trimestral para URLs principales
+- **Método**: Verificación automatizada de HTTP status
+- **Alertas**: Notificar si URL cambia o deja de funcionar
 
-### Fase 3: Extensión
-1. Agregar provincias faltantes
-2. Identificar APIs oficiales donde existan
-3. Optimizar performance y reliability
+### Backup de Configuración
+- **Versionado**: Git tracking de cambios en el schema
+- **Rollback**: Posibilidad de volver a configuración anterior
+- **Testing**: Suite de tests para validar integridad del mapa
+
+### Monitoreo de Cambios
+- **Web scraping changes**: Detectar modificaciones en estructura HTML
+- **API deprecations**: Monitorear cambios en endpoints oficiales
+- **Legal updates**: Seguir cambios normativos que afecten publicación oficial

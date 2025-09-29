@@ -35,6 +35,12 @@ Sistema de IA Legal especializado en español con extensión multiregional, basa
 
 ### Retrieval por Jurisdicción (AR)
 - **Province-aware router**: Selección automática de índice por ISO 3166-2:AR
+- **Fallback jerárquico**: Provincia → Nacional AR → España → Global ES-LatAm-EU
+- **Clasificación heurística**: Detección automática de jurisdicción desde query
+- **Self-RAG integration**: Decisión inteligente de recuperación + citation enforcer
+
+### Retrieval por Jurisdicción (AR)
+- **Province-aware router**: Selección automática de índice por ISO 3166-2:AR
 - **Fallback jerárquico**: Provincia → AR nacional → ES → GLOBAL  
 - **Clasificación inteligente**: Detección heurística desde query (boletín/geográfico/ISO)
 - **Trazabilidad completa**: Logging de jurisdicciones consultadas para auditoría

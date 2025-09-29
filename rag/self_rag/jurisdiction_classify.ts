@@ -4,169 +4,115 @@
  * TODO: mejorar con NER + diccionarios/aliases (schema/ar_iso_aliases.json).
  */
 
-import aliases from "../../schema/ar_iso_aliases.json";
-
-export interface JurisdictionHint {
-  jurisdiction: string;
-  confidence: number;
-  matches: string[];
-  method: 'explicit_mention' | 'bulletin_reference' | 'geographic_name' | 'default_fallback';
-}
-
-// Patrones específicos de boletines oficiales
-const BULLETIN_PATTERNS = [
-  { pattern: /\b(bocba|boletín oficial.*ciudad autónoma)\b/i, jurisdiction: "AR-C", confidence: 0.95 },
-  { pattern: /\b(boletín oficial.*provincia de buenos aires|pba)\b/i, jurisdiction: "AR-B", confidence: 0.95 },
-  { pattern: /\b(boletín oficial.*córdoba)\b/i, jurisdiction: "AR-X", confidence: 0.95 },
-  { pattern: /\b(boletín oficial.*mendoza)\b/i, jurisdiction: "AR-M", confidence: 0.95 },
-  { pattern: /\b(boletín oficial.*santa fe)\b/i, jurisdiction: "AR-S", confidence: 0.95 },
-  { pattern: /\b(boletín oficial.*neuquén)\b/i, jurisdiction: "AR-Q", confidence: 0.95 },
-  { pattern: /\b(boletín oficial.*río negro)\b/i, jurisdiction: "AR-R", confidence: 0.95 },
-  { pattern: /\b(bora|boletín oficial.*república argentina)\b/i, jurisdiction: "AR", confidence: 0.90 }
-];
-
-// Patrones geográficos (menor confianza que referencias a boletines)
-const GEOGRAPHIC_PATTERNS = [
-  { pattern: /\b(caba|ciudad de buenos aires|capital federal)\b/i, jurisdiction: "AR-C", confidence: 0.80 },
-  { pattern: /\b(provincia de buenos aires|gran buenos aires)\b/i, jurisdiction: "AR-B", confidence: 0.75 },
-  { pattern: /\b(córdoba|cordoba)\b/i, jurisdiction: "AR-X", confidence: 0.70 },
-  { pattern: /\b(mendoza)\b/i, jurisdiction: "AR-M", confidence: 0.70 },
-  { pattern: /\b(santa fe)\b/i, jurisdiction: "AR-S", confidence: 0.70 },
-  { pattern: /\b(neuquén|neuquen)\b/i, jurisdiction: "AR-Q", confidence: 0.70 },
-  { pattern: /\b(río negro|rio negro|rionegro)\b/i, jurisdiction: "AR-R", confidence: 0.70 },
-  { pattern: /\b(salta)\b/i, jurisdiction: "AR-A", confidence: 0.70 },
-  { pattern: /\b(san juan)\b/i, jurisdiction: "AR-J", confidence: 0.70 },
-  { pattern: /\b(san luis)\b/i, jurisdiction: "AR-D", confidence: 0.70 },
-  { pattern: /\b(tucumán|tucuman)\b/i, jurisdiction: "AR-G", confidence: 0.70 }
-];
-
-// Patrones de códigos ISO explícitos
-const ISO_PATTERNS = [
-  { pattern: /\b(ar-c|ar_c)\b/i, jurisdiction: "AR-C", confidence: 0.95 },
-  { pattern: /\b(ar-b|ar_b)\b/i, jurisdiction: "AR-B", confidence: 0.95 },
-  { pattern: /\b(ar-x|ar_x)\b/i, jurisdiction: "AR-X", confidence: 0.95 },
-  { pattern: /\b(ar-m|ar_m)\b/i, jurisdiction: "AR-M", confidence: 0.95 },
-  { pattern: /\b(ar-s|ar_s)\b/i, jurisdiction: "AR-S", confidence: 0.95 }
-];
-
-/**
- * Clasificación simple (compatibilidad con prompt original)
- */
 export function classifyJurisdictionHint(q: string): string {
-  const result = classifyJurisdictionDetailed(q);
-  return result.jurisdiction;
-}
-
-/**
- * Clasificación detallada con confianza y contexto
- */
-export function classifyJurisdictionDetailed(q: string): JurisdictionHint {
   const ql = q.toLowerCase();
   
-  // 1. Buscar referencias explícitas a boletines (mayor confianza)
-  for (const { pattern, jurisdiction, confidence } of BULLETIN_PATTERNS) {
-    const match = ql.match(pattern);
-    if (match) {
-      return {
-        jurisdiction,
-        confidence,
-        matches: [match[0]],
-        method: 'bulletin_reference'
-      };
-    }
-  }
-
-  // 2. Buscar códigos ISO explícitos
-  for (const { pattern, jurisdiction, confidence } of ISO_PATTERNS) {
-    const match = ql.match(pattern);
-    if (match) {
-      return {
-        jurisdiction,
-        confidence,
-        matches: [match[0]],
-        method: 'explicit_mention'
-      };
-    }
-  }
-
-  // 3. Buscar menciones geográficas (menor confianza)
-  for (const { pattern, jurisdiction, confidence } of GEOGRAPHIC_PATTERNS) {
-    const match = ql.match(pattern);
-    if (match) {
-      return {
-        jurisdiction,
-        confidence,
-        matches: [match[0]],
-        method: 'geographic_name'
-      };
-    }
-  }
-
-  // 4. Verificar alias desde schema (usando diccionario)
-  const aliasEntries = Object.entries(aliases.human_alias);
-  for (const [humanAlias, isoCode] of aliasEntries) {
-    if (ql.includes(humanAlias.toLowerCase())) {
-      return {
-        jurisdiction: isoCode,
-        confidence: 0.85,
-        matches: [humanAlias],
-        method: 'explicit_mention'
-      };
-    }
-  }
-
-  // 5. Default fallback - nacional argentino
-  return {
-    jurisdiction: "AR",
-    confidence: 0.50,
-    matches: [],
-    method: 'default_fallback'
-  };
+  // Detección específica por boletín oficial
+  if (/\b(caba|bocba|ciudad de buenos aires|ciudad autónoma)\b/.test(ql)) return "AR-C";
+  if (/\bprovincia de buenos aires|pba\b/.test(ql)) return "AR-B";
+  
+  // Detección por nombre de provincia
+  if (/\bcordoba|córdoba\b/.test(ql)) return "AR-X";
+  if (/\bmendoza\b/.test(ql)) return "AR-M";
+  if (/\bsanta fe\b/.test(ql)) return "AR-S";
+  if (/\bneuqu[eé]n\b/.test(ql)) return "AR-Q";
+  if (/\br[ií]o negro\b/.test(ql)) return "AR-R";
+  if (/\bsalta\b/.test(ql)) return "AR-A";
+  if (/\bsan juan\b/.test(ql)) return "AR-J";
+  if (/\bsan luis\b/.test(ql)) return "AR-D";
+  if (/\btucum[aá]n\b/.test(ql)) return "AR-G";
+  if (/\bchaco\b/.test(ql)) return "AR-H";
+  if (/\bmisiones\b/.test(ql)) return "AR-N";
+  if (/\bcorrientes\b/.test(ql)) return "AR-W";
+  if (/\bentre r[ií]os\b/.test(ql)) return "AR-E";
+  if (/\bformosa\b/.test(ql)) return "AR-P";
+  if (/\bjujuy\b/.test(ql)) return "AR-Y";
+  if (/\bla pampa\b/.test(ql)) return "AR-L";
+  if (/\bla rioja\b/.test(ql)) return "AR-F";
+  if (/\bcatamarca\b/.test(ql)) return "AR-K";
+  if (/\bchubut\b/.test(ql)) return "AR-U";
+  if (/\bsanta cruz\b/.test(ql)) return "AR-Z";
+  if (/\bsantiago del estero\b/.test(ql)) return "AR-T";
+  
+  // Detección de jurisdicción nacional
+  if (/\b(csjn|corte suprema|saij|bora|infoleg|naci[oó]n|nacional|federal)\b/.test(ql)) return "AR";
+  
+  // Detección de otras jurisdicciones
+  if (/\b(españa|espa[ñn]a|madrid|barcelona|valencia)\b/.test(ql)) return "ES";
+  
+  // Default: jurisdicción nacional argentina
+  return "AR";
 }
 
 /**
- * Clasificación con múltiples jurisdicciones (para casos complejos)
+ * Clasificación avanzada con confianza y alternativas.
+ * Retorna jurisdicción principal + score de confianza + alternativas posibles.
  */
-export function classifyMultipleJurisdictions(q: string): JurisdictionHint[] {
-  const results: JurisdictionHint[] = [];
+export function classifyJurisdictionAdvanced(q: string): {
+  primary: string;
+  confidence: number;
+  alternatives: Array<{ jurisdiction: string; confidence: number }>;
+} {
   const ql = q.toLowerCase();
-
-  // Buscar todas las coincidencias posibles
-  const allPatterns = [
-    ...BULLETIN_PATTERNS.map(p => ({...p, method: 'bulletin_reference' as const})),
-    ...ISO_PATTERNS.map(p => ({...p, method: 'explicit_mention' as const})),
-    ...GEOGRAPHIC_PATTERNS.map(p => ({...p, method: 'geographic_name' as const}))
+  const matches: Array<{ jurisdiction: string; pattern: string; weight: number }> = [];
+  
+  // Patrones con pesos (mayor peso = mayor confianza)
+  const patterns = [
+    // Boletines oficiales (peso alto)
+    { pattern: /\b(bocba)\b/, jurisdiction: "AR-C", weight: 0.9 },
+    { pattern: /\b(bora|boletín oficial.*república)\b/, jurisdiction: "AR", weight: 0.9 },
+    
+    // Provincias con contexto legal (peso medio-alto)
+    { pattern: /\bcórdoba.*\b(ley|decreto|resolución)\b/, jurisdiction: "AR-X", weight: 0.8 },
+    { pattern: /\bmendoza.*\b(ley|decreto|resolución)\b/, jurisdiction: "AR-M", weight: 0.8 },
+    
+    // Nombres de provincia simples (peso medio)
+    { pattern: /\bcórdoba\b/, jurisdiction: "AR-X", weight: 0.6 },
+    { pattern: /\bmendoza\b/, jurisdiction: "AR-M", weight: 0.6 },
+    { pattern: /\bsanta fe\b/, jurisdiction: "AR-S", weight: 0.6 },
+    
+    // Instituciones nacionales (peso alto)
+    { pattern: /\b(csjn|corte suprema)\b/, jurisdiction: "AR", weight: 0.85 },
+    { pattern: /\b(saij|infoleg)\b/, jurisdiction: "AR", weight: 0.8 },
   ];
-
-  for (const { pattern, jurisdiction, confidence, method } of allPatterns) {
-    const match = ql.match(pattern);
-    if (match) {
-      // Evitar duplicados
-      if (!results.some(r => r.jurisdiction === jurisdiction)) {
-        results.push({
-          jurisdiction,
-          confidence,
-          matches: [match[0]],
-          method
-        });
-      }
+  
+  // Evaluar todos los patrones
+  for (const { pattern, jurisdiction, weight } of patterns) {
+    if (pattern.test(ql)) {
+      matches.push({ jurisdiction, pattern: pattern.source, weight });
     }
   }
-
-  // Ordenar por confianza descendente
-  return results.sort((a, b) => b.confidence - a.confidence);
-}
-
-/**
- * Validación de jurisdicción (verificar si es válida)
- */
-export function isValidJurisdiction(j: string): boolean {
-  const validCodes = Object.keys(aliases.iso_3166_2);
-  const validAliases = Object.keys(aliases.human_alias);
   
-  return validCodes.includes(j) || 
-         validAliases.includes(j) || 
-         j === "AR" || 
-         j === "ES" || 
-         j === "GLOBAL";
+  if (matches.length === 0) {
+    return {
+      primary: "AR",
+      confidence: 0.3, // Baja confianza para default
+      alternatives: [
+        { jurisdiction: "ES", confidence: 0.2 },
+        { jurisdiction: "GLOBAL", confidence: 0.1 }
+      ]
+    };
+  }
+  
+  // Agrupar por jurisdicción y sumar pesos
+  const scores: Record<string, number> = {};
+  for (const match of matches) {
+    scores[match.jurisdiction] = (scores[match.jurisdiction] || 0) + match.weight;
+  }
+  
+  // Normalizar scores (max = 1.0)
+  const maxScore = Math.max(...Object.values(scores));
+  const normalizedScores = Object.entries(scores).map(([j, s]) => ({
+    jurisdiction: j,
+    confidence: s / maxScore
+  }));
+  
+  // Ordenar por confianza
+  normalizedScores.sort((a, b) => b.confidence - a.confidence);
+  
+  return {
+    primary: normalizedScores[0].jurisdiction,
+    confidence: normalizedScores[0].confidence,
+    alternatives: normalizedScores.slice(1)
+  };
 }
