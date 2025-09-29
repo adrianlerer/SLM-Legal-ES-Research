@@ -1,0 +1,58 @@
+# MLOps Dependencies for Legal SCM System
+# Core MLOps
+mlflow>=2.8.0
+wandb>=0.15.0
+dvc>=3.0.0
+bentoml>=1.1.0
+
+# Model Training & Evaluation
+torch>=2.0.0
+transformers>=4.35.0
+peft>=0.6.0  # For LoRA/QLoRA
+datasets>=2.14.0
+evaluate>=0.4.0
+accelerate>=0.24.0
+
+# Data Processing & Validation
+pandas>=2.1.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+great-expectations>=0.17.0
+evidently>=0.4.0
+
+# Privacy & Security
+presidio-analyzer>=2.2.0
+presidio-anonymizer>=2.2.0
+cryptography>=41.0.0
+hashlib-compat>=1.0.1
+
+# Monitoring & Observability
+prometheus-client>=0.17.0
+grafana-api>=1.0.3
+sentry-sdk>=1.35.0
+
+# Legal Domain Specific
+spacy>=3.7.0
+spacy-legal>=0.1.0  # Custom legal NLP
+legal-embeddings>=0.2.0  # Custom legal embeddings
+
+# Testing & Quality
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.9.0
+flake8>=6.0.0
+mypy>=1.6.0
+bandit>=1.7.0
+safety>=2.3.0
+
+# Deployment
+cloudflare-python>=0.1.0
+docker>=6.1.0
+kubernetes>=27.2.0
+
+# Development
+jupyter>=1.0.0
+ipywidgets>=8.1.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.17.0
