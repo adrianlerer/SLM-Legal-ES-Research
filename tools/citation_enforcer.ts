@@ -1,9 +1,10 @@
 /**
  * Citation Enforcer - Garantiza citas obligatorias con pinpoint en respuestas legales
- * Integra patrones argentinos y validación de compliance
+ * Integra patrones argentinos y validación provincial específica
  */
 
 import { AR_PATTERNS, validateArgentineCitation } from './citation_patterns_ar';
+import { validateProvincePinpoint } from "./ar/pinpoint_by_province";
 
 export interface CitationResult {
   ok: boolean;
@@ -30,10 +31,20 @@ export function enforceCitations(answer: string, jurisdictionHint?: string): Cit
       errors.push("Falta cita válida según patrones argentinos (Ley/Decreto/Resolución/Fallos/Boletín + pinpoint)");
     }
     
-    // Verificar pinpoint (Art./Cap./Secc.)
-    const hasPinpoint = /Art\.?|Cap\.?|Secc\.?|Artículo|Capítulo|Sección/i.test(answer);
-    if (!hasPinpoint) {
-      errors.push("Falta pinpoint específico (Artículo/Capítulo/Sección)");
+    // Validación provincial específica si es una provincia
+    if (jurisdictionHint !== "AR" && jurisdictionHint.length > 3) {
+      const res = validateProvincePinpoint(answer, jurisdictionHint as any);
+      if (!res.ok) {
+        errors.push("Cita provincial AR incompleta (boletín + artículo/capítulo/sección).");
+      } else {
+        warnings.push(`Cita provincial válida: ${res.hits.join(", ")}`);
+      }
+    } else {
+      // Verificar pinpoint genérico (Art./Cap./Secc.) para jurisdicción nacional
+      const hasPinpoint = /Art\.?|Cap\.?|Secc\.?|Artículo|Capítulo|Sección/i.test(answer);
+      if (!hasPinpoint) {
+        errors.push("Falta pinpoint específico (Artículo/Capítulo/Sección)");
+      }
     }
     
     return {
