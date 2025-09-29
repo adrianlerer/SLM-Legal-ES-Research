@@ -1,4 +1,7 @@
 # SCM Legal: Small Concept Models for Legal Domain
+
+![TS Unit Tests](https://github.com/adrianlerer/SLM-Legal-Spanish/actions/workflows/ts-tests.yml/badge.svg)
+
 ## 🌟 World-Class Implementation with Best Practices Integration
 
 > **Research Project**: Adapting Large Concept Models (LCMs) to Small Concept Models (SCMs) for professional legal applications

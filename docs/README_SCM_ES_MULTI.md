@@ -89,6 +89,13 @@ Sistema de IA Legal especializado en español con extensión multiregional, basa
 - **Bias monitoring**: Monitoreo continuo de sesgos potenciales
 - **Quality assurance**: Validación automática de calidad de respuestas
 
+### Testing y CI/CD
+- **Unit tests TS**: Suite de tests minimalista sin frameworks (tsx + node:assert)
+- **GitHub Actions**: CI automático con matriz Node 18/20 + cache npm
+- **Type checking**: Validación TypeScript integrada (tsc --noEmit)
+- **Test coverage**: Province router + jurisdiction classifier + citation enforcer
+- **Fixtures**: Casos de prueba para citas válidas/inválidas argentinas
+
 ## Metodología de Implementación
 
 ### Fase 1: Fundación Argentina (Completada)
