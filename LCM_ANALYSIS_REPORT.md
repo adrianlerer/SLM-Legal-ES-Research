@@ -95,7 +95,7 @@
 En lugar de implementar LCMs directamente, propongo desarrollar una **aplicación demostrador** que:
 
 1. **Simule Capacidades LCM** mediante APIs existentes:
-   - OpenAI GPT-4 para análisis conceptual
+   - Commercial embedding service para análisis conceptual
    - Google Translate API para capacidades multilingües
    - Semantic search con embeddings para coherencia conceptual
 

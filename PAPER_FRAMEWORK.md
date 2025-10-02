@@ -172,7 +172,7 @@ Total: 12,500 documents, ~50M tokens, span 2020-2024
 - **Cross-Jurisdictional-QA**: Multi-jurisdiction legal questions
 
 #### **4.2 Baseline Models**
-- GPT-4 (general purpose)
+- Advanced LLM (general purpose)
 - Llama 3.1 8B (general purpose)  
 - LegalBERT-ES (legal Spanish)
 - SimulatedLCM (Meta LCM architecture simulation)
@@ -201,7 +201,7 @@ Total: 12,500 documents, ~50M tokens, span 2020-2024
 
 | Model | CCS ↑ | CRD ↑ | OAS ↑ | Overall ↑ |
 |-------|--------|--------|--------|-----------|
-| GPT-4 | 0.72 | 0.35 | 0.68 | 0.58 |
+| Advanced LLM | 0.72 | 0.35 | 0.68 | 0.58 |
 | Llama 3.1 8B | 0.69 | 0.32 | 0.65 | 0.55 |
 | LegalBERT-ES | 0.74 | 0.41 | 0.78 | 0.64 |
 | **Legal SCM** | **0.89** | **0.76** | **0.94** | **0.86** |
@@ -210,7 +210,7 @@ Total: 12,500 documents, ~50M tokens, span 2020-2024
 
 | Model | RDA ↑ | CA ↑ | HR ↓ | PSS ↑ |
 |-------|-------|------|------|-------|
-| GPT-4 | 0.78 | 0.82 | 0.15 | 3.2/5 |
+| Advanced LLM | 0.78 | 0.82 | 0.15 | 3.2/5 |
 | Llama 3.1 8B | 0.71 | 0.76 | 0.22 | 2.8/5 |
 | LegalBERT-ES | 0.85 | 0.89 | 0.09 | 3.7/5 |
 | **Legal SCM** | **0.92** | **0.95** | **0.05** | **4.3/5** |
@@ -219,7 +219,7 @@ Total: 12,500 documents, ~50M tokens, span 2020-2024
 
 | Model | Parameters | Memory | Latency | Cost/Month |
 |-------|------------|---------|---------|------------|
-| GPT-4 | ~1.7T | ~20GB | ~800ms | $2,000+ |
+| Advanced LLM | ~1.7T | ~20GB | ~800ms | $2,000+ |
 | Llama 3.1 8B | 8B | ~16GB | ~400ms | $800+ |
 | LegalBERT-ES | 110M | ~500MB | ~150ms | $200+ |  
 | **Legal SCM** | **250M** | **300MB** | **120ms** | **$50** |
