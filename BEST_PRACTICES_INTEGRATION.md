@@ -29,7 +29,7 @@ interface LegalJurisdictionConfig {
   jurisdictions: ['AR', 'ES', 'CL', 'UY']
   fallbackJurisdiction: 'AR'
   contextualLegalAnalysis: boolean
-  aiLegalProviders: ['scm-legal', 'openai', 'anthropic']
+  aiLegalProviders: ['scm-legal', 'provider-a', 'provider-b']
 }
 ```
 

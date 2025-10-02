@@ -1,7 +1,7 @@
 """
 SCM Legal - Validación Empírica Expandida
 Reality Filter Applied - Métricas Realistas
-Implementación según correcciones metodológicas de Kimi para repositorio GitHub
+Implementación según correcciones metodológicas para repositorio GitHub
 """
 import os
 import json

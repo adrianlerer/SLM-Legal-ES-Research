@@ -20,7 +20,7 @@ class IdeologicalBiasDetector:
     def __init__(self):
         self.sentiment_models = {
             'open_source': 'cardiffnlp/twitter-roberta-base-sentiment-latest',
-            'commercial': 'openai/gpt-4',
+            'commercial': 'commercial-llm',
             'governmental': 'custom_legal_bert'
         }
         
