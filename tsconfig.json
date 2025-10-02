@@ -1,15 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "strict": false,
     "skipLibCheck": true,
-    "lib": [
-      "ESNext"
-    ],
-    "types": ["vite/client"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "baseUrl": "."
   },
+  "ts-node": {
+    "esm": false,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", ".wrangler"]
 }

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AR Official Gazettes Map",
+  "type": "object",
+  "properties": {
+    "AR": {
+      "type": "object",
+      "properties": {
+        "BORA": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string", "const": "Boletín Oficial de la República Argentina" },
+            "url_base": { "type": "string", "description": "https://www.boletinoficial.gob.ar/  (VERIFICAR MANUALMENTE)" }
+          }, 
+          "required": ["name","url_base"] 
+        }
+      }
+    },
+    "AR-C": {
+      "type": "object",
+      "properties": {
+        "BOCBA": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string", "const": "Boletín Oficial de la Ciudad Autónoma de Buenos Aires" },
+            "url_base": { "type": "string", "description": "https://boletinoficial.buenosaires.gob.ar/  (VERIFICAR)" }
+          }, 
+          "required": ["name","url_base"] 
+        }
+      }
+    },
+    "AR-B": { 
+      "type": "object", 
+      "properties": {
+        "PBA": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string", "const": "Boletín Oficial de la Provincia de Buenos Aires" },
+            "url_base": { "type": "string", "description": "https://boletinoficial.gba.gob.ar/  (VERIFICAR)" }
+          }, 
+          "required": ["name","url_base"] 
+        }
+      }
+    },
+    "AR-X": { 
+      "type": "object", 
+      "properties": {
+        "CORDOBA": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string", "const": "Boletín Oficial de la Provincia de Córdoba" },
+            "url_base": { "type": "string", "description": "TODO (VERIFICAR URL OFICIAL)" }
+          }, 
+          "required": ["name","url_base"] 
+        }
+      }
+    },
+    "AR-M": { 
+      "type": "object", 
+      "properties": {
+        "MENDOZA": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string", "const": "Boletín Oficial de la Provincia de Mendoza" },
+            "url_base": { "type": "string", "description": "TODO (VERIFICAR URL OFICIAL)" }
+          }, 
+          "required": ["name","url_base"] 
+        }
+      }
+    },
+    "AR-S": { 
+      "type": "object", 
+      "properties": {
+        "SANTAFE": { 
+          "type": "object", 
+          "properties": {
+            "name": { "type": "string", "const": "Boletín Oficial de la Provincia de Santa Fe" },
+            "url_base": { "type": "string", "description": "https://www.santafe.gob.ar/boletinoficial/  (VERIFICAR)" }
+          }, 
+          "required": ["name","url_base"] 
+        }
+      }
+    }
+  }
+}
