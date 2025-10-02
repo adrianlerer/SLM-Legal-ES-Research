@@ -65,10 +65,10 @@ Normalized to [0, 10] scale for comparison
 ### **3. Baseline Model Comparisons**
 
 #### **3.1 General-Purpose Models**
-- **GPT-4**: State-of-the-art general reasoning
-- **Claude 3.5 Sonnet**: Advanced text understanding
+- **Advanced LLM-A**: State-of-the-art general reasoning
+- **Advanced LLM-B**: Advanced text understanding
 - **Llama 3.1 70B**: Open-source large model
-- **Gemini Pro**: Google's multimodal model
+- **Multimodal LLM-C**: Large multimodal model
 
 #### **3.2 Legal-Specialized Models**
 - **LegalBERT**: Legal domain BERT variant

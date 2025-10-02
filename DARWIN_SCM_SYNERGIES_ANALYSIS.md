@@ -2,8 +2,8 @@
 ## Integración Estratégica de Sistemas de Escritura Inteligente
 
 **Fecha**: 28 de Septiembre, 2025  
-**Analista**: Claude (AI Assistant)  
-**Para**: Ignacio Adrian Lerer, J.D., MBA
+**Analista**: AI-assisted development team  
+**Para**: Ignacio Adrian Lerer, Abogado (UBA), Executive MBA (Universidad Austral)
 
 ---
 
