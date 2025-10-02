@@ -285,7 +285,7 @@ The author acknowledges the crisis conditions that necessitated this emergency r
 
 **Contact Information**
 
-Ignacio Adrian Lerer, J.D., MBA  
+Ignacio Adrian Lerer, Abogado (UBA), Executive MBA (Universidad Austral)  
 Director Independiente & Consultor Ejecutivo  
 Especialista en Gobierno Corporativo y Compliance  
 Buenos Aires, Argentina  

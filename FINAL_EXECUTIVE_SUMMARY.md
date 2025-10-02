@@ -2,7 +2,7 @@
 ## Darwin Writer SaaS + SCM Legal Spanish: Integración Sinérgica Exitosa
 
 **Date**: 28 de Septiembre, 2025  
-**Executive Summary for**: Ignacio Adrian Lerer, J.D., MBA  
+**Executive Summary for**: Ignacio Adrian Lerer, Abogado (UBA), Executive MBA (Universidad Austral)  
 **Status**: ✅ **INTEGRACIÓN COMPLETADA Y OPERACIONAL**
 
 ---

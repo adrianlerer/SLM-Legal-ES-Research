@@ -3,7 +3,7 @@
 
 **Fecha**: 28 de Septiembre, 2025  
 **Analista**: AI-assisted development team  
-**Para**: Ignacio Adrian Lerer, J.D., MBA
+**Para**: Ignacio Adrian Lerer, Abogado (UBA), Executive MBA (Universidad Austral)
 
 ---
 

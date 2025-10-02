@@ -3,7 +3,7 @@
 
 **Date**: September 28, 2025  
 **Status**: ✅ **PRODUCTION READY - CRISIS RESPONSE COMPLETED**  
-**Author**: Ignacio Adrian Lerer, J.D., MBA
+**Author**: Ignacio Adrian Lerer, Abogado (UBA), Executive MBA (Universidad Austral)
 
 ---
 
