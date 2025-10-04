@@ -1,14 +1,22 @@
 """
-TUMIX Legal Multi-Agent System - SCM Legal Integration
-====================================================
+TUMIX Legal Multi-Agent System - SCM Legal Integration ENHANCED 2025
+===================================================================
 
-Implementación de arquitectura TUMIX adaptada para razonamiento jurídico profesional.
-Integra múltiples agentes especializados con capacidades heterogéneas para análisis legal completo.
+Sistema TUMIX avanzado con algoritmos de IA de vanguardia integrados.
+Combina arquitectura multi-agente con Gradient Boosting Consensus,
+PCA Legal Dimensionality Analysis y optimización inteligente de recursos.
 
 CONFIDENCIAL - Propiedad Intelectual Exclusiva
 Desarrollado por: Ignacio Adrián Lerer (Abogado UBA, Executive MBA Universidad Austral)
 
-Características TUMIX Legales:
+NUEVAS CAPACIDADES 2025:
+- Enhanced Consensus Engine: Gradient Boosting + Random Forest + XGBoost
+- Legal Dimensionality Analyzer: PCA + K-Means para clasificación automática
+- Optimización inteligente de asignación de agentes especializados
+- Consenso matemáticamente optimizado con auditabilidad regulatoria
+- Análisis dimensional automático de casos jurídicos complejos
+
+Características TUMIX Legales Originales:
 - Agentes heterogéneos: CoT Jurídico, Search Jurisprudencial, Code Compliance
 - Early stopping con juez LLM especializado en derecho
 - Verificación automática de citas y fuentes primarias
@@ -16,6 +24,7 @@ Características TUMIX Legales:
 - Trazabilidad completa para auditabilidad regulatoria
 
 Basado en: TUMIX (Tool-Use Mixture) Paper - arXiv:2510.01279
+Integra: Top 20 Algoritmos de IA 2025 para dominio jurídico profesional
 Adaptado para: Razonamiento jurídico profesional con 30+ años de experiencia integrada
 """
 
@@ -36,6 +45,22 @@ from urllib.parse import quote_plus
 
 # Para análisis de texto legal
 import spacy
+
+# Importaciones de engines mejorados 2025
+try:
+    from .enhanced_consensus_engine import (
+        EnhancedConsensusEngine, ConsensusResult, ConsensusFeatures,
+        create_enhanced_consensus_engine, calculate_consensus_improvement_metrics
+    )
+    from .legal_dimensionality_analyzer import (
+        LegalDimensionalityAnalyzer, LegalDimensionAnalysis, LegalVectorization,
+        create_legal_dimensionality_analyzer, calculate_dimensionality_improvement_metrics
+    )
+    ENHANCED_ENGINES_AVAILABLE = True
+except ImportError:
+    # Fallback si no están disponibles los engines mejorados
+    ENHANCED_ENGINES_AVAILABLE = False
+    logging.warning("Enhanced engines no disponibles. Usando modo básico.")
 
 
 class AgentType(Enum):
@@ -860,8 +885,17 @@ class LegalMultiAgentOrchestrator:
         self.min_rounds = 2
         self.early_stopping_threshold = 0.85
         
+        # Engines mejorados 2025
+        self.enhanced_consensus_engine = None
+        self.dimensionality_analyzer = None
+        self.engines_initialized = False
+        
         # Inicializar agentes especializados
         self._initialize_agents()
+        
+        # Inicializar engines mejorados si están disponibles
+        if ENHANCED_ENGINES_AVAILABLE:
+            self._initialize_enhanced_engines()
     
     def _initialize_agents(self):
         """Inicializa pool de agentes legales especializados."""
@@ -872,38 +906,96 @@ class LegalMultiAgentOrchestrator:
             # TODO: Agregar más agentes especializados
         ]
     
+    async def _initialize_enhanced_engines(self):
+        """Inicializa engines mejorados 2025 de forma asíncrona."""
+        try:
+            # Enhanced Consensus Engine con algoritmos de ensamble
+            self.enhanced_consensus_engine = await create_enhanced_consensus_engine()
+            self.logger.info("✅ Enhanced Consensus Engine inicializado (Gradient Boosting + Random Forest + XGBoost)")
+            
+            # Legal Dimensionality Analyzer con PCA + K-Means  
+            self.dimensionality_analyzer = await create_legal_dimensionality_analyzer()
+            self.logger.info("✅ Legal Dimensionality Analyzer inicializado (PCA + K-Means)")
+            
+            self.engines_initialized = True
+            self.logger.info("🚀 Todos los engines mejorados 2025 inicializados correctamente")
+            
+        except Exception as e:
+            self.logger.error(f"❌ Error inicializando engines mejorados: {str(e)}")
+            self.engines_initialized = False
+    
     async def process_legal_query(self, query: LegalQuery) -> Dict[str, Any]:
         """
-        Procesa consulta legal usando metodología TUMIX multi-agente.
+        Procesa consulta legal usando metodología TUMIX multi-agente MEJORADA.
+        
+        NUEVAS CAPACIDADES 2025:
+        - Análisis dimensional automático del caso (PCA + K-Means)
+        - Optimización inteligente de asignación de agentes
+        - Consenso matemáticamente optimizado (Gradient Boosting)
         
         Returns:
-            Resultado final con consenso, trazabilidad y justificación
+            Resultado final con consenso optimizado, análisis dimensional y trazabilidad
         """
-        self.logger.info(f"Processing legal query: {query.question[:100]}...")
+        start_time = datetime.now()
+        self.logger.info(f"🚀 Processing enhanced legal query: {query.question[:100]}...")
         
+        # Inicializar engines si no están listos
+        if ENHANCED_ENGINES_AVAILABLE and not self.engines_initialized:
+            await self._initialize_enhanced_engines()
+        
+        # 🧠 FASE 1: Análisis dimensional automático (NUEVO 2025)
+        dimensional_analysis = None
+        optimized_agent_allocation = None
+        
+        if self.dimensionality_analyzer:
+            self.logger.info("🔍 Ejecutando análisis dimensional PCA + K-Means...")
+            try:
+                dimensional_analysis = await self.dimensionality_analyzer.extract_legal_dimensions(query.question)
+                optimized_agent_allocation = dimensional_analysis.recommended_agent_allocation
+                
+                self.logger.info(f"✅ Caso clasificado: {dimensional_analysis.automatic_classification}")
+                self.logger.info(f"🎯 Asignación optimizada: {optimized_agent_allocation}")
+                
+            except Exception as e:
+                self.logger.warning(f"⚠️ Análisis dimensional falló, usando modo estándar: {str(e)}")
+        
+        # 🤖 FASE 2: Iteración multi-agente optimizada
         all_outputs = []
         round_number = 1
         
-        # Iteración multi-agente con early stopping
+        # Iteración multi-agente con early stopping mejorado
         while round_number <= self.max_rounds:
-            self.logger.info(f"Starting round {round_number}")
+            self.logger.info(f"🔄 Starting enhanced round {round_number}")
             
-            # Ejecutar todos los agentes en paralelo
-            round_outputs = await self._execute_agent_round(query, all_outputs, round_number)
+            # Ejecutar agentes con asignación optimizada (si disponible)
+            round_outputs = await self._execute_optimized_agent_round(
+                query, all_outputs, round_number, optimized_agent_allocation
+            )
             all_outputs.extend(round_outputs)
             
-            # Evaluar si continuar (early stopping)
+            # Early stopping mejorado con métricas dimensionales
             if round_number >= self.min_rounds:
-                should_stop = await self._should_stop_iteration(round_outputs, round_number)
+                should_stop = await self._enhanced_early_stopping_decision(
+                    round_outputs, round_number, dimensional_analysis
+                )
                 if should_stop:
-                    self.logger.info(f"Early stopping at round {round_number}")
+                    self.logger.info(f"⏹️ Enhanced early stopping at round {round_number}")
                     break
             
             round_number += 1
         
-        # Generar consenso final
-        final_result = await self._generate_consensus(query, all_outputs)
+        # 🎯 FASE 3: Consenso matemáticamente optimizado (NUEVO 2025)
+        final_result = await self._generate_enhanced_consensus(
+            query, all_outputs, dimensional_analysis
+        )
         
+        # 📊 FASE 4: Métricas de mejora y auditabilidad
+        processing_time = (datetime.now() - start_time).total_seconds()
+        final_result.update(self._calculate_enhancement_metrics(
+            processing_time, dimensional_analysis, final_result
+        ))
+        
+        self.logger.info(f"✅ Enhanced legal analysis completed in {processing_time:.2f}s")
         return final_result
     
     async def _execute_agent_round(self, query: LegalQuery, previous_outputs: List[AgentOutput], 
@@ -929,6 +1021,120 @@ class LegalMultiAgentOrchestrator:
                 valid_outputs.append(output)
         
         return valid_outputs
+    
+    async def _execute_optimized_agent_round(self, query: LegalQuery, previous_outputs: List[AgentOutput], 
+                                           round_number: int, agent_allocation: Optional[Dict[str, float]] = None) -> List[AgentOutput]:
+        """
+        Ejecuta agentes con asignación optimizada basada en análisis dimensional.
+        
+        MEJORA 2025: Usa PCA + K-Means para determinar qué agentes priorizar.
+        """
+        
+        # Si hay asignación optimizada, ajustar recursos por agente
+        if agent_allocation:
+            self.logger.info("🎯 Usando asignación optimizada de agentes")
+            
+            # Filtrar y priorizar agentes según asignación
+            prioritized_agents = []
+            for agent in self.agents:
+                agent_type_key = agent.agent_type.value
+                if agent_type_key in agent_allocation and agent_allocation[agent_type_key] > 0.15:
+                    # Solo ejecutar agentes con asignación significativa
+                    prioritized_agents.append(agent)
+            
+            if prioritized_agents:
+                agents_to_execute = prioritized_agents
+            else:
+                agents_to_execute = self.agents  # Fallback a todos
+        else:
+            agents_to_execute = self.agents
+        
+        # Filtrar outputs previos por agente
+        tasks = []
+        for agent in agents_to_execute:
+            agent_previous = [o for o in previous_outputs if o.round_number < round_number]
+            task = agent.process_query(query, agent_previous)
+            tasks.append(task)
+        
+        # Ejecutar en paralelo con manejo mejorado de errores
+        round_outputs = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Procesar resultados con métricas de calidad
+        valid_outputs = []
+        for i, output in enumerate(round_outputs):
+            if isinstance(output, Exception):
+                self.logger.error(f"❌ Agent {agents_to_execute[i].agent_id} failed: {output}")
+            else:
+                # Ajustar confianza basada en asignación optimizada
+                if agent_allocation:
+                    agent_type_key = agents_to_execute[i].agent_type.value
+                    if agent_type_key in agent_allocation:
+                        allocation_weight = agent_allocation[agent_type_key]
+                        # Boost confianza para agentes bien asignados
+                        output.confidence_score = min(1.0, output.confidence_score * (1 + allocation_weight))
+                
+                valid_outputs.append(output)
+        
+        self.logger.info(f"🎯 Round {round_number}: {len(valid_outputs)}/{len(agents_to_execute)} agentes exitosos")
+        return valid_outputs
+    
+    async def _enhanced_early_stopping_decision(self, round_outputs: List[AgentOutput], 
+                                               round_number: int, 
+                                               dimensional_analysis: Optional[Any] = None) -> bool:
+        """
+        Decisión de early stopping mejorada con métricas dimensionales.
+        
+        MEJORA 2025: Integra calidad dimensional y complejidad del caso.
+        """
+        
+        # Criterios base (existentes)
+        answers = [output.answer_summary for output in round_outputs]
+        unique_answers = len(set(answers))
+        consensus_ratio = 1.0 - (unique_answers - 1) / len(answers) if answers else 0
+        
+        avg_confidence = sum(output.confidence_score for output in round_outputs) / len(round_outputs)
+        
+        total_citations = sum(len(output.citations) for output in round_outputs)
+        verified_citations = sum(len([c for c in output.citations if c.verified]) for output in round_outputs)
+        citation_verification_rate = verified_citations / total_citations if total_citations > 0 else 0
+        
+        # NUEVOS CRITERIOS 2025: Basados en análisis dimensional
+        complexity_threshold = 0.7  # Threshold base
+        dimensional_quality = 0.8   # Calidad dimensional base
+        
+        if dimensional_analysis:
+            # Ajustar thresholds según complejidad detectada
+            complexity_level = dimensional_analysis.automatic_classification.get('complexity_level', 'moderado')
+            
+            if complexity_level in ['experto', 'supremo']:
+                complexity_threshold = 0.85  # Más exigente para casos complejos
+                required_rounds = 3
+            elif complexity_level in ['muy_complejo', 'complejo']:
+                complexity_threshold = 0.8
+                required_rounds = 2  
+            else:
+                complexity_threshold = 0.7
+                required_rounds = 2
+            
+            # Calidad dimensional actual
+            dimensional_quality = dimensional_analysis.dimensional_quality_metrics.get('overall_dimensional_quality', 0.8)
+        else:
+            required_rounds = self.min_rounds
+        
+        # Decisión mejorada de parada
+        enhanced_stop_decision = (
+            consensus_ratio >= complexity_threshold and 
+            avg_confidence >= 0.8 and 
+            citation_verification_rate >= 0.6 and
+            dimensional_quality >= 0.75 and
+            round_number >= required_rounds
+        )
+        
+        self.logger.info(f"🛑 Enhanced stop evaluation - Consensus: {consensus_ratio:.2f}, "
+                        f"Confidence: {avg_confidence:.2f}, Citations: {citation_verification_rate:.2f}, "
+                        f"Dimensional Quality: {dimensional_quality:.2f}")
+        
+        return enhanced_stop_decision
     
     async def _should_stop_iteration(self, round_outputs: List[AgentOutput], round_number: int) -> bool:
         """
@@ -962,10 +1168,13 @@ class LegalMultiAgentOrchestrator:
         
         return stop_decision
     
-    async def _generate_consensus(self, query: LegalQuery, all_outputs: List[AgentOutput]) -> Dict[str, Any]:
+    async def _generate_enhanced_consensus(self, query: LegalQuery, all_outputs: List[AgentOutput],
+                                         dimensional_analysis: Optional[Any] = None) -> Dict[str, Any]:
         """
-        Genera respuesta final por consenso ponderado y LLM selector.
-        Prioriza verificabilidad y auditabilidad para contexto legal.
+        Genera consenso matemáticamente optimizado usando Gradient Boosting + Random Forest.
+        
+        MEJORA 2025: Usa Enhanced Consensus Engine para consenso inteligente.
+        Integra análisis dimensional para contexto adicional.
         """
         
         if not all_outputs:
@@ -981,6 +1190,94 @@ class LegalMultiAgentOrchestrator:
                 agent_latest[agent_id] = output
         
         final_round_outputs = list(agent_latest.values())
+        
+        # 🚀 CONSENSO MEJORADO: Usar Enhanced Consensus Engine si disponible
+        if self.enhanced_consensus_engine and ENHANCED_ENGINES_AVAILABLE:
+            self.logger.info("🧠 Usando Enhanced Consensus Engine (Gradient Boosting + Random Forest + XGBoost)")
+            
+            try:
+                # Calcular consenso optimizado
+                consensus_result = await self.enhanced_consensus_engine.calculate_weighted_consensus(
+                    final_round_outputs
+                )
+                
+                # Compilar todas las citas verificables
+                all_citations = []
+                for output in final_round_outputs:
+                    all_citations.extend(output.citations)
+                
+                # Resultado mejorado con consenso matemáticamente optimizado
+                enhanced_result = {
+                    "final_answer": consensus_result.final_consensus,
+                    "confidence_score": consensus_result.consensus_confidence,
+                    "legal_analysis": self._compile_enhanced_legal_analysis(final_round_outputs),
+                    "citations": [
+                        {
+                            "source_type": cite.source_type,
+                            "reference": cite.reference,
+                            "text_quoted": cite.text_quoted,
+                            "verified": cite.verified
+                        }
+                        for cite in all_citations if cite.verified
+                    ],
+                    
+                    # 🎯 METADATOS MEJORADOS 2025
+                    "enhanced_consensus_metadata": {
+                        "consensus_method": "Enhanced Gradient Boosting + Random Forest + XGBoost",
+                        "consensus_confidence": consensus_result.consensus_confidence,
+                        "coherence_score": consensus_result.coherence_score,
+                        "regulatory_audit_score": consensus_result.regulatory_audit_score,
+                        "consensus_stability": consensus_result.consensus_stability,
+                        "mathematical_proof": consensus_result.mathematical_proof,
+                        "feature_importance": consensus_result.feature_importance,
+                        "model_performance": consensus_result.model_performance_metrics,
+                        "agent_weights": consensus_result.agent_weights,
+                        "weight_justification": consensus_result.weight_justification,
+                        "improvement_vs_simple_average": consensus_result.improvement_over_simple_average,
+                        "statistical_significance": consensus_result.statistical_significance,
+                        "processing_time_ms": consensus_result.processing_time_ms
+                    },
+                    
+                    # Metadatos tradicionales (compatibilidad)
+                    "consensus_metadata": {
+                        "total_rounds": max(o.round_number for o in all_outputs),
+                        "participating_agents": len(set(o.agent_id for o in all_outputs)),
+                        "consensus_strength": consensus_result.consensus_confidence,
+                        "total_citations": len(all_citations),
+                        "verified_citations": len([c for c in all_citations if c.verified])
+                    },
+                    
+                    # 🔍 ANÁLISIS DIMENSIONAL (NUEVO 2025)
+                    "dimensional_analysis": self._extract_dimensional_insights(dimensional_analysis) if dimensional_analysis else None,
+                    
+                    "agent_contributions": consensus_result.agent_contributions,
+                    
+                    "audit_trail": {
+                        "query_processed": query.question,
+                        "jurisdiction": query.jurisdiction,
+                        "domain": query.domain,
+                        "processing_timestamp": datetime.now().isoformat(),
+                        "total_execution_time": sum(o.execution_time_ms for o in all_outputs),
+                        "methodology": "TUMIX Enhanced Multi-Agent System 2025",
+                        "enhancement_level": "Gradient Boosting + PCA + K-Means",
+                        "engines_used": ["Enhanced Consensus Engine", "Legal Dimensionality Analyzer"] if dimensional_analysis else ["Enhanced Consensus Engine"]
+                    }
+                }
+                
+                self.logger.info(f"✅ Enhanced consensus completed - Confidence: {consensus_result.consensus_confidence:.3f}")
+                return enhanced_result
+                
+            except Exception as e:
+                self.logger.error(f"❌ Enhanced consensus failed, fallback to standard: {str(e)}")
+        
+        # 📊 FALLBACK: Consenso estándar si engines mejorados no disponibles
+        self.logger.info("📊 Usando consenso estándar (engines mejorados no disponibles)")
+        return await self._generate_standard_consensus(query, final_round_outputs, all_outputs, dimensional_analysis)
+    
+    async def _generate_standard_consensus(self, query: LegalQuery, final_round_outputs: List[AgentOutput],
+                                         all_outputs: List[AgentOutput], 
+                                         dimensional_analysis: Optional[Any] = None) -> Dict[str, Any]:
+        """Consenso estándar como fallback."""
         
         # Votación ponderada por competencia del agente
         answer_votes = Counter()
@@ -1012,22 +1309,11 @@ class LegalMultiAgentOrchestrator:
         for output in final_round_outputs:
             all_citations.extend(output.citations)
         
-        # Generar análisis integral
-        legal_analysis_parts = []
-        
-        # Agregar reasoning de cada tipo de agente
-        for agent_type in [AgentType.COT_JURIDICO, AgentType.SEARCH_JURISPRUDENCIAL, AgentType.CODE_COMPLIANCE]:
-            agent_outputs = [o for o in final_round_outputs if o.agent_type == agent_type]
-            if agent_outputs:
-                output = agent_outputs[0]  # Tomar el más reciente
-                legal_analysis_parts.append(f"\\n{agent_type.value.upper()}:")
-                legal_analysis_parts.append(output.detailed_reasoning)
-        
-        # Compilar resultado final
+        # Compilar resultado estándar
         consensus_result = {
             "final_answer": winning_answer,
             "confidence_score": winning_confidence,
-            "legal_analysis": "\\n".join(legal_analysis_parts),
+            "legal_analysis": self._compile_enhanced_legal_analysis(final_round_outputs),
             "citations": [
                 {
                     "source_type": cite.source_type,
@@ -1044,13 +1330,14 @@ class LegalMultiAgentOrchestrator:
                 "total_citations": len(all_citations),
                 "verified_citations": len([c for c in all_citations if c.verified])
             },
+            "dimensional_analysis": self._extract_dimensional_insights(dimensional_analysis) if dimensional_analysis else None,
             "agent_contributions": [
                 {
                     "agent_id": output.agent_id,
                     "agent_type": output.agent_type.value,
                     "final_round": output.round_number,
                     "confidence": output.confidence_score,
-                    "key_insights": output.legal_issues_identified[:3]  # Top 3 issues
+                    "key_insights": output.legal_issues_identified[:3]
                 }
                 for output in final_round_outputs
             ],
@@ -1060,11 +1347,70 @@ class LegalMultiAgentOrchestrator:
                 "domain": query.domain,
                 "processing_timestamp": datetime.now().isoformat(),
                 "total_execution_time": sum(o.execution_time_ms for o in all_outputs),
-                "methodology": "TUMIX Legal Multi-Agent System"
+                "methodology": "TUMIX Legal Multi-Agent System (Standard Mode)"
             }
         }
         
         return consensus_result
+    
+    def _compile_enhanced_legal_analysis(self, final_round_outputs: List[AgentOutput]) -> str:
+        """Compila análisis legal mejorado de todos los agentes."""
+        
+        legal_analysis_parts = []
+        
+        # Agregar reasoning de cada tipo de agente con formato mejorado
+        for agent_type in [AgentType.COT_JURIDICO, AgentType.SEARCH_JURISPRUDENCIAL, AgentType.CODE_COMPLIANCE]:
+            agent_outputs = [o for o in final_round_outputs if o.agent_type == agent_type]
+            if agent_outputs:
+                output = agent_outputs[0]  # Tomar el más reciente
+                agent_name = agent_type.value.replace('_', ' ').title()
+                legal_analysis_parts.append(f"\\n## {agent_name}")
+                legal_analysis_parts.append(output.detailed_reasoning)
+        
+        return "\\n".join(legal_analysis_parts)
+    
+    def _extract_dimensional_insights(self, dimensional_analysis: Any) -> Dict[str, Any]:
+        """Extrae insights del análisis dimensional para incluir en resultado."""
+        
+        if not dimensional_analysis:
+            return None
+        
+        return {
+            "case_classification": dimensional_analysis.automatic_classification,
+            "key_legal_dimensions": dimensional_analysis.key_legal_dimensions,
+            "complexity_analysis": dimensional_analysis.complexity_cluster_info,
+            "domain_analysis": dimensional_analysis.domain_cluster_info,
+            "jurisdiction_analysis": dimensional_analysis.jurisdiction_cluster_info,
+            "quality_metrics": dimensional_analysis.dimensional_quality_metrics,
+            "processing_optimization": dimensional_analysis.processing_optimization,
+            "variance_analysis": dimensional_analysis.variance_analysis
+        }
+    
+    def _calculate_enhancement_metrics(self, processing_time: float, 
+                                     dimensional_analysis: Optional[Any],
+                                     final_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Calcula métricas de mejora del sistema enhanceado."""
+        
+        enhancement_metrics = {
+            "enhancement_metrics_2025": {
+                "processing_time_seconds": processing_time,
+                "enhanced_engines_used": ENHANCED_ENGINES_AVAILABLE,
+                "dimensional_analysis_quality": dimensional_analysis.dimensional_quality_metrics.get('overall_dimensional_quality', 0) if dimensional_analysis else 0,
+                "consensus_enhancement_active": self.enhanced_consensus_engine is not None,
+                "improvement_indicators": {
+                    "consensus_mathematical_rigor": 1.0 if "enhanced_consensus_metadata" in final_result else 0.0,
+                    "dimensional_classification_accuracy": dimensional_analysis.dimensional_quality_metrics.get('clustering_confidence', 0) if dimensional_analysis else 0,
+                    "processing_optimization_gain": 1.0 if dimensional_analysis and dimensional_analysis.processing_optimization else 0.0,
+                    "overall_enhancement_score": 0.0
+                }
+            }
+        }
+        
+        # Calcular score general de mejora
+        improvement_scores = list(enhancement_metrics["enhancement_metrics_2025"]["improvement_indicators"].values())[:-1]  # Excluir el overall
+        enhancement_metrics["enhancement_metrics_2025"]["improvement_indicators"]["overall_enhancement_score"] = sum(improvement_scores) / len(improvement_scores)
+        
+        return enhancement_metrics
 
 
 # Función de inicialización para uso fácil
@@ -1094,8 +1440,13 @@ async def process_legal_query_tumix(question: str, jurisdiction: str = "AR",
         specific_norms=kwargs.get("specific_norms", [])
     )
     
-    # Procesar con orquestador TUMIX
+    # Procesar con orquestador TUMIX mejorado
     orchestrator = LegalMultiAgentOrchestrator()
+    
+    # Asegurar que engines mejorados estén inicializados
+    if ENHANCED_ENGINES_AVAILABLE and not orchestrator.engines_initialized:
+        await orchestrator._initialize_enhanced_engines()
+    
     result = await orchestrator.process_legal_query(query)
     
     return result
