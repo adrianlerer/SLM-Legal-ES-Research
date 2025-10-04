@@ -21,6 +21,17 @@ import { scmLegalHandler, scmComparisonHandler } from './routes/scm-legal';
 import { JurisdictionManager, defaultJurisdictionConfig } from './core/jurisdiction/manager';
 import { LegalDataSourceManager } from './integrations/legal-data-sources';
 import { darwinSCMIntegrationApp } from './integrations/darwin-writer-integration';
+// BitNet Integration Imports
+import { 
+  bitnetLegalQueryHandler, 
+  bitnetConsensusHandler, 
+  bitnetStatusHandler,
+  bitnetMoEQueryHandler,
+  bitnetMoEExpertsHandler,
+  codaLegalAutomationHandler
+} from './routes/bitnet-legal';
+// CoDA Legal Automation Imports
+import { codaAutomationHandler } from './routes/coda-automation';
 import type { LegalContextRequest, LegalContextResponse } from './core/jurisdiction/types';
 
 // Type definitions for Cloudflare bindings
@@ -259,6 +270,18 @@ app.get('/api/context-engineering/status', contextEngineeringStatusHandler);
 app.post('/api/scm/analyze', scmLegalHandler);
 app.post('/api/scm/compare', scmComparisonHandler);
 
+// BitNet Legal Processing API routes (NEW - Ultra-Efficient Local Processing)
+app.post('/api/bitnet/legal-query', bitnetLegalQueryHandler);
+app.post('/api/bitnet/consensus', bitnetConsensusHandler);
+app.get('/api/bitnet/status', bitnetStatusHandler);
+
+// BitNet MoE (Mixture of Experts) Legal Processing API routes (NEW - Specialized Expert Routing)
+app.post('/api/bitnet/moe-query', bitnetMoEQueryHandler);
+app.post('/api/bitnet/moe-experts', bitnetMoEExpertsHandler);
+
+// CoDA Legal Automation API routes (NEW - Document Generation & Process Automation)
+app.post('/api/coda/automation', codaLegalAutomationHandler);
+
 // TUMIX Legal Multi-Agent System API route (NEW)
 app.post('/api/tumix/legal-query', async (c) => {
   try {
@@ -482,74 +505,74 @@ ${domain === 'corporativo' ? 'Implementar due diligence REFORZADA + programa int
 // Main page with enhanced UI and world-class architecture features
 app.get('/', (c) => {
   return c.render(
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Enhanced Header with World-Class Branding */}
-      <header className="bg-white shadow-lg border-b-4 border-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <i className="fas fa-balance-scale text-3xl text-blue-600 mr-4"></i>
+      <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center py-6">
+            <div class="flex items-center">
+              <i class="fas fa-balance-scale text-3xl text-blue-600 mr-4"></i>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">SCM Legal</h1>
-                <p className="text-sm text-gray-600">Small Concept Models para Análisis Legal Multi-Jurisdiccional</p>
+                <h1 class="text-2xl font-bold text-gray-900">SCM Legal</h1>
+                <p class="text-sm text-gray-600">Small Concept Models para Análisis Legal Multi-Jurisdiccional</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Jurisdicciones:</span>
-                <div className="flex space-x-1">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">AR</span>
-                  <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">ES</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">CL</span>
-                  <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">UY</span>
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">Jurisdicciones:</span>
+                <div class="flex space-x-1">
+                  <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">AR</span>
+                  <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">ES</span>
+                  <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">CL</span>
+                  <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">UY</span>
                 </div>
               </div>
               <a href="https://github.com/adrianlerer/SLM-Legal-Spanish" target="_blank" 
-                 className="text-gray-600 hover:text-blue-600 transition-colors">
-                <i className="fab fa-github text-xl"></i>
+                 class="text-gray-600 hover:text-blue-600 transition-colors">
+                <i class="fab fa-github text-xl"></i>
               </a>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div class="max-w-6xl mx-auto px-4 py-8">
         {/* World-Class Features Banner */}
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
+        <div class="text-center mb-8">
+          <h2 class="text-4xl font-extrabold text-gray-900 mb-4">
             🧠 Análisis Legal Inteligente
-            <span className="text-blue-600"> Multi-Jurisdiccional</span>
+            <span class="text-blue-600"> Multi-Jurisdiccional</span>
           </h2>
-          <p className="text-xl text-gray-600 mb-4">
+          <p class="text-xl text-gray-600 mb-4">
             Plataforma de IA especializada con Small Concept Models (SCM) optimizados para el dominio legal
           </p>
-          <div className="flex justify-center flex-wrap gap-2 mb-4">
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+          <div class="flex justify-center flex-wrap gap-2 mb-4">
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
               🧠 Conceptual Reasoning
             </span>
-            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
               ⚡ 250M Parameters
             </span>
-            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
               🎯 Legal Domain Specialized
             </span>
-            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
               🌐 Multi-Jurisdictional
             </span>
-            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
               🏗️ Microservices Architecture
             </span>
-            <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
               📊 World-Class Integration
             </span>
           </div>
-          <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 text-left max-w-4xl mx-auto">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <i className="fas fa-exclamation-triangle text-amber-400"></i>
+          <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 text-left max-w-4xl mx-auto">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-amber-400"></i>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-amber-700">
+              <div class="ml-3">
+                <p class="text-sm text-amber-700">
                   <strong>AVISO LEGAL:</strong> Este sistema es experimental y de investigación académica. No constituye asesoramiento legal profesional. 
                   Siempre consulte con un abogado matriculado para asuntos legales específicos.
                 </p>
@@ -559,54 +582,86 @@ app.get('/', (c) => {
         </div>
 
         {/* Enhanced Model Selection with Architecture Info */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex flex-wrap gap-2 mb-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div class="flex flex-wrap gap-2 mb-4">
             <button 
               id="scmTab" 
               onclick="switchModel('scm')" 
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium active-tab"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium active-tab"
             >
               🧠 SCM Legal (Conceptual)
             </button>
             <button 
               id="llmTab" 
               onclick="switchModel('llm')" 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
             >
               📝 LLM Tradicional
             </button>
             <button 
               id="compareTab" 
               onclick="switchModel('compare')" 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
             >
               ⚖️ Comparación
             </button>
             <button 
               id="architectureTab" 
               onclick="switchModel('architecture')" 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
             >
               🏗️ Arquitectura
             </button>
             <button 
+              id="bitnetTab" 
+              onclick="switchModel('bitnet')" 
+              class="px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-medium"
+              title="BitNet 1.58-bit Ultra-Efficient Local Processing - 80% Cost Reduction"
+            >
+              🚀 BitNet Local
+            </button>
+            <button 
+              id="bitnet_consensusTab" 
+              onclick="switchModel('bitnet_consensus')" 
+              class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium"
+              title="BitNet Multi-Agent Mathematical Consensus - Enhanced Consensus Engine"
+            >
+              🧠 BitNet Consensus
+            </button>
+            <button 
+              id="bitnet_moeTab" 
+              onclick="switchModel('bitnet_moe')" 
+              class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium"
+              title="BitNet MoE (Mixture of Experts) Legal - Specialized Domain Routing"
+            >
+              🎯 BitNet MoE
+            </button>
+            <button 
               id="tumixTab" 
               onclick="switchModel('tumix')" 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
               title="Sistema Multi-Agente TUMIX para Razonamiento Jurídico Avanzado"
             >
               🤖 TUMIX Multi-Agent
             </button>
             <button 
+              id="codaTab" 
+              onclick="switchModel('coda')" 
+              class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium"
+              title="CoDA Legal Automation - Document Generation & Process Automation"
+            >
+              🚀 CoDA Automation
+            </button>
+            <button 
               id="darwinTab" 
               onclick="window.open('/static/darwin-scm-demo.html', '_blank')" 
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all"
+              class="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all"
               title="Abrir Demo de Integración Darwin Writer + SCM Legal"
             >
               🧬 Darwin-SCM Hybrid
             </button>
           </div>
-          <div id="modelDescription" className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+          <div id="modelDescription" class="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
             <strong>Small Concept Model (SCM):</strong> Arquitectura distribuida con microservicios, 
             integración multi-jurisdiccional (AR/ES/CL/UY), y patrones de clase mundial para análisis legal especializado.
             Procesa documentos a nivel de conceptos legales con razonamiento contextual avanzado.
@@ -614,17 +669,17 @@ app.get('/', (c) => {
         </div>
 
         {/* Enhanced Query Interface */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-            <i className="fas fa-gavel mr-2"></i>
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800">
+            <i class="fas fa-gavel mr-2"></i>
             Análisis Legal Multi-Jurisdiccional
           </h2>
           
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               Jurisdicción:
             </label>
-            <select id="jurisdiction" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <select id="jurisdiction" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="AR">🇦🇷 Argentina (Activo)</option>
               <option value="ES">🇪🇸 España (Integración Avanzada)</option>
               <option value="CL">🇨🇱 Chile (Integración Avanzada)</option>
@@ -632,150 +687,414 @@ app.get('/', (c) => {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               Documento Legal para Análisis:
             </label>
             <textarea 
               id="legalDocument" 
               placeholder="Ej: Paste del contrato, cláusula, o documento legal a analizar..."
-              className="w-full p-3 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full p-3 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               Consulta Específica:
             </label>
             <textarea 
               id="legalQuery" 
               placeholder="Ej: ¿Qué riesgos y obligaciones identifica en este documento?"
-              className="w-full p-3 border border-gray-300 rounded-md h-20 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full p-3 border border-gray-300 rounded-md h-20 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
 
-          <div className="mb-4" id="scmOptions">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de Análisis SCM:
-            </label>
-            <select id="analysisType" className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="comprehensive">🔍 Análisis Conceptual Integral</option>
-              <option value="compliance">🛡️ Enfoque en Compliance</option>
-              <option value="risk_assessment">⚠️ Evaluación de Riesgos</option>
-              <option value="contract_review">📋 Revisión Contractual</option>
-              <option value="governance">🏛️ Gobierno Corporativo</option>
-              <option value="cross_jurisdictional">🌐 Análisis Cross-Jurisdiccional</option>
-            </select>
+          <div class="mb-4" id="analysisOptions">
+            <div id="scmOptions">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de Análisis:
+              </label>
+              <select id="analysisType" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="comprehensive">🔍 Análisis Conceptual Integral</option>
+                <option value="compliance">🛡️ Enfoque en Compliance</option>
+                <option value="risk_assessment">⚠️ Evaluación de Riesgos</option>
+                <option value="contract_review">📋 Revisión Contractual</option>
+                <option value="governance">🏛️ Gobierno Corporativo</option>
+                <option value="cross_jurisdictional">🌐 Análisis Cross-Jurisdiccional</option>
+              </select>
+            </div>
+
+            <div id="bitnetOptions" style="display: none;">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Configuración BitNet:
+              </label>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Nivel de Confidencialidad:
+                  </label>
+                  <select id="confidentialityLevel" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="maximum_security">🔒 Máxima Seguridad (100% Local)</option>
+                    <option value="highly_confidential">🛡️ Altamente Confidencial</option>
+                    <option value="confidential">🔐 Confidencial</option>
+                    <option value="internal">🏢 Interno</option>
+                    <option value="public">🌐 Público</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Prioridad:
+                  </label>
+                  <select id="priority" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="normal">⭐ Normal</option>
+                    <option value="high">⚡ Alta</option>
+                    <option value="critical">🚨 Crítica</option>
+                    <option value="emergency">🆘 Emergencia</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-3 grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Tokens Máximos:
+                  </label>
+                  <input type="number" id="maxTokens" defaultValue="512" min="100" max="2048" 
+                         class="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">
+                    Backend Preferido:
+                  </label>
+                  <select id="preferredBackend" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                    <option value="bitnet_local">💻 BitNet Local (Máxima Privacidad)</option>
+                    <option value="groq_cloud">⚡ GROQ Cloud (Ultra-Rápido)</option>
+                    <option value="openai_cloud">🧠 OpenAI Cloud (Estándar)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div id="consensusOptions" style="display: none;">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Configuración Multi-Agent Consensus:
+              </label>
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="grid md:grid-cols-3 gap-3 mb-3">
+                  <label class="flex items-center">
+                    <input type="checkbox" id="agentCOT" defaultChecked class="mr-2" />
+                    <span class="text-sm">🧠 COT Jurídico</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="agentSearch" defaultChecked class="mr-2" />
+                    <span class="text-sm">🔍 Search Jurisprudencial</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="agentCompliance" defaultChecked class="mr-2" />
+                    <span class="text-sm">⚖️ Code Compliance</span>
+                  </label>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      Método de Consenso:
+                    </label>
+                    <select id="consensusMethod" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                      <option value="enhanced_mathematical">🧮 Matemático Mejorado (Gradient Boosting)</option>
+                      <option value="basic_weighted">⚖️ Ponderado Básico</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      Umbral de Calidad:
+                    </label>
+                    <input type="range" id="qualityThreshold" min="0.6" max="1.0" step="0.1" defaultValue="0.8" 
+                           class="w-full" />
+                    <div class="text-xs text-gray-500 text-center">80%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="moeOptions" style="display: none;">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Configuración MoE (Mixture of Experts) Legal:
+              </label>
+              <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+                <div class="mb-3">
+                  <p class="text-xs text-gray-600 mb-2">
+                    🎯 Selecciona expertos legales especializados para análisis de dominio específico
+                  </p>
+                  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <label class="flex items-center">
+                      <input type="checkbox" id="expertCorporate" class="mr-2" />
+                      <span class="text-sm">🏢 Derecho Corporativo</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" id="expertContract" class="mr-2" />
+                      <span class="text-sm">📋 Análisis Contractual</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" id="expertCompliance" class="mr-2" />
+                      <span class="text-sm">🛡️ Compliance</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" id="expertLitigation" class="mr-2" />
+                      <span class="text-sm">⚖️ Estrategia Litigiosa</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" id="expertTax" class="mr-2" />
+                      <span class="text-sm">💼 Derecho Tributario</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" id="expertDueDiligence" class="mr-2" />
+                      <span class="text-sm">🔍 Due Diligence</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      Máximo de Expertos:
+                    </label>
+                    <select id="maxExperts" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                      <option value="2">2 Expertos</option>
+                      <option value="3" selected>3 Expertos (Recomendado)</option>
+                      <option value="4">4 Expertos</option>
+                      <option value="6">6 Expertos (Análisis Integral)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      Tipo de Consenso:
+                    </label>
+                    <select id="moeConsensusType" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                      <option value="enhanced_mathematical">🧮 Matemático Mejorado</option>
+                      <option value="expert_selection">🎯 Selección de Expertos</option>
+                      <option value="basic_weighted">⚖️ Ponderado Básico</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">
+                      Clasificación Automática:
+                    </label>
+                    <select id="autoClassification" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                      <option value="enabled" selected>🤖 Automática</option>
+                      <option value="manual">✋ Manual</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mt-3 p-2 bg-white rounded-md border border-gray-200">
+                  <div class="text-xs text-gray-600">
+                    💡 <strong>Routing Inteligente:</strong> El sistema clasificará automáticamente el dominio legal 
+                    y seleccionará los expertos más relevantes. Los expertos marcados manualmente tendrán prioridad.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-4">
-              <label className="flex items-center">
-                <input type="checkbox" id="enableConceptualReasoning" checked className="mr-2" />
-                <span className="text-sm text-gray-700">Razonamiento Conceptual Avanzado</span>
+          <div class="mb-4">
+            <div class="flex flex-wrap gap-4">
+              <label class="flex items-center">
+                <input type="checkbox" id="enableConceptualReasoning" defaultChecked class="mr-2" />
+                <span class="text-sm text-gray-700">Razonamiento Conceptual Avanzado</span>
               </label>
-              <label className="flex items-center">
-                <input type="checkbox" id="crossJurisdictional" className="mr-2" />
-                <span className="text-sm text-gray-700">Análisis Cross-Jurisdiccional</span>
+              <label class="flex items-center">
+                <input type="checkbox" id="crossJurisdictional" class="mr-2" />
+                <span class="text-sm text-gray-700">Análisis Cross-Jurisdiccional</span>
               </label>
-              <label className="flex items-center">
-                <input type="checkbox" id="enableDataSources" className="mr-2" />
-                <span className="text-sm text-gray-700">Integración Fuentes Oficiales</span>
+              <label class="flex items-center">
+                <input type="checkbox" id="enableDataSources" class="mr-2" />
+                <span class="text-sm text-gray-700">Integración Fuentes Oficiales</span>
               </label>
             </div>
           </div>
 
           <button 
             onclick="submitSCMAnalysis()" 
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition duration-200 font-medium"
+            id="analyzeButton"
+            class="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition duration-200 font-medium"
           >
-            <i className="fas fa-brain mr-2"></i>
-            Analizar con SCM Legal Multi-Jurisdiccional
+            <span id="buttonIcon" class="fas fa-brain mr-2"></span>
+            <span id="buttonText">Analizar con SCM Legal Multi-Jurisdiccional</span>
           </button>
         </div>
 
         {/* Results Area - Enhanced with World-Class Features */}
-        <div id="results" className="hidden">
+        <div id="results" class="hidden">
           {/* SCM Analysis Results */}
-          <div id="scmResults" className="space-y-6">
+          <div id="scmResults" class="space-y-6">
             {/* Main Analysis */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">
-                <i className="fas fa-brain mr-2"></i>
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h3 class="text-xl font-semibold mb-4 text-gray-800">
+                <i class="fas fa-brain mr-2"></i>
                 Análisis Conceptual SCM Multi-Jurisdiccional
               </h3>
-              <div id="scmAnalysis" className="prose max-w-none"></div>
+              <div id="scmAnalysis" class="prose max-w-none"></div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Conceptos Identificados */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h4 className="text-lg font-semibold mb-3 text-gray-800">
-                  <i className="fas fa-lightbulb mr-2"></i>
+              <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold mb-3 text-gray-800">
+                  <i class="fas fa-lightbulb mr-2"></i>
                   Conceptos Legales
                 </h4>
-                <div id="conceptsIdentified" className="space-y-2"></div>
+                <div id="conceptsIdentified" class="space-y-2"></div>
               </div>
 
               {/* Razonamiento Conceptual */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h4 className="text-lg font-semibold mb-3 text-gray-800">
-                  <i className="fas fa-project-diagram mr-2"></i>
+              <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold mb-3 text-gray-800">
+                  <i class="fas fa-project-diagram mr-2"></i>
                   Referencias Cruzadas
                 </h4>
-                <div id="conceptualReasoning" className="space-y-2"></div>
+                <div id="conceptualReasoning" class="space-y-2"></div>
               </div>
 
               {/* Evaluación de Riesgos */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h4 className="text-lg font-semibold mb-3 text-gray-800">
-                  <i className="fas fa-exclamation-triangle mr-2"></i>
+              <div class="bg-white rounded-lg shadow-lg p-6">
+                <h4 class="text-lg font-semibold mb-3 text-gray-800">
+                  <i class="fas fa-exclamation-triangle mr-2"></i>
                   Indicadores de Riesgo
                 </h4>
-                <div id="riskIndicators" className="space-y-2"></div>
+                <div id="riskIndicators" class="space-y-2"></div>
               </div>
             </div>
 
             {/* Enhanced Performance Metrics with Architecture Info */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h4 className="text-lg font-semibold mb-3 text-gray-800">
-                <i className="fas fa-chart-bar mr-2"></i>
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h4 class="text-lg font-semibold mb-3 text-gray-800">
+                <i class="fas fa-chart-bar mr-2"></i>
                 Métricas de Performance SCM & Arquitectura
               </h4>
-              <div id="performanceMetrics" className="grid md:grid-cols-4 gap-4 text-sm"></div>
+              <div id="performanceMetrics" class="grid md:grid-cols-4 gap-4 text-sm"></div>
             </div>
           </div>
 
           {/* Comparison Results */}
-          <div id="comparisonResults" className="hidden space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">
-                <i className="fas fa-balance-scale mr-2"></i>
+          <div id="comparisonResults" class="hidden space-y-6">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h3 class="text-xl font-semibold mb-4 text-gray-800">
+                <i class="fas fa-balance-scale mr-2"></i>
                 SCM vs LLM Tradicional - Análisis Comparativo
               </h3>
-              <div id="comparisonAnalysis" className="prose max-w-none"></div>
+              <div id="comparisonAnalysis" class="prose max-w-none"></div>
+            </div>
+          </div>
+
+          {/* CoDA Automation Form */}
+          <div id="codaForm" class="hidden space-y-6">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h3 class="text-xl font-semibold mb-4 text-purple-800">
+                <i class="fas fa-robot mr-2"></i>
+                CoDA Legal Automation
+              </h3>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Solicitud de Automatización:
+                  </label>
+                  <textarea 
+                    id="codaRequest" 
+                    placeholder="Ej: Generar un contrato de servicios profesionales con cláusulas de confidencialidad..."
+                    class="w-full p-3 border border-gray-300 rounded-md h-24 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  ></textarea>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Tipo de Tarea:
+                    </label>
+                    <select id="codaTaskType" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500">
+                      <option value="document_generation">Generación de Documentos</option>
+                      <option value="template_creation">Creación de Templates</option>
+                      <option value="workflow_automation">Automatización de Workflows</option>
+                      <option value="code_generation">Generación de Código</option>
+                      <option value="process_optimization">Optimización de Procesos</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Tipo de Documento:
+                    </label>
+                    <select id="codaDocumentType" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500">
+                      <option value="contract">Contrato</option>
+                      <option value="policy">Política Corporativa</option>
+                      <option value="workflow">Workflow</option>
+                      <option value="checklist">Checklist</option>
+                      <option value="template">Template Legal</option>
+                      <option value="other">Otro</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Complejidad:
+                    </label>
+                    <select id="codaComplexity" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500">
+                      <option value="simple">Simple</option>
+                      <option value="medium">Medio</option>
+                      <option value="complex">Complejo</option>
+                      <option value="highly_complex">Muy Complejo</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <button 
+                  onclick="performCoDAAutomation()" 
+                  class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-md hover:from-purple-700 hover:to-pink-700 transition duration-200 font-medium"
+                >
+                  <i class="fas fa-robot mr-2"></i>
+                  Generar con CoDA
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* CoDA Results */}
+          <div id="codaResults" class="hidden space-y-6">
+            <div id="codaGeneratedContent" class="space-y-4"></div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h4 class="text-lg font-semibold mb-3 text-gray-800">
+                <i class="fas fa-chart-line mr-2"></i>
+                Métricas de Automatización CoDA
+              </h4>
+              <div id="codaMetadata" class="space-y-4"></div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h4 class="text-lg font-semibold mb-3 text-gray-800">
+                <i class="fas fa-cogs mr-2"></i>
+                Detalles Técnicos CoDA
+              </h4>
+              <div id="codaTechnicalDetails" class="space-y-4"></div>
             </div>
           </div>
 
           {/* Architecture Details */}
-          <div id="architectureDetails" className="hidden space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">
-                <i className="fas fa-sitemap mr-2"></i>
+          <div id="architectureDetails" class="hidden space-y-6">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h3 class="text-xl font-semibold mb-4 text-gray-800">
+                <i class="fas fa-sitemap mr-2"></i>
                 Arquitectura de Clase Mundial
               </h3>
-              <div id="architectureInfo" className="prose max-w-none"></div>
+              <div id="architectureInfo" class="prose max-w-none"></div>
             </div>
           </div>
         </div>
 
         {/* Enhanced Technical Details with World-Class Architecture */}
-        <div className="mt-12 bg-gradient-to-r from-gray-100 to-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800">
-            <i className="fas fa-cogs mr-2"></i>
+        <div class="mt-12 bg-gradient-to-r from-gray-100 to-blue-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold mb-3 text-gray-800">
+            <i class="fas fa-cogs mr-2"></i>
             Arquitectura Técnica de Clase Mundial
           </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
             <div>
               <strong>Modelo Base:</strong> SCM Legal 250M (Conceptual Reasoning + LoRA Fine-tuning)
             </div>
@@ -792,44 +1111,44 @@ app.get('/', (c) => {
         </div>
 
         {/* World-Class Features Overview */}
-        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-globe text-blue-600 text-xl"></i>
+        <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-globe text-blue-600 text-xl"></i>
             </div>
-            <h4 className="font-semibold text-gray-900 mb-2">Multi-Jurisdiccional</h4>
-            <p className="text-gray-600 text-sm">Arquitectura inspirada en Tolgee para análisis legal comparativo</p>
+            <h4 class="font-semibold text-gray-900 mb-2">Multi-Jurisdiccional</h4>
+            <p class="text-gray-600 text-sm">Arquitectura inspirada en Tolgee para análisis legal comparativo</p>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-network-wired text-green-600 text-xl"></i>
+          <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-network-wired text-green-600 text-xl"></i>
             </div>
-            <h4 className="font-semibold text-gray-900 mb-2">Microservicios</h4>
-            <p className="text-gray-600 text-sm">Patrones del System Design Primer para escalabilidad</p>
+            <h4 class="font-semibold text-gray-900 mb-2">Microservicios</h4>
+            <p class="text-gray-600 text-sm">Patrones del System Design Primer para escalabilidad</p>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-database text-purple-600 text-xl"></i>
+          <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-database text-purple-600 text-xl"></i>
             </div>
-            <h4 className="font-semibold text-gray-900 mb-2">APIs Públicas</h4>
-            <p className="text-gray-600 text-sm">Framework de integración con fuentes legales oficiales</p>
+            <h4 class="font-semibold text-gray-900 mb-2">APIs Públicas</h4>
+            <p class="text-gray-600 text-sm">Framework de integración con fuentes legales oficiales</p>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-yellow-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-graduation-cap text-yellow-600 text-xl"></i>
+          <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <div class="bg-yellow-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-graduation-cap text-yellow-600 text-xl"></i>
             </div>
-            <h4 className="font-semibold text-gray-900 mb-2">Estructura Académica</h4>
-            <p className="text-gray-600 text-sm">Documentación y metodología de clase mundial</p>
+            <h4 class="font-semibold text-gray-900 mb-2">Estructura Académica</h4>
+            <p class="text-gray-600 text-sm">Documentación y metodología de clase mundial</p>
           </div>
         </div>
       </div>
 
       <script src="/static/scm-legal-app.js"></script>
     </div>
-  )
+  );
 });
 
 // Error handler with enhanced logging
