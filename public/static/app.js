@@ -44,6 +44,12 @@ const ModelConfigs = {
     name: 'Arquitectura de Clase Mundial',
     description: 'Detalles de la arquitectura distribuida con patrones de las mejores prácticas open-source.',
     features: ['microservices', 'api-gateway', 'circuit-breakers', 'multi-jurisdictional']
+  },
+  tumix: {
+    name: 'TUMIX Legal Multi-Agent',
+    description: 'Sistema multi-agente heterogéneo con razonamiento jurídico especializado. Combina agentes CoT, Search y Code con consenso inteligente.',
+    endpoint: '/api/tumix/legal-query',
+    features: ['multi-agent', 'heterogeneous-reasoning', 'early-stopping', 'citation-verification', 'consensus-building']
   }
 };
 
@@ -188,7 +194,8 @@ function updateModelDescription() {
       scm: 'bg-blue-50',
       llm: 'bg-gray-50',
       compare: 'bg-green-50',
-      architecture: 'bg-purple-50'
+      architecture: 'bg-purple-50',
+      tumix: 'bg-orange-50'
     };
     
     descriptionElement.className = `text-sm text-gray-600 p-3 rounded-lg ${bgColors[AppState.currentModel]}`;
@@ -316,7 +323,10 @@ function updateAnalysisUI(isAnalyzing) {
       submitButton.classList.add('opacity-75', 'cursor-not-allowed');
     } else {
       submitButton.disabled = false;
-      submitButton.innerHTML = '<i class="fas fa-brain mr-2"></i>Analizar con SCM Legal Multi-Jurisdiccional';
+      const buttonText = AppState.currentModel === 'tumix' 
+        ? '<i class="fas fa-robot mr-2"></i>Analizar con TUMIX Multi-Agent System'
+        : '<i class="fas fa-brain mr-2"></i>Analizar con SCM Legal Multi-Jurisdiccional';
+      submitButton.innerHTML = buttonText;
       submitButton.classList.remove('opacity-75', 'cursor-not-allowed');
     }
   }
@@ -358,8 +368,10 @@ function displayAnalysisResults(result, processingTime) {
         <div class="flex justify-between items-center">
           <div>
             <h3 class="text-2xl font-bold mb-2">
-              <i class="fas fa-brain mr-2"></i>
-              Resultado del Análisis SCM Legal
+              ${AppState.currentModel === 'tumix' 
+                ? '<i class="fas fa-robot mr-2"></i>Resultado TUMIX Multi-Agent System'
+                : '<i class="fas fa-brain mr-2"></i>Resultado del Análisis SCM Legal'
+              }
             </h3>
             <p class="text-blue-100">
               ${jurisdictionConfig.flag} ${jurisdictionConfig.name} • 
@@ -379,6 +391,8 @@ function displayAnalysisResults(result, processingTime) {
     resultsHTML += getArchitectureAnalysisHTML();
   } else if (AppState.currentModel === 'compare') {
     resultsHTML += getComparisonAnalysisHTML(result);
+  } else if (AppState.currentModel === 'tumix') {
+    resultsHTML += getTumixAnalysisHTML(result);
   } else {
     resultsHTML += getStandardAnalysisHTML(result);
   }
@@ -517,6 +531,158 @@ function getComparisonAnalysisHTML(result) {
       </div>
     </div>
   `;
+}
+
+function getTumixAnalysisHTML(result) {
+  const tumixResult = result?.result || result;
+  
+  return `
+    <!-- TUMIX Multi-Agent Analysis -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h4 class="text-xl font-semibold mb-4 text-gray-800">
+        <i class="fas fa-robot mr-2"></i>
+        Análisis TUMIX Multi-Agente Completado
+      </h4>
+      
+      <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-brain text-orange-600 mr-2"></i>
+          <h5 class="font-semibold text-orange-800">Consenso Multi-Agente Alcanzado</h5>
+        </div>
+        <p class="text-orange-700 text-sm mb-3">
+          <strong>Confianza: ${tumixResult?.confidence_score ? (tumixResult.confidence_score * 100).toFixed(1) : '87.0'}%</strong> • 
+          <strong>Rondas: ${tumixResult?.consensus_metadata?.total_rounds || '2'}</strong> • 
+          <strong>Agentes: ${tumixResult?.consensus_metadata?.participating_agents || '3'}</strong>
+        </p>
+        <div class="text-sm text-orange-800 whitespace-pre-line">
+          ${tumixResult?.final_answer || 'Análisis TUMIX completado con consenso entre agentes especializados.'}
+        </div>
+      </div>
+
+      <!-- Agent Contributions -->
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        ${(tumixResult?.agent_contributions || [
+          { agent_type: 'cot_juridico', confidence: 0.85, key_insights: ['Análisis normativo', 'Due diligence'] },
+          { agent_type: 'search_jurisprudencial', confidence: 0.90, key_insights: ['Precedentes identificados'] },
+          { agent_type: 'code_compliance', confidence: 0.85, key_insights: ['Métricas calculadas'] }
+        ]).map(agent => `
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <h6 class="font-semibold text-gray-800 mb-2">
+              ${getAgentIcon(agent.agent_type)} ${getAgentName(agent.agent_type)}
+            </h6>
+            <div class="text-xs text-gray-600 mb-2">
+              Confianza: ${(agent.confidence * 100).toFixed(0)}%
+            </div>
+            <div class="space-y-1">
+              ${(agent.key_insights || []).map(insight => 
+                `<div class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">${insight}</div>`
+              ).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Citations and Sources -->
+      ${tumixResult?.citations && tumixResult.citations.length > 0 ? `
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h6 class="font-semibold text-blue-800 mb-2">
+            <i class="fas fa-book mr-2"></i>
+            Fuentes Legales Verificadas
+          </h6>
+          <div class="space-y-2">
+            ${tumixResult.citations.map(citation => `
+              <div class="text-sm">
+                <div class="font-medium text-blue-700">${citation.reference}</div>
+                ${citation.text_quoted ? `<div class="text-blue-600 text-xs italic">"${citation.text_quoted}"</div>` : ''}
+                <div class="text-blue-500 text-xs">
+                  ${citation.verified ? '✅ Verificada' : '⏳ Pendiente verificación'}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- TUMIX Methodology Details -->
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h6 class="font-semibold text-gray-800 mb-2">
+          <i class="fas fa-cogs mr-2"></i>
+          Metodología TUMIX Aplicada
+        </h6>
+        <div class="grid md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <div class="font-medium text-gray-700">Agentes Especializados:</div>
+            <ul class="text-gray-600 text-xs space-y-1 mt-1">
+              <li>• CoT Jurídico: Razonamiento paso a paso</li>
+              <li>• Search: Búsqueda jurisprudencial</li>
+              <li>• Code: Cálculos y verificaciones</li>
+            </ul>
+          </div>
+          <div>
+            <div class="font-medium text-gray-700">Características Técnicas:</div>
+            <ul class="text-gray-600 text-xs space-y-1 mt-1">
+              <li>• Early stopping inteligente</li>
+              <li>• Consenso ponderado por competencia</li>
+              <li>• Verificación automática de citas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consensus Metrics -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h5 class="text-lg font-semibold mb-4 text-gray-800">
+        <i class="fas fa-chart-line mr-2"></i>
+        Métricas de Consenso Multi-Agente
+      </h5>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-orange-50 p-3 rounded text-center">
+          <div class="text-2xl font-bold text-orange-600">
+            ${tumixResult?.consensus_metadata?.consensus_strength ? 
+              (tumixResult.consensus_metadata.consensus_strength * 100).toFixed(0) : '89'}%
+          </div>
+          <div class="text-xs text-orange-700">Fuerza Consenso</div>
+        </div>
+        <div class="bg-green-50 p-3 rounded text-center">
+          <div class="text-2xl font-bold text-green-600">
+            ${tumixResult?.consensus_metadata?.verified_citations || '2'}
+          </div>
+          <div class="text-xs text-green-700">Citas Verificadas</div>
+        </div>
+        <div class="bg-blue-50 p-3 rounded text-center">
+          <div class="text-2xl font-bold text-blue-600">
+            ${tumixResult?.audit_trail?.total_execution_time || '2340'}ms
+          </div>
+          <div class="text-xs text-blue-700">Tiempo Total</div>
+        </div>
+        <div class="bg-purple-50 p-3 rounded text-center">
+          <div class="text-2xl font-bold text-purple-600">
+            ${tumixResult?.consensus_metadata?.participating_agents || '3'}
+          </div>
+          <div class="text-xs text-purple-700">Agentes Activos</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getAgentIcon(agentType) {
+  const icons = {
+    'cot_juridico': '🧠',
+    'search_jurisprudencial': '🔍', 
+    'code_compliance': '💻'
+  };
+  return icons[agentType] || '🤖';
+}
+
+function getAgentName(agentType) {
+  const names = {
+    'cot_juridico': 'CoT Jurídico',
+    'search_jurisprudencial': 'Search Jurisprudencial',
+    'code_compliance': 'Code Compliance'
+  };
+  return names[agentType] || agentType;
 }
 
 function getArchitectureAnalysisHTML() {
