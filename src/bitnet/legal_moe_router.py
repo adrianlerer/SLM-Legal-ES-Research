@@ -212,6 +212,12 @@ class LegalDomainClassifier:
                 "review", "análisis", "analysis", "documentación", "documentation",
                 "contingencias", "contingencies", "riesgos", "risks", "pasivos", "liabilities"
             ],
+            LegalDomain.RLAD_ENHANCED: [
+                "abstracciones", "abstractions", "patrones", "patterns", "razonamiento",
+                "reasoning", "estructuras", "structures", "metodología", "methodology",
+                "framework", "enfoque", "approach", "sistemático", "systematic",
+                "inteligente", "intelligent", "discovery", "descubrimiento", "rlad"
+            ],
             LegalDomain.LEGAL_AUTOMATION: [
                 "automatización", "automation", "generar", "generate", "template",
                 "plantilla", "código", "code", "workflow", "proceso", "process",

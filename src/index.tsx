@@ -28,7 +28,8 @@ import {
   bitnetStatusHandler,
   bitnetMoEQueryHandler,
   bitnetMoEExpertsHandler,
-  codaLegalAutomationHandler
+  codaLegalAutomationHandler,
+  rladEnhancedAnalysisHandler
 } from './routes/bitnet-legal';
 // CoDA Legal Automation Imports
 import { codaAutomationHandler } from './routes/coda-automation';
@@ -281,6 +282,9 @@ app.post('/api/bitnet/moe-experts', bitnetMoEExpertsHandler);
 
 // CoDA Legal Automation API routes (NEW - Document Generation & Process Automation)
 app.post('/api/coda/automation', codaLegalAutomationHandler);
+
+// RLAD Enhanced Legal Analysis API routes (NEW - Abstraction Discovery & Enhanced Reasoning)
+app.post('/api/rlad/enhanced-analysis', rladEnhancedAnalysisHandler);
 
 // TUMIX Legal Multi-Agent System API route (NEW)
 app.post('/api/tumix/legal-query', async (c) => {
