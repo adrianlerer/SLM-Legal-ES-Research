@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { serveStatic } from 'hono/cloudflare-workers'
 import { renderer } from './renderer'
 import aiAnalysis from './routes/ai-analysis'
+import guardrails from './routes/guardrails'
 
 const app = new Hono()
 
@@ -17,6 +18,9 @@ app.use(renderer)
 
 // Mount AI analysis routes
 app.route('/api/ai', aiAnalysis)
+
+// Mount guardrails routes
+app.route('/api/guardrails', guardrails)
 
 // API Routes for legal document analysis
 app.get('/api/health', (c) => {
@@ -203,6 +207,57 @@ app.get('/', (c) => {
                 className="w-full bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors"
               >
                 Evaluar Riesgos
+              </button>
+            </div>
+
+            {/* AI Guardrails */}
+            <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="text-center mb-4">
+                <i className="fas fa-shield-alt text-3xl text-purple-600 mb-3"></i>
+                <h3 className="text-xl font-semibold text-gray-800">AI Guardrails</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Sistema de validación y seguridad para garantizar análisis de IA confiables y precisos.
+              </p>
+              <button 
+                id="guardrails-btn" 
+                className="w-full bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+              >
+                Validar con Guardrails
+              </button>
+            </div>
+
+            {/* Safe Analysis */}
+            <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="text-center mb-4">
+                <i className="fas fa-lock text-3xl text-indigo-600 mb-3"></i>
+                <h3 className="text-xl font-semibold text-gray-800">Análisis Seguro</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Análisis de IA con guardrails integrados para máxima confiabilidad en entornos legales.
+              </p>
+              <button 
+                id="safe-analysis-btn" 
+                className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors"
+              >
+                Análisis Seguro
+              </button>
+            </div>
+
+            {/* Guardrails Metrics */}
+            <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="text-center mb-4">
+                <i className="fas fa-tachometer-alt text-3xl text-teal-600 mb-3"></i>
+                <h3 className="text-xl font-semibold text-gray-800">Métricas de Guardrails</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Monitoreo y estadísticas de rendimiento del sistema de validación de IA.
+              </p>
+              <button 
+                id="metrics-btn" 
+                className="w-full bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition-colors"
+              >
+                Ver Métricas
               </button>
             </div>
           </div>

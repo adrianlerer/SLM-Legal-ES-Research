@@ -30,6 +30,24 @@ class LegalAnalyzer {
       riskBtn.addEventListener('click', () => this.handleRiskAssessment());
     }
 
+    // Guardrails button
+    const guardrailsBtn = document.getElementById('guardrails-btn');
+    if (guardrailsBtn) {
+      guardrailsBtn.addEventListener('click', () => this.handleGuardrailsValidation());
+    }
+
+    // Safe analysis button
+    const safeAnalysisBtn = document.getElementById('safe-analysis-btn');
+    if (safeAnalysisBtn) {
+      safeAnalysisBtn.addEventListener('click', () => this.handleSafeAnalysis());
+    }
+
+    // Metrics button
+    const metricsBtn = document.getElementById('metrics-btn');
+    if (metricsBtn) {
+      metricsBtn.addEventListener('click', () => this.handleGuardrailsMetrics());
+    }
+
     // File input change
     const fileInput = document.getElementById('file-input');
     if (fileInput) {
@@ -148,6 +166,90 @@ class LegalAnalyzer {
     };
 
     this.displayResults('Evaluación de Riesgos', mockRiskData);
+  }
+
+  async handleGuardrailsValidation() {
+    const btn = document.getElementById('guardrails-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Validando...';
+      btn.disabled = true;
+
+      const sampleOutput = {
+        summary: 'Análisis legal completado con IA',
+        findings: ['Aplicación correcta de normativas', 'Identificación de riesgos apropiada'],
+        legal_implications: ['Cumplimiento de marcos regulatorios', 'Transparencia en procesos']
+      };
+
+      const response = await axios.post('/api/guardrails/validate', {
+        output_text: JSON.stringify(sampleOutput),
+        analysis_type: 'comprehensive',
+        guardrail_specs: ['legal_accuracy', 'compliance_safety', 'corporate_governance']
+      });
+
+      this.displayGuardrailResults('Validación de Guardrails', response.data);
+      
+    } catch (error) {
+      console.error('Error in guardrails validation:', error);
+      this.showNotification('Error en validación de guardrails', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async handleSafeAnalysis() {
+    const btn = document.getElementById('safe-analysis-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Analizando con Guardrails...';
+      btn.disabled = true;
+
+      const sampleContent = `
+        El presente documento establece el marco de gobierno corporativo aplicable 
+        a sociedades cotizadas conforme a la Ley de Sociedades de Capital y el 
+        Código de Buen Gobierno. Se analizan las responsabilidades del consejo de 
+        administración en materia de supervisión y control de riesgos corporativos.
+      `;
+
+      const response = await axios.post('/api/guardrails/safe-analysis', {
+        document_content: sampleContent,
+        analysis_type: 'comprehensive',
+        jurisdiction: 'ES',
+        enable_guardrails: true
+      });
+
+      this.displaySafeAnalysisResults('Análisis Seguro con Guardrails', response.data);
+      
+    } catch (error) {
+      console.error('Error in safe analysis:', error);
+      this.showNotification('Error en análisis seguro', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async handleGuardrailsMetrics() {
+    const btn = document.getElementById('metrics-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Cargando métricas...';
+      btn.disabled = true;
+
+      const response = await axios.get('/api/guardrails/metrics');
+      this.displayMetrics('Métricas de Rendimiento de Guardrails', response.data);
+      
+    } catch (error) {
+      console.error('Error loading metrics:', error);
+      this.showNotification('Error cargando métricas', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   }
 
   handleFileSelect(event) {
@@ -350,6 +452,242 @@ async function checkServiceHealth() {
     console.log('✅ Service health:', response.data);
   } catch (error) {
     console.error('❌ Service health check failed:', error);
+  }
+}
+
+  displayGuardrailResults(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
+    
+    if (!resultsSection || !resultsContent) return;
+
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
+    
+    // Overall validation status
+    const overallStatus = data.overall_valid ? 'passed' : 'failed';
+    const statusColor = overallStatus === 'passed' ? 'green' : 'red';
+    
+    html += `
+      <div class="result-item bg-${statusColor}-50 border-l-4 border-${statusColor}-400 p-4 mb-4">
+        <h4 class="font-semibold text-${statusColor}-800 mb-2">
+          <i class="fas fa-shield-alt mr-2"></i>Estado General de Validación
+        </h4>
+        <p class="text-${statusColor}-700">
+          <span class="font-bold">${overallStatus.toUpperCase()}</span> - 
+          ${data.guardrails_applied.length} guardrails aplicados
+        </p>
+      </div>
+    `;
+
+    // Individual guardrail results
+    if (data.results && data.results.length > 0) {
+      html += `
+        <div class="result-item bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+          <h4 class="font-semibold text-blue-800 mb-3">
+            <i class="fas fa-list-check mr-2"></i>Resultados Detallados
+          </h4>
+      `;
+      
+      data.results.forEach((result, index) => {
+        const resultColor = result.is_valid ? 'text-green-600' : 'text-red-600';
+        const icon = result.is_valid ? 'fa-check-circle' : 'fa-exclamation-triangle';
+        
+        html += `
+          <div class="mb-3 p-3 bg-white rounded border">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-medium ${resultColor}">
+                <i class="fas ${icon} mr-1"></i>
+                Guardrail ${index + 1}
+              </span>
+              <span class="text-sm text-gray-600">
+                Confianza: ${Math.round(result.confidence * 100)}%
+              </span>
+            </div>
+            
+            ${result.violations && result.violations.length > 0 ? `
+              <div class="text-sm text-red-600 mb-1">
+                <strong>Violaciones:</strong>
+                <ul class="list-disc list-inside ml-2">
+                  ${result.violations.map(v => `<li>${v}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            
+            ${result.recommendations && result.recommendations.length > 0 ? `
+              <div class="text-sm text-blue-600">
+                <strong>Recomendaciones:</strong>
+                <ul class="list-disc list-inside ml-2">
+                  ${result.recommendations.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+    }
+
+    // Add timestamp
+    html += `
+      <div class="text-sm text-gray-500 mt-6">
+        <i class="fas fa-clock mr-1"></i>
+        Validado: ${dayjs(data.timestamp).format('DD/MM/YYYY HH:mm:ss')}
+      </div>
+    `;
+
+    resultsContent.innerHTML = html;
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  displaySafeAnalysisResults(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
+    
+    if (!resultsSection || !resultsContent) return;
+
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
+    
+    // Safety score
+    const safetyScore = Math.round(data.guardrails.safety_score * 100);
+    const scoreColor = safetyScore >= 80 ? 'green' : safetyScore >= 60 ? 'yellow' : 'red';
+    
+    html += `
+      <div class="result-item bg-${scoreColor}-50 border-l-4 border-${scoreColor}-400 p-4 mb-4">
+        <h4 class="font-semibold text-${scoreColor}-800 mb-2">
+          <i class="fas fa-shield-alt mr-2"></i>Puntuación de Seguridad
+        </h4>
+        <div class="flex items-center space-x-4">
+          <span class="text-2xl font-bold text-${scoreColor}-700">${safetyScore}%</span>
+          <span class="text-${scoreColor}-700">
+            ${data.guardrails.validation_passed ? 'Todas las validaciones pasadas' : 'Algunas validaciones fallaron'}
+          </span>
+        </div>
+      </div>
+    `;
+
+    // Analysis results
+    if (data.analysis) {
+      this.displayResults('Análisis Principal', data.analysis);
+      return; // Use existing display method for main analysis
+    }
+
+    // Guardrails logs
+    if (data.guardrails.logs && data.guardrails.logs.length > 0) {
+      html += `
+        <div class="result-item bg-purple-50 border-l-4 border-purple-400 p-4 mb-4">
+          <h4 class="font-semibold text-purple-800 mb-3">
+            <i class="fas fa-clipboard-list mr-2"></i>Log de Guardrails
+          </h4>
+      `;
+      
+      data.guardrails.logs.forEach(log => {
+        const logColor = log.status === 'passed' ? 'text-green-600' : 'text-red-600';
+        const icon = log.status === 'passed' ? 'fa-check' : 'fa-times';
+        
+        html += `
+          <div class="mb-2 p-2 bg-white rounded border flex items-center justify-between">
+            <span class="font-medium ${logColor}">
+              <i class="fas ${icon} mr-1"></i>
+              ${log.guardrail}
+            </span>
+            <span class="text-sm text-gray-600">
+              ${Math.round(log.confidence * 100)}% confianza
+            </span>
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+    }
+
+    resultsContent.innerHTML = html;
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  displayMetrics(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
+    
+    if (!resultsSection || !resultsContent) return;
+
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
+    
+    // Overall metrics
+    html += `
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-blue-50 p-4 rounded-lg text-center">
+          <div class="text-2xl font-bold text-blue-700">${data.total_validations.toLocaleString()}</div>
+          <div class="text-sm text-blue-600">Total Validaciones</div>
+        </div>
+        <div class="bg-green-50 p-4 rounded-lg text-center">
+          <div class="text-2xl font-bold text-green-700">${Math.round(data.success_rate * 100)}%</div>
+          <div class="text-sm text-green-600">Tasa de Éxito</div>
+        </div>
+        <div class="bg-purple-50 p-4 rounded-lg text-center">
+          <div class="text-2xl font-bold text-purple-700">${Math.round(data.average_confidence * 100)}%</div>
+          <div class="text-sm text-purple-600">Confianza Promedio</div>
+        </div>
+      </div>
+    `;
+
+    // Guardrail performance
+    html += `
+      <div class="result-item bg-gray-50 border-l-4 border-gray-400 p-4 mb-4">
+        <h4 class="font-semibold text-gray-800 mb-3">
+          <i class="fas fa-chart-bar mr-2"></i>Rendimiento por Guardrail
+        </h4>
+        <div class="space-y-3">
+    `;
+    
+    Object.entries(data.guardrail_performance).forEach(([name, perf]) => {
+      html += `
+        <div class="bg-white p-3 rounded border">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-medium capitalize">${name.replace('_', ' ')}</span>
+            <span class="text-sm text-green-600">${Math.round(perf.success_rate * 100)}% éxito</span>
+          </div>
+          <div class="text-xs text-gray-600 grid grid-cols-2 gap-2">
+            <span>Invocaciones: ${perf.invocations.toLocaleString()}</span>
+            <span>Tiempo promedio: ${perf.avg_processing_time}</span>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+
+    // Fail actions
+    html += `
+      <div class="result-item bg-orange-50 border-l-4 border-orange-400 p-4 mb-4">
+        <h4 class="font-semibold text-orange-800 mb-3">
+          <i class="fas fa-exclamation-triangle mr-2"></i>Acciones de Fallo
+        </h4>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+    `;
+    
+    Object.entries(data.fail_actions_taken).forEach(([action, count]) => {
+      html += `
+        <div class="bg-white p-2 rounded text-center border">
+          <div class="font-bold text-orange-700">${count}</div>
+          <div class="text-orange-600 capitalize">${action}</div>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+
+    resultsContent.innerHTML = html;
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
   }
 }
 

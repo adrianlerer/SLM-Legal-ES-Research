@@ -56,7 +56,7 @@ interface ComplianceCheck {
 
 ### ✅ **Completadas**
 1. **Interfaz Web Responsiva**
-   - Dashboard principal con 3 módulos especializados
+   - Dashboard principal con 6 módulos especializados
    - Sistema de carga de documentos (drag & drop)
    - Notificaciones y feedback en tiempo real
    - Diseño optimizado para profesionales legales
@@ -69,17 +69,20 @@ interface ComplianceCheck {
    - `POST /api/ai/reasoning-chains` - Análisis de cadenas de razonamiento
    - `POST /api/ai/statistical-compliance` - Análisis estadístico de compliance
 
-3. **Características Técnicas Avanzadas**
+3. **Sistema de AI Guardrails** ⭐ **NUEVO**
+   - `POST /api/guardrails/validate` - Validación de outputs con guardrails
+   - `POST /api/guardrails/safe-analysis` - Análisis seguro con validación integrada
+   - `GET /api/guardrails/metrics` - Métricas de rendimiento de guardrails
+   - Framework de seguridad inspirado en mejores prácticas de IA confiable
+
+4. **Características Técnicas Avanzadas**
    - Análisis composicional inspirado en research de transformers
    - Métricas de complejidad y optimización
    - Evaluación de riesgos multicapa
    - Framework de gobierno corporativo integrado
-
-### 🔄 **En Desarrollo**
-4. **Sistema de Análisis de IA** (80% completado)
-   - Integración con el paper académico sobre transformers
-   - Algoritmos de análisis composicional k-fold
-   - Métricas de confianza y validación estadística
+   - **Guardrails de Precisión Legal**: Validación de referencias normativas
+   - **Guardrails de Compliance**: Seguridad regulatoria automática
+   - **Guardrails de Gobierno Corporativo**: Validación de responsabilidades
 
 ### 📋 **Pendientes**
 5. **Procesamiento de PDFs Nativo**
@@ -103,11 +106,15 @@ interface ComplianceCheck {
 - Análisis de políticas corporativas
 - Evaluación de marcos de gobierno corporativo
 - Revisión de compliance regulatorio
+- **Validación con AI Guardrails** para análisis críticos
 
 ### **Casos de Uso Especializados**
 - Análisis de documentos académicos sobre IA y derecho
 - Evaluación de impacto regulatorio de nuevas tecnologías
 - Auditoría de procesos de toma de decisiones corporativas
+- **Análisis Seguro con Guardrails** para decisiones de alta responsabilidad
+- **Monitoreo de Calidad** de análisis automatizados
+- **Validación de Outputs** críticos antes de presentación al consejo
 
 ## 🚀 Estado del Despliegue
 - **Plataforma**: Sandbox de desarrollo (E2B)
@@ -133,6 +140,15 @@ Implementación de conceptos del paper "Learning Compositional Functions with Tr
 - Evaluación automática de estructuras de governance
 - Análisis de responsabilidades del consejo de administración
 - Métricas de transparencia y rendición de cuentas
+
+### **Sistema de AI Guardrails** ⭐ **INNOVACIÓN CLAVE**
+Implementación de guardrails de IA siguiendo mejores prácticas internacionales:
+- **Guardrails de Precisión Legal**: Validación automática de referencias normativas y estructura jurídica
+- **Guardrails de Compliance**: Verificación de adherencia a marcos regulatorios (GDPR, LSC, CBG)
+- **Guardrails de Gobierno Corporativo**: Validación de análisis de responsabilidades y deberes fiduciarios
+- **Guardrails de Formato**: Asegurar outputs estructurados y profesionales
+- **Métricas de Confianza**: Scoring automático de confiabilidad (85-100%)
+- **Acciones de Fallo**: Sistema automático de corrección, filtrado y re-entrenamiento
 
 ## 🎓 Especialización Profesional
 **Desarrollado para**: Ignacio Adrián Lerer - Abogado corporativo senior con más de 30 años de experiencia
