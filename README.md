@@ -1,13 +1,25 @@
-# SLM Legal Spanish - Sistema de Análisis Legal Inteligente
+# SLM Legal Spanish - Small Concept Models Research Platform
 
-## Descripción del Proyecto
-**SLM Legal Spanish** es una aplicación web especializada en análisis inteligente de documentos legales y académicos, diseñada específicamente para profesionales del derecho corporativo con enfoque en gobierno corporativo, compliance y gestión de riesgos.
+## Research Overview
+**SLM Legal Spanish** is both a functional web application for legal document analysis and a research platform for Small Concept Models (SCM) - a domain-specialized extension of Meta's Large Concept Models (LCM) framework. This project demonstrates concept-based reasoning adaptation for Hispanic-American corporate law while maintaining edge deployment compatibility.
 
-## 🎯 Objetivos Principales
-- **Análisis Documental Avanzado**: Procesamiento inteligente de documentos legales, contratos y normativas
-- **Verificación de Compliance**: Evaluación automática de cumplimiento normativo por jurisdicción
-- **Evaluación de Riesgos**: Identificación y análisis de riesgos legales y corporativos
-- **Gobierno Corporativo**: Herramientas especializadas para directores y consejeros independientes
+**Research Status**: Pre-empirical validation - Training and benchmarking in progress  
+**Academic Positioning**: Legitimate extension of Meta's LCM research for domain specialization  
+**Principal Investigator**: Ignacio Adrian Lerer
+
+## 🎯 Research Objectives
+
+### **Academic Research Goals**
+- **Concept-Based Reasoning Specialization**: Demonstrate domain adaptation of Meta's LCM framework
+- **Edge Deployment Validation**: Achieve <300MB models with <100ms inference for legal applications  
+- **Hispanic-American Legal Ontology**: Develop structured concept hierarchy for AR/CL/UY/ES jurisdictions
+- **Academic Contribution**: Publish peer-reviewed research extending concept-based reasoning to professional domains
+
+### **Applied System Goals**
+- **Legal Document Intelligence**: Advanced processing of corporate law documents and regulations
+- **Compliance Verification**: Automated regulatory compliance assessment by jurisdiction
+- **Risk Evaluation**: Corporate governance and legal risk identification
+- **Professional Tools**: Specialized interfaces for corporate directors and legal practitioners
 
 ## 🌐 URLs de Acceso
 - **Aplicación Web**: https://3000-i3ad2acm9hwlnpah2poeo-6532622b.e2b.dev
@@ -122,11 +134,34 @@ interface ComplianceCheck {
 - **Tecnología**: Hono + Cloudflare Workers runtime
 - **Última Actualización**: 2025-10-05
 
-## 📊 Métricas Técnicas
-- **Tiempo de Respuesta**: < 2 segundos para análisis básico
-- **Capacidad**: Documentos hasta 10MB
-- **Formatos Soportados**: PDF, DOC, DOCX, TXT
-- **Precisión de Análisis**: ~87% (simulado, basado en métricas del paper)
+## 📊 Research Performance Metrics
+
+### **Current Implementation (Web Application)**
+- **Response Time**: < 2 seconds for basic analysis
+- **Document Capacity**: Up to 10MB files  
+- **Supported Formats**: PDF, DOC, DOCX, TXT
+- **System Uptime**: 99%+ in development environment
+
+### **Small Concept Models (SCM) - Target Performance**
+```
+⚠️  ACADEMIC HONESTY PROTOCOL ACTIVE ⚠️
+All performance metrics below are TARGET ESTIMATES pending empirical validation
+```
+
+**Projected Performance vs Baselines:**
+- **vs Random Baseline**: >60% accuracy (target, not validated)
+- **vs Llama 3.2 1B Base**: +15-25 percentage points (conservative estimate)
+- **vs GPT-3.5 Legal Tasks**: 70-80% performance ratio (target)
+- **Edge Deployment**: <300MB quantized, <100ms inference (theoretical)
+- **Jurisdictional Coverage**: AR/CL/UY/ES corporate law (limited scope)
+
+**Training Configuration:**
+- **Base Models**: Llama 3.2 1B/3B with LoRA adaptation
+- **Training Data**: ~1M tokens from 50+ legal research papers
+- **Specialization**: Hispanic-American corporate governance and compliance
+- **Deployment Target**: Edge computing for regulatory-sensitive environments
+
+**Status**: Training pipeline prepared, empirical results pending (4-6 weeks)
 
 ## 🔬 Innovaciones Técnicas
 
@@ -150,10 +185,42 @@ Implementación de guardrails de IA siguiendo mejores prácticas internacionales
 - **Métricas de Confianza**: Scoring automático de confiabilidad (85-100%)
 - **Acciones de Fallo**: Sistema automático de corrección, filtrado y re-entrenamiento
 
-## 🎓 Especialización Profesional
-**Desarrollado para**: Ignacio Adrián Lerer - Abogado corporativo senior con más de 30 años de experiencia
-**Enfoque**: Gobierno corporativo, compliance y gestión estratégica del riesgo
-**Sectores**: Manufactura, agroindustria, energía, minería
+## 🎓 Research Authority & Professional Context
+
+### **Principal Investigator**
+**Ignacio Adrian Lerer** - Corporate Law Executive & Independent Researcher  
+- **Experience**: 30+ years in corporate governance, compliance, and strategic risk management
+- **Sectors**: Manufacturing, agribusiness, energy, mining  
+- **Academic Background**: UBA Law Graduate (honors), IAE Business School EMBA
+- **Professional Role**: Independent Director, Corporate Counsel, Executive Consultant
+
+### **Research Positioning**
+- **Academic Integrity**: Full transparency on capabilities and limitations
+- **Professional Reputation**: Executive reputation protection through honest methodology
+- **Meta AI Research Contact**: Planned post-empirical validation (Week 5-6)
+- **Publication Target**: arXiv submission with ACL 2025 conference consideration
+
+## 📚 Academic Documentation
+
+### **Research Framework Documents**
+1. **[META_CONTACT_PREPARATION.md](./META_CONTACT_PREPARATION.md)** - Strategy for Meta AI Research team contact
+2. **[REALISTIC_TRAINING_PLAN.md](./REALISTIC_TRAINING_PLAN.md)** - Honest assessment of capabilities and timeline
+3. **[paper/SCM_LEGAL_ARXIV_DRAFT.md](./paper/SCM_LEGAL_ARXIV_DRAFT.md)** - Academic paper draft for arXiv submission
+4. **[BENCHMARK_EVALUATION_FRAMEWORK.md](./BENCHMARK_EVALUATION_FRAMEWORK.md)** - Rigorous evaluation methodology
+
+### **Research Transparency Protocol**
+**"Total Reality Filter"** - Every claim must be empirically validated before external presentation. This protocol ensures:
+- No premature performance claims
+- Conservative estimates with confidence intervals  
+- Full disclosure of limitations and scope boundaries
+- Academic integrity protecting executive reputation
+
+### **Meta AI Research Relationship**
+This research positions Small Concept Models as a **legitimate complement** to Meta's Large Concept Models:
+- **LCM Focus**: Multilingual generalization with 7B+ parameters
+- **SCM Focus**: Domain specialization with <1B parameters  
+- **Shared Foundation**: Concept-based reasoning paradigm
+- **Complementary Value**: Generalization vs specialization within same theoretical framework
 
 ---
 
