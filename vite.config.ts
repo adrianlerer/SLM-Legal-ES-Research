@@ -10,8 +10,5 @@ export default defineConfig({
       adapter,
       entry: 'src/index.tsx'
     })
-  ],
-  esbuild: {
-    jsxImportSource: 'hono/jsx'
-  }
+  ]
 })
