@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'legal-slm-mvp',
+      name: 'SLM-Legal-Spanish',
       script: 'npx',
       args: 'wrangler pages dev dist --ip 0.0.0.0 --port 3000',
       env: {
@@ -10,7 +10,9 @@ module.exports = {
       },
       watch: false,
       instances: 1,
-      exec_mode: 'fork'
+      exec_mode: 'fork',
+      restart_delay: 3000,
+      max_restarts: 5
     }
   ]
 }

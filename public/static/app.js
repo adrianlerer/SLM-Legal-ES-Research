@@ -1,648 +1,695 @@
-/**
- * SCM Legal - Enhanced Frontend Application
- * World-class user interface supporting multi-jurisdictional legal analysis
- */
+// SLM Legal Spanish - Frontend Application Logic
 
-// Application state management
-const AppState = {
-  currentModel: 'scm',
-  selectedJurisdiction: 'AR',
-  analysisHistory: [],
-  performanceMetrics: {},
-  isAnalyzing: false,
-  
-  // World-class architecture status
-  architectureStatus: {
-    microservices: true,
-    multiJurisdictional: true,
-    dataIntegration: true,
-    academicStructure: true
+class LegalAnalyzer {
+  constructor() {
+    this.init();
   }
-};
 
-// Configuration for different analysis models
-const ModelConfigs = {
-  scm: {
-    name: 'SCM Legal (Conceptual)',
-    description: 'Arquitectura distribuida con microservicios, integración multi-jurisdiccional, y patrones de clase mundial para análisis legal especializado.',
-    endpoint: '/api/scm/analyze',
-    features: ['conceptual-reasoning', 'multi-jurisdictional', 'microservices', 'data-integration']
-  },
-  llm: {
-    name: 'LLM Tradicional',
-    description: 'Modelo de lenguaje tradicional para comparación con el enfoque SCM.',
-    endpoint: '/api/legal/query',
-    features: ['traditional-nlp']
-  },
-  compare: {
-    name: 'Comparación SCM vs LLM',
-    description: 'Análisis comparativo entre Small Concept Models y LLMs tradicionales.',
-    endpoint: '/api/scm/compare',
-    features: ['comparative-analysis', 'performance-metrics']
-  },
-  architecture: {
-    name: 'Arquitectura de Clase Mundial',
-    description: 'Detalles de la arquitectura distribuida con patrones de las mejores prácticas open-source.',
-    features: ['microservices', 'api-gateway', 'circuit-breakers', 'multi-jurisdictional']
+  init() {
+    this.setupEventListeners();
+    this.setupDropZone();
+    this.showWelcomeMessage();
   }
-};
 
-// Jurisdiction configurations with enhanced metadata
-const JurisdictionConfigs = {
-  AR: {
-    name: 'Argentina',
-    flag: '🇦🇷',
-    legalSystem: 'Civil Law',
-    language: 'es-AR',
-    mainSources: ['InfoLEG', 'CSJN'],
-    status: 'active',
-    features: ['complete-integration', 'real-time-analysis']
-  },
-  ES: {
-    name: 'España',
-    flag: '🇪🇸',
-    legalSystem: 'Civil Law',
-    language: 'es-ES',
-    mainSources: ['BOE', 'CENDOJ'],
-    status: 'enhanced',
-    features: ['api-integration', 'cross-jurisdictional-mapping']
-  },
-  CL: {
-    name: 'Chile',
-    flag: '🇨🇱',
-    legalSystem: 'Civil Law',
-    language: 'es-CL',
-    mainSources: ['LeyChile', 'PJUD'],
-    status: 'enhanced',
-    features: ['api-integration', 'cross-jurisdictional-mapping']
-  },
-  UY: {
-    name: 'Uruguay',
-    flag: '🇺🇾',
-    legalSystem: 'Civil Law',
-    language: 'es-UY',
-    mainSources: ['IMPO'],
-    status: 'enhanced',
-    features: ['api-integration', 'cross-jurisdictional-mapping']
+  setupEventListeners() {
+    // Analyze document button
+    const analyzeBtn = document.getElementById('analyze-btn');
+    if (analyzeBtn) {
+      analyzeBtn.addEventListener('click', () => this.handleAnalyzeDocument());
+    }
+
+    // Compliance check button
+    const complianceBtn = document.getElementById('compliance-btn');
+    if (complianceBtn) {
+      complianceBtn.addEventListener('click', () => this.handleComplianceCheck());
+    }
+
+    // Risk assessment button
+    const riskBtn = document.getElementById('risk-btn');
+    if (riskBtn) {
+      riskBtn.addEventListener('click', () => this.handleRiskAssessment());
+    }
+
+    // Guardrails button
+    const guardrailsBtn = document.getElementById('guardrails-btn');
+    if (guardrailsBtn) {
+      guardrailsBtn.addEventListener('click', () => this.handleGuardrailsValidation());
+    }
+
+    // Safe analysis button
+    const safeAnalysisBtn = document.getElementById('safe-analysis-btn');
+    if (safeAnalysisBtn) {
+      safeAnalysisBtn.addEventListener('click', () => this.handleSafeAnalysis());
+    }
+
+    // Metrics button
+    const metricsBtn = document.getElementById('metrics-btn');
+    if (metricsBtn) {
+      metricsBtn.addEventListener('click', () => this.handleGuardrailsMetrics());
+    }
+
+    // File input change
+    const fileInput = document.getElementById('file-input');
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+    }
   }
-};
 
-// Initialize application
-document.addEventListener('DOMContentLoaded', function() {
-  initializeApp();
-  setupEventListeners();
-  loadInitialData();
+  setupDropZone() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    
+    if (!dropZone || !fileInput) return;
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drop-zone-active');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('drop-zone-active');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drop-zone-active');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        this.processFile(files[0]);
+      }
+    });
+  }
+
+  showWelcomeMessage() {
+    console.log('🏛️ SLM Legal Spanish - Sistema iniciado');
+    console.log('📋 Especializado en Análisis Legal y Compliance');
+    
+    // Show a subtle notification
+    this.showNotification('Sistema legal inteligente activado', 'info', 3000);
+  }
+
+  async handleAnalyzeDocument() {
+    const btn = document.getElementById('analyze-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Analizando...';
+      btn.disabled = true;
+
+      // Simulate document analysis with the uploaded PDF
+      const response = await axios.post('/api/analyze-document', {
+        document_url: 'https://page.gensparksite.com/get_upload_url/28364bd1e30b64e4fd23279a4e6d423eef56d2fe805b76bdf82f987083319dbe/default/e1b72850-1384-4716-9cff-02945f95e3ef',
+        analysis_type: 'academic_legal'
+      });
+
+      this.displayResults('Análisis de Documento Académico', response.data);
+      
+    } catch (error) {
+      console.error('Error analyzing document:', error);
+      this.showNotification('Error al analizar el documento', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async handleComplianceCheck() {
+    const btn = document.getElementById('compliance-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Verificando...';
+      btn.disabled = true;
+
+      const sampleText = `
+        Transformer-based language models have demonstrated impressive capabilities 
+        across a range of complex reasoning tasks. This research explores the 
+        learnability of compositional functions and their application in legal analysis.
+      `;
+
+      const response = await axios.post('/api/compliance-check', {
+        text: sampleText,
+        jurisdiction: 'ES'
+      });
+
+      this.displayResults('Verificación de Compliance', response.data);
+      
+    } catch (error) {
+      console.error('Error in compliance check:', error);
+      this.showNotification('Error en verificación de compliance', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async handleRiskAssessment() {
+    this.showNotification('Evaluación de riesgos - Funcionalidad en desarrollo', 'warning');
+    
+    const mockRiskData = {
+      assessment_id: Math.random().toString(36).substring(7),
+      risk_level: 'medium',
+      categories: [
+        { name: 'Riesgo Regulatorio', level: 'medium', description: 'Normativas emergentes en IA' },
+        { name: 'Riesgo Operacional', level: 'low', description: 'Procesos establecidos' },
+        { name: 'Riesgo Reputacional', level: 'high', description: 'Impacto potencial significativo' }
+      ],
+      recommendations: [
+        'Establecer comité de governance para IA',
+        'Implementar políticas de transparencia',
+        'Desarrollar framework de auditoría'
+      ],
+      assessed_at: new Date().toISOString()
+    };
+
+    this.displayResults('Evaluación de Riesgos', mockRiskData);
+  }
+
+  async handleGuardrailsValidation() {
+    const btn = document.getElementById('guardrails-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Validando...';
+      btn.disabled = true;
+
+      const sampleOutput = {
+        summary: 'Análisis legal completado con IA',
+        findings: ['Aplicación correcta de normativas', 'Identificación de riesgos apropiada'],
+        legal_implications: ['Cumplimiento de marcos regulatorios', 'Transparencia en procesos']
+      };
+
+      const response = await axios.post('/api/guardrails/validate', {
+        output_text: JSON.stringify(sampleOutput),
+        analysis_type: 'comprehensive',
+        guardrail_specs: ['legal_accuracy', 'compliance_safety', 'corporate_governance']
+      });
+
+      this.displayGuardrailResults('Validación de Guardrails', response.data);
+      
+    } catch (error) {
+      console.error('Error in guardrails validation:', error);
+      this.showNotification('Error en validación de guardrails', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async handleSafeAnalysis() {
+    const btn = document.getElementById('safe-analysis-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Analizando con Guardrails...';
+      btn.disabled = true;
+
+      const sampleContent = `
+        El presente documento establece el marco de gobierno corporativo aplicable 
+        a sociedades cotizadas conforme a la Ley de Sociedades de Capital y el 
+        Código de Buen Gobierno. Se analizan las responsabilidades del consejo de 
+        administración en materia de supervisión y control de riesgos corporativos.
+      `;
+
+      const response = await axios.post('/api/guardrails/safe-analysis', {
+        document_content: sampleContent,
+        analysis_type: 'comprehensive',
+        jurisdiction: 'ES',
+        enable_guardrails: true
+      });
+
+      this.displaySafeAnalysisResults('Análisis Seguro con Guardrails', response.data);
+      
+    } catch (error) {
+      console.error('Error in safe analysis:', error);
+      this.showNotification('Error en análisis seguro', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async handleGuardrailsMetrics() {
+    const btn = document.getElementById('metrics-btn');
+    const originalText = btn.textContent;
+    
+    try {
+      btn.innerHTML = '<span class="loading-spinner mr-2"></span>Cargando métricas...';
+      btn.disabled = true;
+
+      const response = await axios.get('/api/guardrails/metrics');
+      this.displayMetrics('Métricas de Rendimiento de Guardrails', response.data);
+      
+    } catch (error) {
+      console.error('Error loading metrics:', error);
+      this.showNotification('Error cargando métricas', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.processFile(file);
+    }
+  }
+
+  processFile(file) {
+    // Validate file
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    
+    if (file.size > maxSize) {
+      this.showNotification('El archivo es demasiado grande (máx. 10MB)', 'error');
+      return;
+    }
+
+    if (!allowedTypes.includes(file.type)) {
+      this.showNotification('Formato de archivo no admitido', 'error');
+      return;
+    }
+
+    this.showNotification(`Archivo "${file.name}" cargado correctamente`, 'success');
+    
+    // Simulate file processing
+    setTimeout(() => {
+      this.showNotification('Procesando documento con IA...', 'info');
+      setTimeout(() => {
+        this.handleAnalyzeDocument();
+      }, 1000);
+    }, 500);
+  }
+
+  displayResults(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
+    
+    if (!resultsSection || !resultsContent) return;
+
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
+    
+    if (data.summary) {
+      html += `
+        <div class="result-item bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+          <h4 class="font-semibold text-blue-800 mb-2">
+            <i class="fas fa-info-circle mr-2"></i>Resumen
+          </h4>
+          <p class="text-blue-700">${data.summary}</p>
+        </div>
+      `;
+    }
+
+    if (data.key_findings) {
+      html += `
+        <div class="result-item bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+          <h4 class="font-semibold text-green-800 mb-2">
+            <i class="fas fa-search mr-2"></i>Hallazgos Principales
+          </h4>
+          <ul class="text-green-700 space-y-1">
+            ${data.key_findings.map(finding => `<li>• ${finding}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    if (data.legal_implications) {
+      html += `
+        <div class="result-item bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+          <h4 class="font-semibold text-yellow-800 mb-2">
+            <i class="fas fa-balance-scale mr-2"></i>Implicaciones Legales
+          </h4>
+          <ul class="text-yellow-700 space-y-1">
+            ${data.legal_implications.map(implication => `<li>• ${implication}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    if (data.findings) {
+      html += `
+        <div class="result-item bg-orange-50 border-l-4 border-orange-400 p-4 mb-4">
+          <h4 class="font-semibold text-orange-800 mb-2">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Observaciones de Compliance
+          </h4>
+          <ul class="text-orange-700 space-y-1">
+            ${data.findings.map(finding => `<li>• ${finding}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    if (data.recommendations) {
+      html += `
+        <div class="result-item bg-purple-50 border-l-4 border-purple-400 p-4 mb-4">
+          <h4 class="font-semibold text-purple-800 mb-2">
+            <i class="fas fa-lightbulb mr-2"></i>Recomendaciones
+          </h4>
+          <ul class="text-purple-700 space-y-1">
+            ${data.recommendations.map(rec => `<li>• ${rec}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    if (data.risk_level) {
+      const riskColor = data.risk_level === 'high' ? 'red' : data.risk_level === 'medium' ? 'yellow' : 'green';
+      html += `
+        <div class="result-item bg-gray-50 border-l-4 border-gray-400 p-4 mb-4">
+          <h4 class="font-semibold text-gray-800 mb-2">
+            <i class="fas fa-chart-line mr-2"></i>Nivel de Riesgo
+          </h4>
+          <span class="compliance-badge ${data.risk_level}">
+            <i class="fas fa-shield-alt"></i>
+            ${data.risk_level.toUpperCase()}
+          </span>
+        </div>
+      `;
+    }
+
+    // Add timestamp
+    const timestamp = data.processed_at || data.checked_at || data.assessed_at || new Date().toISOString();
+    html += `
+      <div class="text-sm text-gray-500 mt-6">
+        <i class="fas fa-clock mr-1"></i>
+        Procesado: ${dayjs(timestamp).format('DD/MM/YYYY HH:mm:ss')}
+      </div>
+    `;
+
+    resultsContent.innerHTML = html;
+    resultsSection.classList.remove('hidden');
+    
+    // Scroll to results
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  showNotification(message, type = 'info', duration = 5000) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `
+      fixed top-4 right-4 z-50 max-w-sm bg-white border-l-4 rounded-lg shadow-lg p-4 
+      transform translate-x-full transition-transform duration-300
+      ${type === 'success' ? 'border-green-400' : ''}
+      ${type === 'error' ? 'border-red-400' : ''}
+      ${type === 'warning' ? 'border-yellow-400' : ''}
+      ${type === 'info' ? 'border-blue-400' : ''}
+    `;
+    
+    const iconClass = {
+      success: 'fas fa-check-circle text-green-500',
+      error: 'fas fa-exclamation-circle text-red-500',
+      warning: 'fas fa-exclamation-triangle text-yellow-500',
+      info: 'fas fa-info-circle text-blue-500'
+    }[type] || 'fas fa-info-circle text-blue-500';
+    
+    notification.innerHTML = `
+      <div class="flex items-start">
+        <i class="${iconClass} mr-3 mt-1"></i>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-800">${message}</p>
+        </div>
+        <button class="ml-3 text-gray-400 hover:text-gray-600" onclick="this.parentElement.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => {
+      notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Auto hide
+    if (duration > 0) {
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+      }, duration);
+    }
+  }
+}
+
+// Initialize application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  new LegalAnalyzer();
 });
 
-function initializeApp() {
-  console.log('🚀 Initializing SCM Legal with World-Class Architecture');
-  
-  // Update UI with current state
-  updateModelDescription();
-  updateJurisdictionInfo();
-  
-  // Show architecture status
-  displayArchitectureStatus();
-  
-  // Initialize performance monitoring
-  initializePerformanceMonitoring();
-}
+// Global error handler
+window.addEventListener('error', (e) => {
+  console.error('Application error:', e.error);
+});
 
-function setupEventListeners() {
-  // Model switching
-  ['scm', 'llm', 'compare', 'architecture'].forEach(model => {
-    const button = document.getElementById(`${model}Tab`);
-    if (button) {
-      button.addEventListener('click', () => switchModel(model));
-    }
-  });
-  
-  // Analysis submission
-  const analyzeButton = document.querySelector('button[onclick="submitSCMAnalysis()"]');
-  if (analyzeButton) {
-    analyzeButton.onclick = submitSCMAnalysis;
-  }
-  
-  // Jurisdiction change
-  const jurisdictionSelect = document.getElementById('jurisdiction');
-  if (jurisdictionSelect) {
-    jurisdictionSelect.addEventListener('change', function() {
-      AppState.selectedJurisdiction = this.value;
-      updateJurisdictionInfo();
-    });
-  }
-}
-
-async function loadInitialData() {
+// Service health check
+async function checkServiceHealth() {
   try {
-    // Load jurisdiction data
-    const jurisdictionsResponse = await fetch('/api/jurisdictions');
-    const jurisdictionsData = await jurisdictionsResponse.json();
-    
-    // Load data source health
-    const healthResponse = await fetch('/api/data-sources/health');
-    const healthData = await healthResponse.json();
-    
-    // Update UI with loaded data
-    updateDataSourceStatus(healthData);
-    
-    console.log('✅ Initial data loaded successfully');
+    const response = await axios.get('/api/health');
+    console.log('✅ Service health:', response.data);
   } catch (error) {
-    console.error('⚠️ Error loading initial data:', error);
+    console.error('❌ Service health check failed:', error);
   }
 }
 
-function switchModel(modelType) {
-  AppState.currentModel = modelType;
-  
-  // Update active tab
-  document.querySelectorAll('[id$="Tab"]').forEach(tab => {
-    tab.classList.remove('bg-blue-600', 'text-white', 'active-tab');
-    tab.classList.add('bg-gray-200', 'text-gray-700');
-  });
-  
-  const activeTab = document.getElementById(`${modelType}Tab`);
-  if (activeTab) {
-    activeTab.classList.remove('bg-gray-200', 'text-gray-700');
-    activeTab.classList.add('bg-blue-600', 'text-white', 'active-tab');
-  }
-  
-  updateModelDescription();
-  updateUIForModel(modelType);
-}
+  displayGuardrailResults(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
+    
+    if (!resultsSection || !resultsContent) return;
 
-function updateModelDescription() {
-  const descriptionElement = document.getElementById('modelDescription');
-  const config = ModelConfigs[AppState.currentModel];
-  
-  if (descriptionElement && config) {
-    const features = config.features.map(f => `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">${f}</span>`).join('');
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
     
-    descriptionElement.innerHTML = `
-      <strong>${config.name}:</strong> ${config.description}
-      <div class="mt-2">${features}</div>
-    `;
+    // Overall validation status
+    const overallStatus = data.overall_valid ? 'passed' : 'failed';
+    const statusColor = overallStatus === 'passed' ? 'green' : 'red';
     
-    // Update background color based on model
-    const bgColors = {
-      scm: 'bg-blue-50',
-      llm: 'bg-gray-50',
-      compare: 'bg-green-50',
-      architecture: 'bg-purple-50'
-    };
-    
-    descriptionElement.className = `text-sm text-gray-600 p-3 rounded-lg ${bgColors[AppState.currentModel]}`;
-  }
-}
-
-function updateUIForModel(modelType) {
-  const scmOptions = document.getElementById('scmOptions');
-  const architectureDetails = document.getElementById('architectureDetails');
-  
-  if (modelType === 'architecture') {
-    if (scmOptions) scmOptions.style.display = 'none';
-    displayArchitectureDetails();
-  } else {
-    if (scmOptions) scmOptions.style.display = 'block';
-    if (architectureDetails) architectureDetails.style.display = 'none';
-  }
-}
-
-function updateJurisdictionInfo() {
-  const config = JurisdictionConfigs[AppState.selectedJurisdiction];
-  if (!config) return;
-  
-  // Update jurisdiction-specific UI elements
-  const jurisdictionSelect = document.getElementById('jurisdiction');
-  if (jurisdictionSelect) {
-    // Update option text to include status
-    const option = jurisdictionSelect.querySelector(`option[value="${AppState.selectedJurisdiction}"]`);
-    if (option) {
-      option.textContent = `${config.flag} ${config.name} (${config.status})`;
-    }
-  }
-  
-  console.log(`🌍 Jurisdiction changed to: ${config.name} (${config.status})`);
-}
-
-async function submitSCMAnalysis() {
-  if (AppState.isAnalyzing) return;
-  
-  const legalDocument = document.getElementById('legalDocument').value.trim();
-  const legalQuery = document.getElementById('legalQuery').value.trim();
-  
-  if (!legalDocument || !legalQuery) {
-    alert('Por favor, complete tanto el documento legal como la consulta específica.');
-    return;
-  }
-  
-  AppState.isAnalyzing = true;
-  updateAnalysisUI(true);
-  
-  try {
-    const startTime = Date.now();
-    
-    // Prepare analysis request with enhanced options
-    const analysisRequest = {
-      query: legalQuery,
-      document: legalDocument,
-      jurisdiction: AppState.selectedJurisdiction,
-      analysisType: document.getElementById('analysisType').value,
-      options: {
-        conceptualReasoning: document.getElementById('enableConceptualReasoning').checked,
-        crossJurisdictional: document.getElementById('crossJurisdictional').checked,
-        enableDataSources: document.getElementById('enableDataSources')?.checked || false,
-        includeComparative: AppState.currentModel === 'compare'
-      },
-      metadata: {
-        modelType: AppState.currentModel,
-        timestamp: new Date().toISOString(),
-        requestId: generateRequestId()
-      }
-    };
-    
-    // Send analysis request to appropriate endpoint
-    const config = ModelConfigs[AppState.currentModel];
-    const response = await fetch(config.endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Jurisdiction': AppState.selectedJurisdiction,
-        'X-Request-ID': analysisRequest.metadata.requestId
-      },
-      body: JSON.stringify(analysisRequest)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Analysis failed: ${response.status} ${response.statusText}`);
-    }
-    
-    const result = await response.json();
-    const processingTime = Date.now() - startTime;
-    
-    // Update performance metrics
-    updatePerformanceMetrics(processingTime, result);
-    
-    // Display results
-    displayAnalysisResults(result, processingTime);
-    
-    // Add to history
-    AppState.analysisHistory.push({
-      request: analysisRequest,
-      result: result,
-      processingTime: processingTime,
-      timestamp: new Date()
-    });
-    
-    console.log('✅ Analysis completed successfully', result);
-    
-  } catch (error) {
-    console.error('❌ Analysis failed:', error);
-    displayError(error.message);
-  } finally {
-    AppState.isAnalyzing = false;
-    updateAnalysisUI(false);
-  }
-}
-
-function updateAnalysisUI(isAnalyzing) {
-  const submitButton = document.querySelector('button[onclick="submitSCMAnalysis()"]');
-  const resultsSection = document.getElementById('results');
-  
-  if (submitButton) {
-    if (isAnalyzing) {
-      submitButton.disabled = true;
-      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Analizando...';
-      submitButton.classList.add('opacity-75', 'cursor-not-allowed');
-    } else {
-      submitButton.disabled = false;
-      submitButton.innerHTML = '<i class="fas fa-brain mr-2"></i>Analizar con SCM Legal Multi-Jurisdiccional';
-      submitButton.classList.remove('opacity-75', 'cursor-not-allowed');
-    }
-  }
-  
-  if (isAnalyzing && resultsSection) {
-    resultsSection.style.display = 'block';
-    resultsSection.classList.remove('hidden');
-    
-    // Show loading state
-    const loadingHTML = `
-      <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-        <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Procesando Análisis Legal</h3>
-        <p class="text-gray-600">Aplicando Small Concept Models con arquitectura multi-jurisdiccional...</p>
-        <div class="mt-4 text-sm text-gray-500">
-          <div>🏗️ Microservicios: Activo</div>
-          <div>🌍 Jurisdicción: ${JurisdictionConfigs[AppState.selectedJurisdiction].name}</div>
-          <div>🧠 Modelo: ${ModelConfigs[AppState.currentModel].name}</div>
-        </div>
-      </div>
-    `;
-    resultsSection.innerHTML = loadingHTML;
-  }
-}
-
-function displayAnalysisResults(result, processingTime) {
-  const resultsSection = document.getElementById('results');
-  if (!resultsSection) return;
-  
-  resultsSection.style.display = 'block';
-  resultsSection.classList.remove('hidden');
-  
-  const jurisdictionConfig = JurisdictionConfigs[AppState.selectedJurisdiction];
-  
-  let resultsHTML = `
-    <div class="space-y-6">
-      <!-- Analysis Header -->
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg p-6">
-        <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-2xl font-bold mb-2">
-              <i class="fas fa-brain mr-2"></i>
-              Resultado del Análisis SCM Legal
-            </h3>
-            <p class="text-blue-100">
-              ${jurisdictionConfig.flag} ${jurisdictionConfig.name} • 
-              ${ModelConfigs[AppState.currentModel].name} • 
-              ${processingTime}ms
-            </p>
-          </div>
-          <div class="text-right">
-            <div class="text-3xl font-bold">${Math.round(Math.random() * 20 + 80)}%</div>
-            <div class="text-blue-200 text-sm">Confianza</div>
-          </div>
-        </div>
-      </div>
-  `;
-  
-  if (AppState.currentModel === 'architecture') {
-    resultsHTML += getArchitectureAnalysisHTML();
-  } else if (AppState.currentModel === 'compare') {
-    resultsHTML += getComparisonAnalysisHTML(result);
-  } else {
-    resultsHTML += getStandardAnalysisHTML(result);
-  }
-  
-  // Performance metrics
-  resultsHTML += `
-      <!-- Enhanced Performance Metrics -->
-      <div class="bg-gray-50 rounded-lg p-6">
-        <h4 class="text-lg font-semibold mb-4 text-gray-800">
-          <i class="fas fa-chart-bar mr-2"></i>
-          Métricas de Performance & Arquitectura
+    html += `
+      <div class="result-item bg-${statusColor}-50 border-l-4 border-${statusColor}-400 p-4 mb-4">
+        <h4 class="font-semibold text-${statusColor}-800 mb-2">
+          <i class="fas fa-shield-alt mr-2"></i>Estado General de Validación
         </h4>
-        <div class="grid md:grid-cols-4 gap-4 text-sm">
-          <div class="bg-white p-4 rounded">
-            <div class="font-semibold text-blue-600">Tiempo de Procesamiento</div>
-            <div class="text-2xl font-bold">${processingTime}ms</div>
-          </div>
-          <div class="bg-white p-4 rounded">
-            <div class="font-semibold text-green-600">Microservicios</div>
-            <div class="text-2xl font-bold">✅ Activo</div>
-          </div>
-          <div class="bg-white p-4 rounded">
-            <div class="font-semibold text-purple-600">APIs Integradas</div>
-            <div class="text-2xl font-bold">${jurisdictionConfig.mainSources.length}</div>
-          </div>
-          <div class="bg-white p-4 rounded">
-            <div class="font-semibold text-orange-600">Eficiencia SCM</div>
-            <div class="text-2xl font-bold">${Math.round(Math.random() * 15 + 85)}%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  resultsSection.innerHTML = resultsHTML;
-}
-
-function getStandardAnalysisHTML(result) {
-  return `
-    <!-- Main Analysis -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h4 class="text-xl font-semibold mb-4 text-gray-800">
-        <i class="fas fa-gavel mr-2"></i>
-        Análisis Conceptual Legal
-      </h4>
-      <div class="prose max-w-none">
-        <p class="text-gray-700">
-          <strong>Análisis conceptual completado</strong> utilizando Small Concept Models especializados 
-          para el dominio legal ${JurisdictionConfigs[AppState.selectedJurisdiction].name}.
+        <p class="text-${statusColor}-700">
+          <span class="font-bold">${overallStatus.toUpperCase()}</span> - 
+          ${data.guardrails_applied.length} guardrails aplicados
         </p>
-        <div class="bg-blue-50 p-4 rounded-lg mt-4">
-          <p><strong>Conceptos legales identificados:</strong> Se han detectado elementos relacionados con 
-          ${AppState.selectedJurisdiction === 'AR' ? 'la legislación argentina' : 
-             AppState.selectedJurisdiction === 'ES' ? 'el ordenamiento jurídico español' :
-             AppState.selectedJurisdiction === 'CL' ? 'la normativa chilena' : 'el marco legal uruguayo'}, 
-          aplicando razonamiento conceptual avanzado.</p>
-        </div>
       </div>
-    </div>
-    
-    <div class="grid md:grid-cols-3 gap-6">
-      <!-- Legal Concepts -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h5 class="text-lg font-semibold mb-3 text-gray-800">
-          <i class="fas fa-lightbulb mr-2"></i>
-          Conceptos Identificados
-        </h5>
-        <div class="space-y-2">
-          <div class="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">Derecho Contractual</div>
-          <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm">Obligaciones Legales</div>
-          <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm">Compliance Corporativo</div>
-        </div>
-      </div>
+    `;
+
+    // Individual guardrail results
+    if (data.results && data.results.length > 0) {
+      html += `
+        <div class="result-item bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+          <h4 class="font-semibold text-blue-800 mb-3">
+            <i class="fas fa-list-check mr-2"></i>Resultados Detallados
+          </h4>
+      `;
       
-      <!-- Cross References -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h5 class="text-lg font-semibold mb-3 text-gray-800">
-          <i class="fas fa-project-diagram mr-2"></i>
-          Referencias Cruzadas
-        </h5>
-        <div class="space-y-2 text-sm text-gray-600">
-          <div>• Artículo 1197 CC (Argentina)</div>
-          <div>• Ley de Sociedades Comerciales</div>
-          <div>• Normativa BCRA/CNV</div>
-        </div>
-      </div>
+      data.results.forEach((result, index) => {
+        const resultColor = result.is_valid ? 'text-green-600' : 'text-red-600';
+        const icon = result.is_valid ? 'fa-check-circle' : 'fa-exclamation-triangle';
+        
+        html += `
+          <div class="mb-3 p-3 bg-white rounded border">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-medium ${resultColor}">
+                <i class="fas ${icon} mr-1"></i>
+                Guardrail ${index + 1}
+              </span>
+              <span class="text-sm text-gray-600">
+                Confianza: ${Math.round(result.confidence * 100)}%
+              </span>
+            </div>
+            
+            ${result.violations && result.violations.length > 0 ? `
+              <div class="text-sm text-red-600 mb-1">
+                <strong>Violaciones:</strong>
+                <ul class="list-disc list-inside ml-2">
+                  ${result.violations.map(v => `<li>${v}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            
+            ${result.recommendations && result.recommendations.length > 0 ? `
+              <div class="text-sm text-blue-600">
+                <strong>Recomendaciones:</strong>
+                <ul class="list-disc list-inside ml-2">
+                  ${result.recommendations.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
       
-      <!-- Risk Factors -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h5 class="text-lg font-semibold mb-3 text-gray-800">
-          <i class="fas fa-exclamation-triangle mr-2"></i>
-          Factores de Riesgo
-        </h5>
-        <div class="space-y-2">
-          <div class="flex items-center">
-            <div class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
-            <span class="text-sm">Riesgo Medio: Clausulado</span>
-          </div>
-          <div class="flex items-center">
-            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-            <span class="text-sm">Riesgo Bajo: Compliance</span>
-          </div>
-        </div>
+      html += `</div>`;
+    }
+
+    // Add timestamp
+    html += `
+      <div class="text-sm text-gray-500 mt-6">
+        <i class="fas fa-clock mr-1"></i>
+        Validado: ${dayjs(data.timestamp).format('DD/MM/YYYY HH:mm:ss')}
       </div>
-    </div>
-  `;
-}
+    `;
 
-function getComparisonAnalysisHTML(result) {
-  return `
-    <!-- Comparison Analysis -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h4 class="text-xl font-semibold mb-4 text-gray-800">
-        <i class="fas fa-balance-scale mr-2"></i>
-        Comparación: SCM vs LLM Tradicional
-      </h4>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-blue-50 p-4 rounded-lg">
-          <h5 class="font-semibold text-blue-800 mb-2">Small Concept Model (SCM)</h5>
-          <ul class="text-sm text-blue-700 space-y-1">
-            <li>✅ Razonamiento conceptual especializado</li>
-            <li>✅ Análisis legal estructurado</li>
-            <li>✅ Menor latencia (${Math.round(Math.random() * 100 + 150)}ms)</li>
-            <li>✅ Mayor precisión en dominio legal</li>
-          </ul>
-        </div>
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h5 class="font-semibold text-gray-800 mb-2">LLM Tradicional</h5>
-          <ul class="text-sm text-gray-700 space-y-1">
-            <li>• Análisis general de texto</li>
-            <li>• Mayor consumo de recursos</li>
-            <li>• Latencia superior (${Math.round(Math.random() * 500 + 800)}ms)</li>
-            <li>• Precisión variable en legal</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function getArchitectureAnalysisHTML() {
-  return `
-    <!-- Architecture Details -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h4 class="text-xl font-semibold mb-4 text-gray-800">
-        <i class="fas fa-sitemap mr-2"></i>
-        Arquitectura de Clase Mundial - Detalles Técnicos
-      </h4>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h5 class="font-semibold mb-3">🏗️ Patrones Implementados</h5>
-          <ul class="space-y-2 text-sm">
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              Microservicios con API Gateway
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              Circuit Breakers & Health Checks
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              Multi-jurisdictional Architecture
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              Distributed Caching Strategy
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h5 class="font-semibold mb-3">🌍 Integración Multi-Jurisdiccional</h5>
-          <div class="space-y-2 text-sm">
-            ${Object.entries(JurisdictionConfigs).map(([code, config]) => 
-              `<div class="flex justify-between">
-                <span>${config.flag} ${config.name}</span>
-                <span class="text-${config.status === 'active' ? 'green' : 'blue'}-600">${config.status}</span>
-              </div>`
-            ).join('')}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function displayArchitectureStatus() {
-  const status = AppState.architectureStatus;
-  console.log('🏗️ Architecture Status:', status);
-  
-  // Could add visual indicators in UI if needed
-}
-
-function displayArchitectureDetails() {
-  const architectureDetails = document.getElementById('architectureDetails');
-  if (architectureDetails) {
-    architectureDetails.style.display = 'block';
-    architectureDetails.classList.remove('hidden');
-    
-    architectureDetails.innerHTML = getArchitectureAnalysisHTML();
-  }
-}
-
-function updateDataSourceStatus(healthData) {
-  console.log('📊 Data Source Health:', healthData);
-  // Could update UI indicators for data source status
-}
-
-function updatePerformanceMetrics(processingTime, result) {
-  AppState.performanceMetrics = {
-    ...AppState.performanceMetrics,
-    lastProcessingTime: processingTime,
-    averageResponseTime: AppState.analysisHistory.length > 0 
-      ? (AppState.performanceMetrics.averageResponseTime + processingTime) / 2
-      : processingTime,
-    totalAnalyses: AppState.analysisHistory.length + 1,
-    successRate: 100 // Simplified for demo
-  };
-}
-
-function initializePerformanceMonitoring() {
-  // Set up performance monitoring
-  console.log('📊 Performance monitoring initialized');
-}
-
-function displayError(message) {
-  const resultsSection = document.getElementById('results');
-  if (resultsSection) {
-    resultsSection.style.display = 'block';
+    resultsContent.innerHTML = html;
     resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  displaySafeAnalysisResults(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
     
-    resultsSection.innerHTML = `
-      <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-        <div class="flex items-center">
-          <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
-          <div>
-            <h4 class="text-red-800 font-semibold">Error en el Análisis</h4>
-            <p class="text-red-700 mt-1">${message}</p>
-            <p class="text-red-600 text-sm mt-2">
-              Verifique la conexión y vuelva a intentar. Si el problema persiste, 
-              contacte al equipo de desarrollo.
-            </p>
-          </div>
+    if (!resultsSection || !resultsContent) return;
+
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
+    
+    // Safety score
+    const safetyScore = Math.round(data.guardrails.safety_score * 100);
+    const scoreColor = safetyScore >= 80 ? 'green' : safetyScore >= 60 ? 'yellow' : 'red';
+    
+    html += `
+      <div class="result-item bg-${scoreColor}-50 border-l-4 border-${scoreColor}-400 p-4 mb-4">
+        <h4 class="font-semibold text-${scoreColor}-800 mb-2">
+          <i class="fas fa-shield-alt mr-2"></i>Puntuación de Seguridad
+        </h4>
+        <div class="flex items-center space-x-4">
+          <span class="text-2xl font-bold text-${scoreColor}-700">${safetyScore}%</span>
+          <span class="text-${scoreColor}-700">
+            ${data.guardrails.validation_passed ? 'Todas las validaciones pasadas' : 'Algunas validaciones fallaron'}
+          </span>
         </div>
       </div>
     `;
+
+    // Analysis results
+    if (data.analysis) {
+      this.displayResults('Análisis Principal', data.analysis);
+      return; // Use existing display method for main analysis
+    }
+
+    // Guardrails logs
+    if (data.guardrails.logs && data.guardrails.logs.length > 0) {
+      html += `
+        <div class="result-item bg-purple-50 border-l-4 border-purple-400 p-4 mb-4">
+          <h4 class="font-semibold text-purple-800 mb-3">
+            <i class="fas fa-clipboard-list mr-2"></i>Log de Guardrails
+          </h4>
+      `;
+      
+      data.guardrails.logs.forEach(log => {
+        const logColor = log.status === 'passed' ? 'text-green-600' : 'text-red-600';
+        const icon = log.status === 'passed' ? 'fa-check' : 'fa-times';
+        
+        html += `
+          <div class="mb-2 p-2 bg-white rounded border flex items-center justify-between">
+            <span class="font-medium ${logColor}">
+              <i class="fas ${icon} mr-1"></i>
+              ${log.guardrail}
+            </span>
+            <span class="text-sm text-gray-600">
+              ${Math.round(log.confidence * 100)}% confianza
+            </span>
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+    }
+
+    resultsContent.innerHTML = html;
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  displayMetrics(title, data) {
+    const resultsSection = document.getElementById('results-section');
+    const resultsContent = document.getElementById('results-content');
+    
+    if (!resultsSection || !resultsContent) return;
+
+    let html = `<h3 class="text-xl font-semibold text-gray-800 mb-4">${title}</h3>`;
+    
+    // Overall metrics
+    html += `
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-blue-50 p-4 rounded-lg text-center">
+          <div class="text-2xl font-bold text-blue-700">${data.total_validations.toLocaleString()}</div>
+          <div class="text-sm text-blue-600">Total Validaciones</div>
+        </div>
+        <div class="bg-green-50 p-4 rounded-lg text-center">
+          <div class="text-2xl font-bold text-green-700">${Math.round(data.success_rate * 100)}%</div>
+          <div class="text-sm text-green-600">Tasa de Éxito</div>
+        </div>
+        <div class="bg-purple-50 p-4 rounded-lg text-center">
+          <div class="text-2xl font-bold text-purple-700">${Math.round(data.average_confidence * 100)}%</div>
+          <div class="text-sm text-purple-600">Confianza Promedio</div>
+        </div>
+      </div>
+    `;
+
+    // Guardrail performance
+    html += `
+      <div class="result-item bg-gray-50 border-l-4 border-gray-400 p-4 mb-4">
+        <h4 class="font-semibold text-gray-800 mb-3">
+          <i class="fas fa-chart-bar mr-2"></i>Rendimiento por Guardrail
+        </h4>
+        <div class="space-y-3">
+    `;
+    
+    Object.entries(data.guardrail_performance).forEach(([name, perf]) => {
+      html += `
+        <div class="bg-white p-3 rounded border">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-medium capitalize">${name.replace('_', ' ')}</span>
+            <span class="text-sm text-green-600">${Math.round(perf.success_rate * 100)}% éxito</span>
+          </div>
+          <div class="text-xs text-gray-600 grid grid-cols-2 gap-2">
+            <span>Invocaciones: ${perf.invocations.toLocaleString()}</span>
+            <span>Tiempo promedio: ${perf.avg_processing_time}</span>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+
+    // Fail actions
+    html += `
+      <div class="result-item bg-orange-50 border-l-4 border-orange-400 p-4 mb-4">
+        <h4 class="font-semibold text-orange-800 mb-3">
+          <i class="fas fa-exclamation-triangle mr-2"></i>Acciones de Fallo
+        </h4>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+    `;
+    
+    Object.entries(data.fail_actions_taken).forEach(([action, count]) => {
+      html += `
+        <div class="bg-white p-2 rounded text-center border">
+          <div class="font-bold text-orange-700">${count}</div>
+          <div class="text-orange-600 capitalize">${action}</div>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+
+    resultsContent.innerHTML = html;
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
   }
 }
 
-function generateRequestId() {
-  return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
-}
-
-// Global functions for backward compatibility
-window.switchModel = switchModel;
-window.submitSCMAnalysis = submitSCMAnalysis;
-
-// Export for module usage
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    AppState,
-    ModelConfigs,
-    JurisdictionConfigs,
-    switchModel,
-    submitSCMAnalysis
-  };
-}
+// Run health check on load
+checkServiceHealth();

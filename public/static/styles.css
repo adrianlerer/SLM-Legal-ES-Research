@@ -1,0 +1,129 @@
+/* Custom styles for SLM Legal Spanish */
+
+/* Enhanced gradients and shadows */
+.bg-gradient-legal {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+}
+
+.shadow-legal {
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Loading animations */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Document upload styling */
+.drop-zone-active {
+  border-color: #3b82f6 !important;
+  background-color: #eff6ff !important;
+}
+
+.drop-zone-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+/* Results styling */
+.result-item {
+  border-left: 4px solid #3b82f6;
+  transition: all 0.3s ease;
+}
+
+.result-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Status indicators */
+.status-success {
+  color: #10b981;
+}
+
+.status-warning {
+  color: #f59e0b;
+}
+
+.status-error {
+  color: #ef4444;
+}
+
+.status-info {
+  color: #3b82f6;
+}
+
+/* Legal-specific styling */
+.legal-highlight {
+  background: linear-gradient(120deg, #fef3c7 0%, #fcd34d 100%);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.compliance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.compliance-badge.high {
+  background-color: #dc2626;
+  color: white;
+}
+
+.compliance-badge.medium {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.compliance-badge.low {
+  background-color: #10b981;
+  color: white;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Print styles for reports */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .bg-gradient-to-br {
+    background: white !important;
+  }
+  
+  .shadow-lg {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}
