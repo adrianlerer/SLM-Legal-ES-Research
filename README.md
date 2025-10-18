@@ -1,4 +1,4 @@
-# SLM-Legal-ES-Research: Alternativa Argentina a Harvey AI
+# SLM-Legal-ES-Research: Alternativa Argentina a Desarrollos de Gestión con AI de Estudios Jurídicos
 
 ## Investigación y Desarrollo de Sistema Legal IA Interpretable
 
