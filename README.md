@@ -8,9 +8,9 @@
 
 ### **Sistema Legal IA Argentino con Know-How Local**
 
-Desarrollamos una alternativa **económicamente viable** a sistemas como Harvey AI, especializada en derecho argentino (CCyC 2015, Ley 19.550, jurisprudencia CSJN) con **95% de reducción de costo** y **>95% interpretabilidad**.
+Desarrollamos una alternativa **económicamente viable** a sistemas líderes de mercado de Desarrollos de Gestión con AI, pero en español desde el origen, y especializada en derecho argentino (CCyC 2015, Ley 19.550, jurisprudencia CSJN) con **95% de reducción de costo** y **>95% interpretabilidad**.
 
-| Característica | Harvey AI | Nuestro Sistema | Ventaja |
+| Característica | Lider Mercado AI | Nuestro Sistema | Ventaja |
 |----------------|-----------|-----------------|---------|
 | **Costo Anual** | Enterprise pricing | Accesible para PyMEs | **Económicamente viable** ✅ |
 | **Interpretabilidad** | 0% (caja negra) | >95% (conceptos) | **Cumple regulación argentina** ✅ |
