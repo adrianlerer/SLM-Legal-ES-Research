@@ -203,7 +203,7 @@ Early Partners (50 firmas):
 ├── Contribución: 1K+ documentos  
 ├── Revenue share: None
 ├── Inversión: Suscripción anual accesible
-└── Valor recibido: IA legal nivel Harvey a 95% descuento
+└── Valor recibido: IA legal nivel Suite IA clase mundial con un fuerte descuento
 ```
 
 **Documento Completo**: [cooperative_data_strategy.md](./cooperative_data_strategy.md)
@@ -225,11 +225,11 @@ Early Partners (50 firmas):
 
 ### Comparación Harvey AI
 
-**Harvey AI Positioning**:
+**Lider Law Firms Management with AI Positioning**:
 - Target: Am100, Magic Circle (top 100 global firms)
 - Precio: Enterprise pricing ($50K+ por firma anualmente)
 - Geografía: USA, UK primarily
-- **Gap**: 89% del mercado legal argentino **no puede pagar** Harvey
+- **Gap**: 89% del mercado legal argentino **no puede pagar** los precios de los Paquetes Líderes Mundiales
 
 **Nuestro Positioning**:
 - Target: PyMEs legales argentinas (10-50 abogados)
