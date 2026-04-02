@@ -4,6 +4,25 @@
 
 ---
 
+## 📄 Nuevo Paper (Abril 2026)
+
+### **[LLS SKaaS: Legal Skills as a Service — Interpretable Legal AI Infrastructure for the LATAM Mid-Market](./paper_lls_skaas_v1.md)**
+
+> Paper en inglés, standalone, Zenodo preprint (DOI pendiente).
+
+**Contribuciones principales:**
+- SCM v2 con `evidence` textual + `confidence` + detección de tensiones dialécticas
+- Búsqueda semántica sobre **241,318 documentos** en **839ms** (HNSW + pgvector)
+- PII-isolation por diseño: datos sensibles nunca salen del dispositivo cliente
+- Arquitectura multi-tenant: corpus base LLS compartido + corpus privado por estudio
+- Tres tracks de usuario en paralelo: abogado senior / compliance officer / investigador
+
+**Companion data** (en `/docs`):
+- [`benchmark_results.json`](./docs/benchmark_results.json) — latencias y casos verificados
+- [`scm_v2_spec.md`](./docs/scm_v2_spec.md) — especificación completa del SCM v2
+
+---
+
 ## 🚀 Propuesta de Valor (Actualización 2025)
 
 ### **Sistema Legal IA Argentino con Know-How Local**
@@ -474,6 +493,6 @@ Para discutir:
 
 ---
 
-**Última actualización**: Octubre 2025  
-**Versión**: 2.3.0 - Production Ready with LLM Hybrid  
-**Status**: 🟢 Investigación activa, reclutando Foundation Partners
+**Última actualización**: Abril 2026
+**Versión**: 3.0.0 — SKaaS Production + Paper v1
+**Status**: 🟢 Sistema deployado — paper en revisión para Zenodo

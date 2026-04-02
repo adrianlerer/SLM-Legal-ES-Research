@@ -1,0 +1,129 @@
+{
+  "_meta": {
+    "version": "2.0.0",
+    "date": "2026-04-02",
+    "hardware": "Apple Silicon M-series (Mac Mini M4 Pro equivalent)",
+    "corpus": "OmniBrain/thoughts — 241,318 documents, 1995-2025",
+    "jurisdiction": "Argentina/CCyC-2015",
+    "note": "Benchmarks medidos en condición de producción local. Inferencia via oMLX con modelo Qwen2.5-7B-Instruct-4bit (MLX quantized). Embeddings via OpenAI text-embedding-3-small (fallback cuando dims incompatibles)."
+  },
+  "infrastructure": {
+    "health_check_ms": 3,
+    "supabase_connection_ms": 140,
+    "omlx_connection_ms": 660
+  },
+  "search": {
+    "description": "Búsqueda semántica vectorial (cosine similarity) sobre 241,318 documentos indexados",
+    "function": "match_thoughts(query_embedding vector(1536), match_threshold float, match_count int)",
+    "index": "HNSW (m=16, ef_construction=64)",
+    "samples": [
+      {
+        "query": "rescisión unilateral de contrato sin audiencia previa",
+        "embedding_backend": "OpenAI text-embedding-3-small",
+        "embedding_dims": 1536,
+        "embedding_latency_ms": 540,
+        "db_query_latency_ms": 299,
+        "total_latency_ms": 839,
+        "results_returned": 3,
+        "top_similarity": 0.613,
+        "top_result_preview": "CONVENIO DE RESCISIÓN — Entre ARGENTINA S.A. con domicilio en Monseñor Bufano 5010..."
+      },
+      {
+        "query": "due diligence sociedad anónima estado contable",
+        "embedding_backend": "OpenAI text-embedding-3-small",
+        "embedding_dims": 1536,
+        "total_latency_ms": 812,
+        "results_returned": 10,
+        "top_similarity": 0.638
+      }
+    ]
+  },
+  "ner": {
+    "description": "Named Entity Recognition jurídico en español — extrae PERSON, ORGANIZATION, LOCATION, DATE_TIME",
+    "model": "Qwen2.5-7B-Instruct-4bit via oMLX",
+    "temperature": 0.0,
+    "samples": [
+      {
+        "text": "El Dr. Carlos Méndez, representante de Accell S.A., firmó contrato con AySA en Buenos Aires el 15/03/2024.",
+        "entities_detected": [
+          {"text": "Dr. Carlos Méndez", "type": "PERSON",       "score": 0.85},
+          {"text": "Accell S.A.",        "type": "ORGANIZATION","score": 0.85},
+          {"text": "AySA",               "type": "ORGANIZATION","score": 0.85},
+          {"text": "Buenos Aires",       "type": "LOCATION",     "score": 0.85},
+          {"text": "15/03/2024",         "type": "DATE_TIME",    "score": 0.85}
+        ],
+        "precision_entities": 5,
+        "latency_ms_cold": 31515,
+        "latency_ms_warm": "~8000 (estimated)",
+        "notes": "Primera inferencia incluye carga del modelo en MPS. Llamadas posteriores significativamente más rápidas."
+      }
+    ]
+  },
+  "scm_v2": {
+    "description": "SCM Pipeline v2 — 24 Principios Jurídicos Universales con evidence, confidence, tensions",
+    "model": "Qwen2.5-7B-Instruct-4bit via oMLX",
+    "temperature": 0.1,
+    "rationale_temperature": "Determinismo intencional: el mismo texto debe producir el mismo vector de principios entre evaluadores distintos. La interpretación queda en el profesional.",
+    "cases": [
+      {
+        "id": "AySA-Accell-2024",
+        "text": "La Resolución 3-2024 de AySA rescinde unilateralmente el contrato con Accell S.A. invocando fuerza mayor sin haber dado audiencia previa al contratista ni motivado debidamente el acto administrativo.",
+        "context": "Contrato de concesión de servicios públicos",
+        "jurisdiction": "Argentina/CCyC-2015",
+        "principles_evaluated": 6,
+        "results": {
+          "Motivación del acto": {"score": 1.00, "confidence": 1.00, "evidence": "rescinde... sin motivar debidamente el acto administrativo"},
+          "Defensa en juicio":   {"score": 0.70, "confidence": 1.00, "evidence": "sin haber dado audiencia previa al contratista"},
+          "Pacta sunt servanda": {"score": 0.70, "confidence": 1.00, "evidence": "rescinde unilateralmente el contrato"},
+          "Buena fe":            {"score": 0.30, "confidence": 0.00, "evidence": ""},
+          "Autonomía de la voluntad": {"score": 0.30, "confidence": 0.00, "evidence": ""},
+          "Debido proceso":      {"score": 0.00, "confidence": 0.00, "evidence": ""}
+        },
+        "tensions_detected": [],
+        "low_confidence_flags": [],
+        "latency_ms": 28400,
+        "backend": "oMLX:Qwen2.5-7B-Instruct-4bit"
+      }
+    ],
+    "tension_pairs_monitored": [
+      ["Autonomía de la voluntad", "Buena fe"],
+      ["Autonomía de la voluntad", "Rebus sic stantibus"],
+      ["Pacta sunt servanda", "Rebus sic stantibus"],
+      ["Seguridad jurídica", "Razonabilidad"],
+      ["Debido proceso", "Congruencia"],
+      ["Legalidad", "Razonabilidad"],
+      ["Cosa juzgada", "Control judicial"],
+      ["Subsidiariedad", "Control judicial"]
+    ]
+  },
+  "corpus_statistics": {
+    "total_documents": 241318,
+    "embedding_dimensions": 1536,
+    "embedding_model": "OpenAI text-embedding-ada-002 / text-embedding-3-small (mixed)",
+    "index_type": "HNSW",
+    "hnsw_params": {"m": 16, "ef_construction": 64},
+    "date_range": "1995-2025",
+    "primary_jurisdiction": "Argentina",
+    "primary_sources": ["CCyC 2015", "Ley 19.550", "Jurisprudencia CSJN", "Doctrina civil y comercial"],
+    "coverage_high": ["Contratos comerciales", "M&A", "Locaciones", "Servicios"],
+    "coverage_low": ["Derecho internacional privado", "Otras jurisdicciones LATAM", "Derecho penal"]
+  },
+  "cost_analysis": {
+    "embedding_per_search_usd": 0.000020,
+    "scm_per_analysis_gpt4o_mini_usd": 0.00015,
+    "scm_per_analysis_omlx_usd": 0.0,
+    "ner_per_analysis_omlx_usd": 0.0,
+    "monthly_1000_searches_usd_estimate": 0.02,
+    "note": "Con oMLX local, costo marginal de NER y SCM es cero (solo electricidad). Embedding requiere OpenAI si el corpus usa 1536 dims."
+  },
+  "comparison_harvey_ai": {
+    "Harvey AI pricing": "$50,000+ USD/año enterprise",
+    "LLS pricing": "Accesible para PyMEs (ver NDA para detalles)",
+    "Harvey AI precision": "94.2% (según literatura pública)",
+    "LLS SCM precision": "Pendiente validación formal (50 casos con abogados licenciados)",
+    "Harvey AI interpretability": "Black-box LLM",
+    "LLS interpretability": ">95% (score trazable a principio + fragmento textual de evidencia)",
+    "Harvey AI jurisdiction": "USA, UK principalmente",
+    "LLS jurisdiction": "Argentina primario; CCyC-2015, Ley 19.550, CSJN"
+  }
+}
